@@ -1,11 +1,15 @@
+import 'dart:io';
 import 'dart:ui';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_typography.dart';
 import '../../../core/utils/app_state.dart';
+import '../../../core/utils/image_storage_service.dart';
 import '../../../data/models/models.dart';
+import '../../../data/repositories/dog_repository.dart';
 
 /// Evcil hayvan sağlık ve aşı takvim kartı modalı.
 class HealthCardModal extends StatelessWidget {
@@ -16,6 +20,124 @@ class HealthCardModal extends StatelessWidget {
       context: context,
       barrierColor: Colors.black.withValues(alpha: 0.45),
       builder: (ctx) => const HealthCardModal(),
+    );
+  }
+
+  Widget _buildAvatar(String path) {
+    if (ImageStorageService.isAssetPath(path)) {
+      return Image.asset(
+        path,
+        fit: BoxFit.cover,
+        width: 44,
+        height: 44,
+        errorBuilder: (_, _, _) => Container(
+          width: 44,
+          height: 44,
+          color: AppColors.surfaceContainerLow,
+          child: const Icon(Icons.pets, color: AppColors.primary, size: 20),
+        ),
+      );
+    }
+    if (kIsWeb) {
+      return Image.network(
+        path,
+        fit: BoxFit.cover,
+        width: 44,
+        height: 44,
+        errorBuilder: (_, _, _) => Container(
+          width: 44,
+          height: 44,
+          color: AppColors.surfaceContainerLow,
+          child: const Icon(Icons.pets, color: AppColors.primary, size: 20),
+        ),
+      );
+    }
+    return Image.file(
+      File(path),
+      fit: BoxFit.cover,
+      width: 44,
+      height: 44,
+      errorBuilder: (_, _, _) => Container(
+        width: 44,
+        height: 44,
+        color: AppColors.surfaceContainerLow,
+        child: const Icon(Icons.pets, color: AppColors.primary, size: 20),
+      ),
+    );
+  }
+
+  void _showAddVaccineDialog(BuildContext context, Dog dog) {
+    final titleController = TextEditingController();
+    final dateController = TextEditingController(text: '15 Aralık 2026');
+    final vetController = TextEditingController(text: 'Dr. Selin Bulut');
+
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text('Yeni Aşı Kaydı', style: AppTypography.titleCard),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextField(
+              controller: titleController,
+              decoration: const InputDecoration(
+                labelText: 'Aşı / Tedavi Adı',
+                hintText: 'Örn. Bronşin Aşısı',
+              ),
+            ),
+            const SizedBox(height: 10),
+            TextField(
+              controller: dateController,
+              decoration: const InputDecoration(
+                labelText: 'Randevu / Uygulama Tarihi',
+              ),
+            ),
+            const SizedBox(height: 10),
+            TextField(
+              controller: vetController,
+              decoration: const InputDecoration(labelText: 'Veteriner Hekim'),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(),
+            child: const Text('İptal'),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              final title = titleController.text.trim();
+              if (title.isNotEmpty) {
+                final newVac = Vaccination(
+                  id: 'v_${DateTime.now().millisecondsSinceEpoch}',
+                  title: title,
+                  dueDate: dateController.text.trim(),
+                  status: VaccineStatus.upcoming,
+                  vetName: vetController.text.trim(),
+                );
+
+                final repo = DogRepository();
+                await repo.addVaccination(dog.id, newVac);
+
+                final updatedDog = dog.copyWith(
+                  vaccinations: List<Vaccination>.from(dog.vaccinations)
+                    ..add(newVac),
+                );
+                if (context.mounted) {
+                  AppStateScope.of(
+                    context,
+                    listen: false,
+                  ).updateDog(updatedDog);
+                }
+              }
+              if (ctx.mounted) {
+                Navigator.of(ctx).pop();
+              }
+            },
+            child: const Text('Ekle'),
+          ),
+        ],
+      ),
     );
   }
 
@@ -48,35 +170,39 @@ class HealthCardModal extends StatelessWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Row(
-                      children: [
-                        Container(
-                          width: 44,
-                          height: 44,
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            image: DecorationImage(
-                              image: AssetImage(dog.photoPath),
-                              fit: BoxFit.cover,
+                    Expanded(
+                      child: Row(
+                        children: [
+                          Container(
+                            width: 44,
+                            height: 44,
+                            decoration: const BoxDecoration(
+                              shape: BoxShape.circle,
+                            ),
+                            child: ClipOval(child: _buildAvatar(dog.photoPath)),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  '${dog.name} — Sağlık Kartı',
+                                  style: AppTypography.titleCard,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                                Text(
+                                  '${dog.breed} • ${dog.ageYears} Yaş',
+                                  style: AppTypography.caption,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ],
                             ),
                           ),
-                        ),
-                        const SizedBox(width: 12),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              '${dog.name} — Sağlık Kartı',
-                              style: AppTypography.titleCard,
-                            ),
-                            Text(
-                              '${dog.breed} • ${dog.ageYears} Yaş',
-                              style: AppTypography.caption,
-                            ),
-                          ],
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
+                    const SizedBox(width: 8),
                     IconButton(
                       icon: const Icon(
                         Icons.close,
@@ -91,7 +217,8 @@ class HealthCardModal extends StatelessWidget {
                   ],
                 ),
                 const SizedBox(height: 20),
-                // Yaklaşan aşı bildirim kartı
+
+                // Yaklaşan Aşı Bildirim Kartı
                 Container(
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
@@ -215,20 +342,7 @@ class HealthCardModal extends StatelessWidget {
                   width: double.infinity,
                   height: 48,
                   child: OutlinedButton.icon(
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text(
-                            'Yeni aşı formu açıldı.',
-                            style: AppTypography.bodyMedium.copyWith(
-                              color: Colors.white,
-                            ),
-                          ),
-                          backgroundColor: AppColors.primary,
-                        ),
-                      );
-                    },
+                    onPressed: () => _showAddVaccineDialog(context, dog),
                     icon: const Icon(Icons.add, color: AppColors.primary),
                     label: Text(
                       'Yeni Aşı / Tedavi Ekle',

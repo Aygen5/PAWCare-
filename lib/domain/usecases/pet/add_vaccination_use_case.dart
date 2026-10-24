@@ -7,6 +7,10 @@ class AddVaccinationUseCase {
 
   const AddVaccinationUseCase(this.repository);
 
+  Future<void> call(String dogId, Vaccination vaccination) {
+    return repository.addVaccination(dogId, vaccination);
+  }
+
   Future<void> addVaccine(String dogId, Vaccination vaccination) {
     return repository.addVaccination(dogId, vaccination);
   }

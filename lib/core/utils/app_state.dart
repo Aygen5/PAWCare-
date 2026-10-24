@@ -103,6 +103,11 @@ class AppState extends ChangeNotifier {
     notifyListeners();
   }
 
+  void updateDogPhoto(String newPath) {
+    _currentDog = _currentDog.copyWith(photoPath: newPath);
+    notifyListeners();
+  }
+
   // Hizmet veren ilanları
   final List<SitterListing> _sitters = [
     SitterListing(

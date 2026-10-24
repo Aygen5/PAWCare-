@@ -173,7 +173,7 @@ Ekranları feature klasörlerine taşımadan önce:
 - **Etkilenecek Dosyalar:** `lib/features/discovery/`
 - **Tamamlanma Kontrolü:** Arama ve filtreleme çalışmalı, tarih seçilerek oluşturulan talep `BookingRepository`'ye kaydedilmeli.
 
-#### Adım 4.4: Köpek Profili, Sağlık Kartı ve Fotoğraf Seçimi (`Pets`)
+#### Adım 4.4: [TAMAMLANDI] Köpek Profili, Sağlık Kartı ve Fotoğraf Seçimi (`Pets`)
 - **Yapılacak İş:**
   - `dog_profile_screen.dart` → `lib/features/pets/view/dog_profile_screen.dart`
   - `health_card_modal.dart` → `lib/features/pets/widgets/health_card_modal.dart`
