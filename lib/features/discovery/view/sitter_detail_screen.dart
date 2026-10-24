@@ -82,32 +82,49 @@ class _SitterDetailScreenState extends State<SitterDetailScreen> {
 
     if (!mounted) return;
 
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        backgroundColor: AppColors.surfaceContainerLowest,
+        backgroundColor: isDark
+            ? AppColors.darkSurface
+            : AppColors.surfaceContainerLowest,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             Container(
               padding: const EdgeInsets.all(16),
-              decoration: const BoxDecoration(
-                color: AppColors.secondaryContainer,
+              decoration: BoxDecoration(
+                color: isDark
+                    ? AppColors.darkPrimaryContainer
+                    : AppColors.secondaryContainer,
                 shape: BoxShape.circle,
               ),
-              child: const Icon(
+              child: Icon(
                 Icons.check_circle_outline,
-                color: AppColors.primary,
+                color: isDark ? AppColors.darkPrimary : AppColors.primary,
                 size: 36,
               ),
             ),
             const SizedBox(height: 18),
-            Text('Talebiniz İletildi!', style: AppTypography.headlineSection),
+            Text(
+              'Talebiniz İletildi!',
+              style: AppTypography.headlineSection.copyWith(
+                color: isDark
+                    ? AppColors.darkOnSurface
+                    : const Color(0xFF1E3023),
+              ),
+            ),
             const SizedBox(height: 8),
             Text(
               '${widget.sitter.name} talebinizi inceleyip onaylayacaktır. Hizmet Veren paneline geçerek talebi görüntüleyebilirsiniz.',
-              style: AppTypography.bodyDefault,
+              style: AppTypography.bodyDefault.copyWith(
+                color: isDark
+                    ? AppColors.darkOnSurfaceVariant
+                    : const Color(0xFF344638),
+              ),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 24),
@@ -337,24 +354,40 @@ class _SitterDetailScreenState extends State<SitterDetailScreen> {
                             vertical: 8,
                           ),
                           decoration: BoxDecoration(
-                            color: AppColors.surfaceContainerLowest,
+                            color: isDark
+                                ? AppColors.darkSurfaceContainer
+                                : AppColors.surfaceContainerLowest,
                             borderRadius: BorderRadius.circular(14),
                             border: Border.all(
-                              color: AppColors.outlineVariant.withValues(
-                                alpha: 0.4,
-                              ),
+                              color: isDark
+                                  ? AppColors.darkOutlineVariant.withValues(
+                                      alpha: 0.4,
+                                    )
+                                  : AppColors.outlineVariant.withValues(
+                                      alpha: 0.4,
+                                    ),
                             ),
                           ),
                           child: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              const Icon(
+                              Icon(
                                 Icons.check_circle_outline,
                                 size: 16,
-                                color: AppColors.primary,
+                                color: isDark
+                                    ? AppColors.darkPrimary
+                                    : AppColors.primary,
                               ),
                               const SizedBox(width: 6),
-                              Text(amenity, style: AppTypography.bodyMedium),
+                              Text(
+                                amenity,
+                                style: AppTypography.bodyMedium.copyWith(
+                                  color: isDark
+                                      ? AppColors.darkOnSurface
+                                      : const Color(0xFF1E3023),
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
                             ],
                           ),
                         );
@@ -584,12 +617,18 @@ class _SitterDetailScreenState extends State<SitterDetailScreen> {
                     Container(
                       padding: const EdgeInsets.all(18),
                       decoration: BoxDecoration(
-                        color: AppColors.surfaceContainerLow,
+                        color: isDark
+                            ? AppColors.darkSurfaceContainer
+                            : AppColors.surfaceContainerLow,
                         borderRadius: BorderRadius.circular(20),
                         border: Border.all(
-                          color: AppColors.outlineVariant.withValues(
-                            alpha: 0.4,
-                          ),
+                          color: isDark
+                              ? AppColors.darkOutlineVariant.withValues(
+                                  alpha: 0.4,
+                                )
+                              : AppColors.outlineVariant.withValues(
+                                  alpha: 0.4,
+                                ),
                         ),
                       ),
                       child: Column(
@@ -599,11 +638,20 @@ class _SitterDetailScreenState extends State<SitterDetailScreen> {
                             children: [
                               Text(
                                 '₺${widget.sitter.pricePerUnit.toInt()} x $_selectedUnits ${widget.sitter.unitLabel}',
-                                style: AppTypography.bodyDefault,
+                                style: AppTypography.bodyDefault.copyWith(
+                                  color: isDark
+                                      ? AppColors.darkOnSurface
+                                      : const Color(0xFF1E3023),
+                                ),
                               ),
                               Text(
                                 '₺${_subtotal.toInt()}',
-                                style: AppTypography.bodyMedium,
+                                style: AppTypography.bodyMedium.copyWith(
+                                  color: isDark
+                                      ? AppColors.darkOnSurface
+                                      : const Color(0xFF1E3023),
+                                  fontWeight: FontWeight.w700,
+                                ),
                               ),
                             ],
                           ),
@@ -613,11 +661,20 @@ class _SitterDetailScreenState extends State<SitterDetailScreen> {
                             children: [
                               Text(
                                 'PawCare Hizmet Bedeli',
-                                style: AppTypography.bodyDefault,
+                                style: AppTypography.bodyDefault.copyWith(
+                                  color: isDark
+                                      ? AppColors.darkOnSurfaceVariant
+                                      : const Color(0xFF344638),
+                                ),
                               ),
                               Text(
                                 '₺${_serviceFee.toInt()}',
-                                style: AppTypography.bodyMedium,
+                                style: AppTypography.bodyMedium.copyWith(
+                                  color: isDark
+                                      ? AppColors.darkOnSurface
+                                      : const Color(0xFF1E3023),
+                                  fontWeight: FontWeight.w700,
+                                ),
                               ),
                             ],
                           ),
@@ -630,7 +687,11 @@ class _SitterDetailScreenState extends State<SitterDetailScreen> {
                             children: [
                               Text(
                                 'Toplam Tutar',
-                                style: AppTypography.headlineSection,
+                                style: AppTypography.headlineSection.copyWith(
+                                  color: isDark
+                                      ? AppColors.darkOnSurface
+                                      : const Color(0xFF1E3023),
+                                ),
                               ),
                               Text(
                                 '₺${_totalPrice.toInt()}',

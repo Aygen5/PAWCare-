@@ -217,12 +217,14 @@ class BookingCard extends StatelessWidget {
                     sitterName: booking.sitterName,
                     avatarPath: booking.sitterPhoto,
                   ),
-                  icon: const Icon(
+                  icon: Icon(
                     Icons.chat_bubble_outline,
-                    color: AppColors.primary,
+                    color: isDark ? AppColors.darkPrimary : AppColors.primary,
                   ),
                   style: IconButton.styleFrom(
-                    backgroundColor: AppColors.surfaceContainerLow,
+                    backgroundColor: isDark
+                        ? AppColors.darkSurfaceContainerLow
+                        : AppColors.surfaceContainerLow,
                     shape: const CircleBorder(),
                   ),
                 ),
@@ -234,12 +236,14 @@ class BookingCard extends StatelessWidget {
                     roleSubtitle: 'Hizmet Veren',
                     phoneNumber: '+90 532 890 12 34',
                   ),
-                  icon: const Icon(
+                  icon: Icon(
                     Icons.phone_outlined,
-                    color: AppColors.primary,
+                    color: isDark ? AppColors.darkPrimary : AppColors.primary,
                   ),
                   style: IconButton.styleFrom(
-                    backgroundColor: AppColors.surfaceContainerLow,
+                    backgroundColor: isDark
+                        ? AppColors.darkSurfaceContainerLow
+                        : AppColors.surfaceContainerLow,
                     shape: const CircleBorder(),
                   ),
                 ),
@@ -281,11 +285,24 @@ class BookingCard extends StatelessWidget {
                       sitterName: booking.sitterName,
                       avatarPath: booking.sitterPhoto,
                     ),
-                    icon: const Icon(Icons.chat_bubble_outline, size: 16),
-                    label: const Text('Bakıcıya Yaz'),
+                    icon: Icon(
+                      Icons.chat_bubble_outline,
+                      size: 16,
+                      color: isDark ? AppColors.darkPrimary : AppColors.primary,
+                    ),
+                    label: Text(
+                      'Bakıcıya Yaz',
+                      style: AppTypography.caption.copyWith(
+                        color: isDark ? AppColors.darkPrimary : AppColors.primary,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.surfaceContainerLow,
-                      foregroundColor: AppColors.primary,
+                      backgroundColor: isDark
+                          ? AppColors.darkSurfaceContainerLow
+                          : AppColors.surfaceContainerLow,
+                      foregroundColor:
+                          isDark ? AppColors.darkPrimary : AppColors.primary,
                       elevation: 0,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(14),
@@ -305,8 +322,17 @@ class BookingCard extends StatelessWidget {
                   sitterName: booking.sitterName,
                   avatarPath: booking.sitterPhoto,
                 ),
-                icon: const Icon(Icons.chat_bubble_outline, size: 16),
-                label: const Text('Mesaj Geçmişi'),
+                icon: Icon(
+                  Icons.chat_bubble_outline,
+                  size: 16,
+                  color: isDark ? AppColors.darkPrimary : AppColors.primary,
+                ),
+                label: Text(
+                  'Mesaj Geçmişi',
+                  style: TextStyle(
+                    color: isDark ? AppColors.darkPrimary : AppColors.primary,
+                  ),
+                ),
               ),
             ),
           ],

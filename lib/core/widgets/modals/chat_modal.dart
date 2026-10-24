@@ -123,7 +123,9 @@ class _ChatModalState extends State<ChatModal> {
                               Text(
                                 'Çevrim içi • Yanıt süresi ~5 dk',
                                 style: AppTypography.caption.copyWith(
-                                  color: AppColors.secondary,
+                                  color: isDark
+                                      ? AppColors.darkOnSurfaceVariant
+                                      : AppColors.secondary,
                                 ),
                               ),
                             ],
@@ -132,13 +134,17 @@ class _ChatModalState extends State<ChatModal> {
                       ),
                     ),
                     IconButton(
-                      icon: const Icon(
+                      icon: Icon(
                         Icons.close,
-                        color: AppColors.onSurfaceVariant,
+                        color: isDark
+                            ? AppColors.darkOnSurfaceVariant
+                            : AppColors.onSurfaceVariant,
                       ),
                       onPressed: () => Navigator.of(context).pop(),
                       style: IconButton.styleFrom(
-                        backgroundColor: AppColors.surfaceContainerLow,
+                        backgroundColor: isDark
+                            ? AppColors.darkSurfaceContainerLow
+                            : AppColors.surfaceContainerLow,
                         shape: const CircleBorder(),
                       ),
                     ),
@@ -188,7 +194,9 @@ class _ChatModalState extends State<ChatModal> {
                               style: AppTypography.bodyDefault.copyWith(
                                 color: msg.isMe
                                     ? Colors.white
-                                    : AppColors.onSurface,
+                                    : (isDark
+                                          ? AppColors.darkOnSurface
+                                          : const Color(0xFF1E3023)),
                               ),
                             ),
                             const SizedBox(height: 4),
@@ -199,7 +207,9 @@ class _ChatModalState extends State<ChatModal> {
                                 style: AppTypography.labelTag.copyWith(
                                   color: msg.isMe
                                       ? AppColors.onPrimaryContainer
-                                      : AppColors.secondary,
+                                      : (isDark
+                                            ? AppColors.darkOnSurfaceVariant
+                                            : AppColors.secondary),
                                   fontSize: 10,
                                 ),
                               ),

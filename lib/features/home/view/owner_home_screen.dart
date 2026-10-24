@@ -690,20 +690,27 @@ class _OwnerHomeViewState extends State<_OwnerHomeView>
                                       sitterName: activeBooking.sitterName,
                                       avatarPath: activeBooking.sitterPhoto,
                                     ),
-                                    icon: const Icon(
+                                    icon: Icon(
                                       Icons.chat_bubble_outline,
                                       size: 18,
-                                      color: AppColors.primary,
+                                      color: isDark
+                                          ? AppColors.darkPrimary
+                                          : AppColors.primary,
                                     ),
                                     label: Text(
                                       'Sohbet',
                                       style: AppTypography.bodyMedium.copyWith(
-                                        color: AppColors.primary,
+                                        color: isDark
+                                            ? AppColors.darkPrimary
+                                            : AppColors.primary,
+                                        fontWeight: FontWeight.w600,
                                       ),
                                     ),
                                     style: OutlinedButton.styleFrom(
-                                      side: const BorderSide(
-                                        color: AppColors.primary,
+                                      side: BorderSide(
+                                        color: isDark
+                                            ? AppColors.darkPrimary
+                                            : AppColors.primary,
                                         width: 1.5,
                                       ),
                                       shape: RoundedRectangleBorder(
