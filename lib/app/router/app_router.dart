@@ -11,7 +11,7 @@ import '../../screens/explore_screen.dart';
 import '../../screens/owner_home_screen.dart';
 import '../../screens/sitter_dashboard_screen.dart';
 import '../../screens/sitter_detail_screen.dart';
-import '../../screens/welcome_screen.dart';
+import '../../features/onboarding/view/welcome_screen.dart';
 import '../../state/app_state.dart';
 import 'app_shell.dart';
 import 'route_names.dart';

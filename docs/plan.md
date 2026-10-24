@@ -146,7 +146,7 @@ Ekranları feature klasörlerine taşımadan önce:
 
 > **Amaç:** Mevcut ekranları Stitch tasarım sadakatini koruyarak feature klasörlerine taşımak; tek seferde tema, navigasyon, Cubit ve veri bağlantılarını tamamlamak.
 
-#### Adım 4.1: Karşılama ve Kimlik Doğrulama (`Onboarding` & `Auth`)
+#### Adım 4.1: [TAMAMLANDI] Karşılama ve Kimlik Doğrulama (`Onboarding` & `Auth`)
 - **Yapılacak İş:**
   - `welcome_screen.dart` → `lib/features/onboarding/view/welcome_screen.dart`
   - `login_modal.dart` ve `signup_modal.dart` → `lib/features/auth/widgets/`

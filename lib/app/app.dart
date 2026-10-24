@@ -5,12 +5,13 @@ import 'package:go_router/go_router.dart';
 import '../core/theme/app_theme.dart';
 import '../core/theme/theme_cubit.dart';
 import '../data/repositories/settings_repository.dart';
+import '../features/auth/cubit/auth_cubit.dart';
 import '../features/auth/cubit/role_cubit.dart';
 import '../state/app_state.dart';
 import 'router/app_router.dart';
 import 'router/route_names.dart';
 
-/// PawCare ana uygulama kurulumu, tema, rol ve router bağlantısı.
+/// PawCare ana uygulama kurulumu, tema, rol, kimlik ve router bağlantısı.
 class PawCareApp extends StatefulWidget {
   final SettingsRepository? settingsRepository;
   final String initialLocation;
@@ -31,6 +32,7 @@ class _PawCareAppState extends State<PawCareApp> {
   late final AppState _appState;
   late final ThemeCubit _themeCubit;
   late final RoleCubit _roleCubit;
+  late final AuthCubit _authCubit;
   late final SettingsRepository _settingsRepository;
   late final GoRouter _router;
 
@@ -42,6 +44,7 @@ class _PawCareAppState extends State<PawCareApp> {
         widget.settingsRepository ?? SettingsRepository.inMemory();
     _themeCubit = ThemeCubit(_settingsRepository);
     _roleCubit = RoleCubit(settingsRepository: _settingsRepository);
+    _authCubit = AuthCubit(settingsRepository: _settingsRepository);
 
     // RoleCubit ile AppState senkronizasyonu
     _appState.setRole(_roleCubit.state);
@@ -65,6 +68,7 @@ class _PawCareAppState extends State<PawCareApp> {
     _appState.dispose();
     _themeCubit.close();
     _roleCubit.close();
+    _authCubit.close();
     super.dispose();
   }
 
@@ -74,6 +78,7 @@ class _PawCareAppState extends State<PawCareApp> {
       providers: [
         BlocProvider.value(value: _themeCubit),
         BlocProvider.value(value: _roleCubit),
+        BlocProvider.value(value: _authCubit),
       ],
       child: AppStateScope(
         notifier: _appState,
