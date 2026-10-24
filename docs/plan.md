@@ -210,7 +210,7 @@ Ekranları feature klasörlerine taşımadan önce:
 
 > **Amaç:** Bildirim kapsamını kesinlikle yerel demo olaylarıyla sınırlı tutarak bildirim ekranını/modalını hazırlamak; profil ayarlarını ve tema değiştiriciyi entegre etmek.
 
-#### Adım 5.1: Yerel Demo Bildirim Tetikleyicileri ve Bildirim Görünümü
+#### Adım 5.1: [TAMAMLANDI] Yerel Demo Bildirim Tetikleyicileri ve Bildirim Görünümü
 - **Tanımlı Yerel Olaylar (Kapsam Sınırı):**
   *Push notification, harici sunucu, Firebase, OneSignal veya GPS servisi KESİNLİKLE eklenmeyecektir.* Bildirimler yalnızca şu 4 yerel olay ile oluşacaktır:
   1. **Rezervasyon Oluşturuldu:** "Rezervasyon talebiniz iletildi: [Hizmet Adı] - Beklemede"

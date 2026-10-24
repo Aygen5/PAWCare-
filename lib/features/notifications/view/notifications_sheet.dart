@@ -1,0 +1,488 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+
+import '../../../core/theme/app_colors.dart';
+import '../../../core/theme/app_typography.dart';
+import '../../../core/utils/app_state.dart';
+import '../../../data/repositories/notification_repository.dart';
+import '../../../domain/entities/notification.dart';
+import '../../../domain/usecases/notification/get_notifications_use_case.dart';
+import '../../../domain/usecases/notification/mark_notification_read_use_case.dart';
+import '../cubit/notifications_cubit.dart';
+import '../cubit/notifications_state.dart';
+
+/// Bildirimlerin listelendiği, filtrelendiği ve okundu işaretlendiği modal alt çekmecesi (Bottom Sheet).
+class NotificationsSheet extends StatelessWidget {
+  const NotificationsSheet({super.key});
+
+  /// Modalı açan statik yardımcı metot.
+  static Future<void> show(BuildContext context) {
+    NotificationsCubit? existingCubit;
+    try {
+      existingCubit = context.read<NotificationsCubit?>();
+    } catch (_) {}
+
+    return showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      builder: (ctx) {
+        if (existingCubit != null) {
+          return BlocProvider.value(
+            value: existingCubit,
+            child: const NotificationsSheet(),
+          );
+        }
+
+        final repo = NotificationRepository();
+        final appState = AppStateScope.of(context, listen: false);
+        return BlocProvider(
+          create: (_) => NotificationsCubit(
+            getNotificationsUseCase: GetNotificationsUseCase(repo),
+            markNotificationReadUseCase: MarkNotificationReadUseCase(repo),
+            initialNotifications: appState.notifications,
+          ),
+          child: const NotificationsSheet(),
+        );
+      },
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final appState = AppStateScope.of(context);
+
+    return Container(
+      constraints: BoxConstraints(
+        maxHeight: MediaQuery.of(context).size.height * 0.85,
+      ),
+      decoration: const BoxDecoration(
+        color: AppColors.surfaceContainerLowest,
+        borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+      ),
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+      child: BlocBuilder<NotificationsCubit, NotificationsState>(
+        builder: (context, state) {
+          final cubit = context.read<NotificationsCubit>();
+          final notifications = state.filteredNotifications;
+
+          return Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Üst çekme çubuğu
+              Center(
+                child: Container(
+                  width: 44,
+                  height: 4,
+                  margin: const EdgeInsets.only(bottom: 16),
+                  decoration: BoxDecoration(
+                    color: AppColors.outlineVariant,
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+              ),
+
+              // Başlık ve Tümünü Oku Butonu
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Expanded(
+                    child: Row(
+                      children: [
+                        const Icon(
+                          Icons.notifications_active,
+                          color: AppColors.primary,
+                          size: 22,
+                        ),
+                        const SizedBox(width: 8),
+                        Flexible(
+                          child: Text(
+                            'Bildirimler',
+                            style: AppTypography.headlineSection,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                        if (state.unreadCount > 0) ...[
+                          const SizedBox(width: 8),
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 8,
+                              vertical: 2,
+                            ),
+                            decoration: BoxDecoration(
+                              color: AppColors.primary,
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: Text(
+                              '${state.unreadCount}',
+                              style: AppTypography.labelTag.copyWith(
+                                color: Colors.white,
+                                fontSize: 10,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ],
+                    ),
+                  ),
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      if (state.hasUnread)
+                        TextButton(
+                          onPressed: () {
+                            cubit.markAllAsRead();
+                            appState.markAllNotificationsAsRead();
+                          },
+                          child: Text(
+                            'Tümünü Oku',
+                            style: AppTypography.labelTag.copyWith(
+                              color: AppColors.primary,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                        ),
+                      IconButton(
+                        icon: const Icon(
+                          Icons.close,
+                          size: 20,
+                          color: AppColors.onSurfaceVariant,
+                        ),
+                        onPressed: () => Navigator.of(context).pop(),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+              const SizedBox(height: 12),
+
+              // Filtreleme Çipleri
+              SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  children: [
+                    _buildFilterChip(
+                      label: 'Tümü (${state.allNotifications.length})',
+                      isSelected: state.activeFilter == NotificationFilter.all,
+                      onTap: () => cubit.setFilter(NotificationFilter.all),
+                    ),
+                    const SizedBox(width: 8),
+                    _buildFilterChip(
+                      label: 'Okunmamış (${state.unreadCount})',
+                      isSelected:
+                          state.activeFilter == NotificationFilter.unread,
+                      onTap: () => cubit.setFilter(NotificationFilter.unread),
+                    ),
+                    const SizedBox(width: 8),
+                    _buildFilterChip(
+                      label: 'Aşılar',
+                      isSelected:
+                          state.activeFilter == NotificationFilter.vaccine,
+                      onTap: () => cubit.setFilter(NotificationFilter.vaccine),
+                    ),
+                    const SizedBox(width: 8),
+                    _buildFilterChip(
+                      label: 'Rezervasyonlar',
+                      isSelected:
+                          state.activeFilter == NotificationFilter.booking,
+                      onTap: () => cubit.setFilter(NotificationFilter.booking),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 14),
+
+              // Bildirim Listesi veya Boş Durum
+              if (notifications.isEmpty)
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 40),
+                  child: Center(
+                    child: Column(
+                      children: [
+                        const Icon(
+                          Icons.notifications_none,
+                          size: 40,
+                          color: AppColors.onSurfaceVariant,
+                        ),
+                        const SizedBox(height: 10),
+                        Text(
+                          'Bu filtrede bildirim bulunmuyor.',
+                          style: AppTypography.bodyDefault.copyWith(
+                            color: AppColors.onSurfaceVariant,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                )
+              else
+                Flexible(
+                  child: ListView.separated(
+                    shrinkWrap: true,
+                    itemCount: notifications.length,
+                    separatorBuilder: (_, _) => const SizedBox(height: 10),
+                    itemBuilder: (context, index) {
+                      final notif = notifications[index];
+                      return _buildNotificationCard(
+                        notif: notif,
+                        onTap: () {
+                          if (!notif.isRead) {
+                            cubit.markAsRead(notif.id);
+                            appState.markNotificationAsRead(notif.id);
+                          }
+                        },
+                      );
+                    },
+                  ),
+                ),
+              const SizedBox(height: 14),
+
+              // Demo Olaylarını Test Etme Çubuğu
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 8,
+                ),
+                decoration: BoxDecoration(
+                  color: AppColors.surfaceContainerLow,
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: Row(
+                  children: [
+                    const Icon(
+                      Icons.play_circle_outline,
+                      size: 18,
+                      color: AppColors.primary,
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        'Demo Olayı Simüle Et:',
+                        style: AppTypography.caption.copyWith(
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                    PopupMenuButton<int>(
+                      tooltip: 'Demo Olayı Seç',
+                      icon: const Icon(
+                        Icons.add_alert,
+                        size: 18,
+                        color: AppColors.primary,
+                      ),
+                      onSelected: (val) {
+                        _triggerDemoEvent(val, cubit, appState);
+                      },
+                      itemBuilder: (ctx) => [
+                        const PopupMenuItem(
+                          value: 1,
+                          child: Text('1. Rezervasyon Talebi İletildi'),
+                        ),
+                        const PopupMenuItem(
+                          value: 2,
+                          child: Text('2. Rezervasyon Durumu Değişti'),
+                        ),
+                        const PopupMenuItem(
+                          value: 3,
+                          child: Text('3. Aşı Hatırlatıcısı'),
+                        ),
+                        const PopupMenuItem(
+                          value: 4,
+                          child: Text('4. Demo Yürüyüş Durumu'),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          );
+        },
+      ),
+    );
+  }
+
+  void _triggerDemoEvent(
+    int typeIndex,
+    NotificationsCubit cubit,
+    AppState appState,
+  ) {
+    String title;
+    String body;
+    String type;
+
+    switch (typeIndex) {
+      case 1:
+        title = 'Rezervasyon Oluşturuldu 📋';
+        body =
+            'Rezervasyon talebiniz iletildi: Köpek Oteli — 2 Gece Konaklama - Beklemede';
+        type = 'booking';
+        break;
+      case 2:
+        title = 'Rezervasyon Onaylandı! 🐾';
+        body = 'Mert Demir ile yürüyüş seansı talebiniz onaylandı.';
+        type = 'booking';
+        break;
+      case 3:
+        title = 'Aşı Hatırlatıcısı 💉';
+        body = 'Barley için Karma Aşı zamanı yaklaşıyor (26 Ekim 2026).';
+        type = 'vaccine';
+        break;
+      case 4:
+      default:
+        title = 'Demo Yürüyüş Durumu 🦮';
+        body = 'Mert Demir yürüyüş seansını başlattı.';
+        type = 'walk';
+        break;
+    }
+
+    cubit.triggerLocalEventNotification(title: title, body: body, type: type);
+    appState.addNotification(
+      NotificationItem(
+        id: 'notif_${DateTime.now().millisecondsSinceEpoch}',
+        title: title,
+        body: body,
+        timestamp: DateTime.now(),
+        isRead: false,
+        type: type,
+      ),
+    );
+  }
+
+  Widget _buildFilterChip({
+    required String label,
+    required bool isSelected,
+    required VoidCallback onTap,
+  }) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(14),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+        decoration: BoxDecoration(
+          color: isSelected
+              ? AppColors.primary
+              : AppColors.surfaceContainerLow,
+          borderRadius: BorderRadius.circular(14),
+        ),
+        child: Text(
+          label,
+          style: AppTypography.labelTag.copyWith(
+            color: isSelected ? Colors.white : AppColors.onSurfaceVariant,
+            fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildNotificationCard({
+    required NotificationItem notif,
+    required VoidCallback onTap,
+  }) {
+    IconData icon;
+    Color iconBg;
+
+    switch (notif.type) {
+      case 'booking':
+        icon = Icons.calendar_month;
+        iconBg = notif.isRead
+            ? AppColors.surfaceContainerHighest
+            : AppColors.secondaryContainer;
+        break;
+      case 'vaccine':
+        icon = Icons.vaccines;
+        iconBg = notif.isRead
+            ? AppColors.surfaceContainerHighest
+            : AppColors.tertiaryFixed;
+        break;
+      case 'walk':
+        icon = Icons.directions_walk;
+        iconBg = notif.isRead
+            ? AppColors.surfaceContainerHighest
+            : AppColors.primaryContainer;
+        break;
+      default:
+        icon = Icons.pets;
+        iconBg = notif.isRead
+            ? AppColors.surfaceContainerHighest
+            : AppColors.primary;
+        break;
+    }
+
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(16),
+      child: Container(
+        padding: const EdgeInsets.all(14),
+        decoration: BoxDecoration(
+          color: notif.isRead
+              ? AppColors.surfaceContainerLow
+              : AppColors.secondaryContainer.withValues(alpha: 0.35),
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(
+            color: notif.isRead
+                ? AppColors.outlineVariant.withValues(alpha: 0.25)
+                : AppColors.primary.withValues(alpha: 0.3),
+          ),
+        ),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: iconBg,
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
+                icon,
+                size: 16,
+                color: notif.isRead
+                    ? AppColors.onSurfaceVariant
+                    : AppColors.primary,
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Expanded(
+                        child: Text(
+                          notif.title,
+                          style: AppTypography.titleCard.copyWith(
+                            fontWeight: notif.isRead
+                                ? FontWeight.w600
+                                : FontWeight.w800,
+                          ),
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                      if (!notif.isRead)
+                        Container(
+                          width: 8,
+                          height: 8,
+                          margin: const EdgeInsets.only(left: 6),
+                          decoration: const BoxDecoration(
+                            color: AppColors.tertiary,
+                            shape: BoxShape.circle,
+                          ),
+                        ),
+                    ],
+                  ),
+                  const SizedBox(height: 2),
+                  Text(notif.body, style: AppTypography.caption),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}

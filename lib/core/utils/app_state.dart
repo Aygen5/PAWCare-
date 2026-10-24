@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../data/models/models.dart';
+import '../../domain/entities/notification.dart' as entity;
 
 /// PawCare geçici uygulama durum yöneticisi; rol, navigasyon, aktif veriler ve bildirimleri tutar.
 class AppState extends ChangeNotifier {
@@ -294,7 +295,7 @@ class AppState extends ChangeNotifier {
   }
 
   // Bildirim yönetimi
-  List<NotificationItem> _notifications = [
+  List<entity.NotificationItem> _notifications = [
     NotificationItem(
       id: 'notif_1',
       title: 'Aşı Hatırlatması',
@@ -311,10 +312,23 @@ class AppState extends ChangeNotifier {
     ),
   ];
 
-  List<NotificationItem> get notifications => _notifications;
+  List<entity.NotificationItem> get notifications => _notifications;
 
   int get unreadNotificationCount =>
       _notifications.where((n) => !n.isRead).length;
+
+  void markNotificationAsRead(String id) {
+    final idx = _notifications.indexWhere((n) => n.id == id);
+    if (idx != -1 && !_notifications[idx].isRead) {
+      _notifications[idx] = _notifications[idx].copyWith(isRead: true);
+      notifyListeners();
+    }
+  }
+
+  void addNotification(entity.NotificationItem notification) {
+    _notifications.insert(0, notification);
+    notifyListeners();
+  }
 
   void markAllNotificationsAsRead() {
     _notifications = _notifications
