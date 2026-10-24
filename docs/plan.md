@@ -242,7 +242,7 @@ Ekranları feature klasörlerine taşımadan önce:
 
 > **Amaç:** Eski monolitik kodları temizlemek, tüm testleri ve statik analizleri çalıştırmak, Stitch tasarım sadakatini ve koyu yeşil dark mode kontrastını doğrulamak.
 
-#### Adım 6.1: Eski Monolitik Kodların Güvenli Şekilde Temizlenmesi
+#### Adım 6.1: [TAMAMLANDI] Eski Monolitik Kodların Güvenli Şekilde Temizlenmesi
 - **Yapılacak İş:**
   - Eski `lib/state/app_state.dart` dosyasını silmek.
   - Eski `lib/screens/` klasörünü ve taşınmış eski dosyaları silmek.
