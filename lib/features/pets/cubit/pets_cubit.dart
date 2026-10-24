@@ -189,4 +189,10 @@ class PetsCubit extends Cubit<PetsState> {
 
     emit(state.copyWith(status: PetsStatus.loaded, dog: updatedDog));
   }
+
+  /// Yeni bir köpek profilini kaydeder ve durumu günceller.
+  Future<void> saveNewDog(Dog newDog) async {
+    await _dogRepository.saveDog(newDog);
+    emit(state.copyWith(status: PetsStatus.loaded, dog: newDog));
+  }
 }

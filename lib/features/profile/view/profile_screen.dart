@@ -73,6 +73,7 @@ class _ProfileView extends StatelessWidget {
       body: SafeArea(
         child: BlocBuilder<ProfileCubit, ProfileState>(
           builder: (context, state) {
+            final isOwner = state.role == UserRole.owner;
             return SingleChildScrollView(
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
               child: Column(
@@ -134,7 +135,10 @@ class _ProfileView extends StatelessWidget {
                   ProfileSettingTile(
                     icon: Icons.notifications_outlined,
                     title: 'Bildirim Tercihleri',
-                    subtitle: 'Aşı, rezervasyon ve yürüyüş uyarıları',
+                    subtitle: isOwner
+                        ? 'Aşı takvimi, yürüyüş ve rezervasyon uyarıları'
+                        : 'Gelen rezervasyon talepleri ve misafir patiler',
+                    onTap: () => _showNotificationPreferences(context, isOwner),
                     trailing: Switch(
                       value: state.notificationsEnabled,
                       activeThumbColor: isDark
@@ -174,7 +178,7 @@ class _ProfileView extends StatelessWidget {
                   ProfileSettingTile(
                     icon: Icons.info_outline,
                     title: 'PawCare Hakkında',
-                    subtitle: 'Sürüm 1.0.0 (Clean Architecture)',
+                    subtitle: 'Sürüm 1.0.0',
                     onTap: () => _showAboutInfo(context),
                   ),
 
@@ -194,6 +198,11 @@ class _ProfileView extends StatelessWidget {
                         roleCubit?.setRole(nextRole);
                         context.read<ProfileCubit>().toggleRole();
                         appState.setRole(nextRole);
+                        if (nextRole == UserRole.sitter) {
+                          appState.setSitterNavIndex(4);
+                        } else {
+                          appState.setOwnerNavIndex(4);
+                        }
 
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
@@ -371,20 +380,136 @@ class _ProfileView extends StatelessWidget {
   }
 
   void _showAboutInfo(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('PawCare Hakkında'),
-        content: const Text(
-          'PawCare, modern Flutter teknolojileri ve Clean Architecture prensipleriyle geliştirilmiş evcil hayvan yönetim ve rezervasyon platformudur.\n\nSürüm: 1.0.0 (Faz 5)',
+        backgroundColor: isDark
+            ? AppColors.darkSurfaceContainer
+            : AppColors.surfaceContainerLowest,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: Text(
+          'PawCare Hakkında',
+          style: AppTypography.headlineSection.copyWith(
+            color: isDark ? AppColors.darkOnSurface : AppColors.onSurface,
+          ),
+        ),
+        content: Text(
+          'PawCare, evcil hayvan sahipleri ile güvenilir, profesyonel bakıcıları bir araya getiren yeni nesil pati bakım platformudur. Can dostlarımızın aşı ve sağlık takvimlerini kolayca yönetmenizi, dilediğiniz an uzman bakıcı veya köpek oteli bulmanızı ve rezervasyon sürecini canlı bildirimlerle güvenle takip etmenizi sağlar. Sevgiyle büyüyen pati dostu bir topluluk için buradayız.\n\nSürüm: 1.0.0',
+          style: AppTypography.bodyDefault.copyWith(
+            color: isDark
+                ? AppColors.darkOnSurfaceVariant
+                : AppColors.onSurfaceVariant,
+            height: 1.5,
+          ),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: const Text('Kapat'),
+            child: Text(
+              'Harika',
+              style: TextStyle(
+                color: isDark ? AppColors.darkPrimary : AppColors.primary,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
           ),
         ],
       ),
+    );
+  }
+
+  void _showNotificationPreferences(BuildContext context, bool isOwner) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: isDark
+            ? AppColors.darkSurfaceContainer
+            : AppColors.surfaceContainerLowest,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: Text(
+          isOwner ? 'Köpek Sahibi Bildirimleri' : 'Hizmet Veren Bildirimleri',
+          style: AppTypography.headlineSection.copyWith(
+            color: isDark ? AppColors.darkOnSurface : AppColors.onSurface,
+          ),
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: isOwner
+              ? [
+                  _buildPrefRow('💉 Aşı Takvimi & Hatırlatmalar', true, isDark),
+                  const SizedBox(height: 12),
+                  _buildPrefRow(
+                    '🦮 Yürüyüş Seansı & Canlı Takip',
+                    true,
+                    isDark,
+                  ),
+                  const SizedBox(height: 12),
+                  _buildPrefRow(
+                    '🐾 Rezervasyon Durum Güncellemeleri',
+                    true,
+                    isDark,
+                  ),
+                ]
+              : [
+                  _buildPrefRow('📋 Gelen Rezervasyon Talepleri', true, isDark),
+                  const SizedBox(height: 12),
+                  _buildPrefRow(
+                    '🐶 Misafir Pati Giriş & Çıkış Uyarıları',
+                    true,
+                    isDark,
+                  ),
+                  const SizedBox(height: 12),
+                  _buildPrefRow(
+                    '💬 Müşteri Mesajları & Canlı Destek',
+                    true,
+                    isDark,
+                  ),
+                ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: Text(
+              'Tamam',
+              style: TextStyle(
+                color: isDark ? AppColors.darkPrimary : AppColors.primary,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildPrefRow(String label, bool initialValue, bool isDark) {
+    return StatefulBuilder(
+      builder: (context, setState) {
+        return Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Expanded(
+              child: Text(
+                label,
+                style: AppTypography.bodyDefault.copyWith(
+                  fontWeight: FontWeight.w600,
+                  color: isDark ? AppColors.darkOnSurface : AppColors.onSurface,
+                ),
+              ),
+            ),
+            Switch(
+              value: initialValue,
+              activeThumbColor: isDark
+                  ? AppColors.darkPrimary
+                  : AppColors.primary,
+              onChanged: (val) => setState(() => initialValue = val),
+            ),
+          ],
+        );
+      },
     );
   }
 }

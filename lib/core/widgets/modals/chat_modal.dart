@@ -66,6 +66,7 @@ class _ChatModalState extends State<ChatModal> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     final state = AppStateScope.of(context);
     final messages = state.chatMessages;
 
@@ -77,11 +78,15 @@ class _ChatModalState extends State<ChatModal> {
         child: Container(
           constraints: const BoxConstraints(maxWidth: 480, maxHeight: 600),
           decoration: BoxDecoration(
-            color: AppColors.surfaceContainerLowest,
+            color: isDark
+                ? AppColors.darkSurface
+                : AppColors.surfaceContainerLowest,
             borderRadius: BorderRadius.circular(28),
             boxShadow: AppColors.floatingShadow,
             border: Border.all(
-              color: AppColors.outlineVariant.withValues(alpha: 0.5),
+              color: isDark
+                  ? AppColors.darkOutlineVariant.withValues(alpha: 0.5)
+                  : AppColors.outlineVariant.withValues(alpha: 0.5),
             ),
           ),
           child: Column(
@@ -163,7 +168,9 @@ class _ChatModalState extends State<ChatModal> {
                         decoration: BoxDecoration(
                           color: msg.isMe
                               ? AppColors.primaryContainer
-                              : AppColors.surfaceContainerLow,
+                              : (isDark
+                                    ? AppColors.darkSurfaceContainer
+                                    : AppColors.surfaceContainerLow),
                           borderRadius: BorderRadius.circular(18).copyWith(
                             bottomRight: msg.isMe
                                 ? const Radius.circular(4)
@@ -217,18 +224,62 @@ class _ChatModalState extends State<ChatModal> {
                       child: TextField(
                         controller: _textController,
                         onSubmitted: (_) => _sendMessage(),
+                        style: AppTypography.bodyMedium.copyWith(
+                          color: isDark
+                              ? AppColors.darkOnSurface
+                              : AppColors.primary,
+                          fontWeight: FontWeight.w600,
+                        ),
+                        cursorColor: isDark
+                            ? AppColors.darkPrimary
+                            : AppColors.primary,
                         decoration: InputDecoration(
                           hintText: 'Mesajınızı yazın...',
-                          hintStyle: AppTypography.bodyDefault,
+                          hintStyle: AppTypography.bodyDefault.copyWith(
+                            color: isDark
+                                ? AppColors.darkOnSurfaceVariant
+                                : AppColors.secondary.withValues(alpha: 0.7),
+                          ),
                           filled: true,
-                          fillColor: AppColors.surfaceContainerLow,
+                          fillColor: isDark
+                              ? AppColors.darkSurfaceContainer
+                              : AppColors.surfaceContainerLow,
                           contentPadding: const EdgeInsets.symmetric(
                             horizontal: 16,
                             vertical: 12,
                           ),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(24),
-                            borderSide: BorderSide.none,
+                            borderSide: BorderSide(
+                              color: isDark
+                                  ? AppColors.darkOutlineVariant.withValues(
+                                      alpha: 0.4,
+                                    )
+                                  : AppColors.outlineVariant.withValues(
+                                      alpha: 0.4,
+                                    ),
+                            ),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(24),
+                            borderSide: BorderSide(
+                              color: isDark
+                                  ? AppColors.darkOutlineVariant.withValues(
+                                      alpha: 0.4,
+                                    )
+                                  : AppColors.outlineVariant.withValues(
+                                      alpha: 0.4,
+                                    ),
+                            ),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(24),
+                            borderSide: BorderSide(
+                              color: isDark
+                                  ? AppColors.darkPrimary
+                                  : AppColors.primary,
+                              width: 1.5,
+                            ),
                           ),
                         ),
                       ),

@@ -71,6 +71,7 @@ class HealthCardModal extends StatelessWidget {
     final dateController = TextEditingController(text: '15 Aralık 2026');
     final vetController = TextEditingController(text: 'Dr. Selin Bulut');
 
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
@@ -80,6 +81,11 @@ class HealthCardModal extends StatelessWidget {
           children: [
             TextField(
               controller: titleController,
+              style: AppTypography.bodyMedium.copyWith(
+                color: isDark ? AppColors.darkOnSurface : AppColors.primary,
+                fontWeight: FontWeight.w600,
+              ),
+              cursorColor: isDark ? AppColors.darkPrimary : AppColors.primary,
               decoration: const InputDecoration(
                 labelText: 'Aşı / Tedavi Adı',
                 hintText: 'Örn. Bronşin Aşısı',
@@ -88,6 +94,11 @@ class HealthCardModal extends StatelessWidget {
             const SizedBox(height: 10),
             TextField(
               controller: dateController,
+              style: AppTypography.bodyMedium.copyWith(
+                color: isDark ? AppColors.darkOnSurface : AppColors.primary,
+                fontWeight: FontWeight.w600,
+              ),
+              cursorColor: isDark ? AppColors.darkPrimary : AppColors.primary,
               decoration: const InputDecoration(
                 labelText: 'Randevu / Uygulama Tarihi',
               ),
@@ -95,6 +106,11 @@ class HealthCardModal extends StatelessWidget {
             const SizedBox(height: 10),
             TextField(
               controller: vetController,
+              style: AppTypography.bodyMedium.copyWith(
+                color: isDark ? AppColors.darkOnSurface : AppColors.primary,
+                fontWeight: FontWeight.w600,
+              ),
+              cursorColor: isDark ? AppColors.darkPrimary : AppColors.primary,
               decoration: const InputDecoration(labelText: 'Veteriner Hekim'),
             ),
           ],

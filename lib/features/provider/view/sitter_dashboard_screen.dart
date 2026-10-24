@@ -62,9 +62,10 @@ class _SitterDashboardView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final appState = AppStateScope.of(context);
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: isDark ? AppColors.darkBackground : AppColors.background,
       body: SafeArea(
         child: BlocConsumer<ProviderCubit, ProviderState>(
           listener: (context, state) {
@@ -119,7 +120,9 @@ class _SitterDashboardView extends StatelessWidget {
                   Container(
                     padding: const EdgeInsets.all(14),
                     decoration: BoxDecoration(
-                      color: AppColors.surfaceContainerLowest,
+                      color: isDark
+                          ? AppColors.darkSurfaceContainer
+                          : AppColors.surfaceContainerLowest,
                       borderRadius: BorderRadius.circular(20),
                       boxShadow: AppColors.cardShadow,
                       border: Border.all(
@@ -207,24 +210,30 @@ class _SitterDashboardView extends StatelessWidget {
                         'Bekleyen',
                         '${pendingBookings.length}',
                         'Talep',
-                        AppColors.secondaryContainer,
-                        AppColors.primary,
+                        isDark
+                            ? AppColors.darkSecondaryContainer
+                            : AppColors.secondaryContainer,
+                        isDark ? AppColors.darkPrimary : AppColors.primary,
                       ),
                       const SizedBox(width: 10),
                       _buildMetricCard(
                         'Onaylı',
                         '${confirmedBookings.length}',
                         'Rezervasyon',
-                        AppColors.tertiaryFixed,
-                        AppColors.tertiary,
+                        isDark
+                            ? AppColors.darkTertiaryContainer
+                            : AppColors.tertiaryFixed,
+                        isDark ? AppColors.darkTertiary : AppColors.tertiary,
                       ),
                       const SizedBox(width: 10),
                       _buildMetricCard(
                         'Kazanç',
                         '₺${state.totalEarnings.toInt()}',
                         'Bu ay',
-                        AppColors.surfaceContainerLow,
-                        AppColors.onSurface,
+                        isDark
+                            ? AppColors.darkSurfaceContainerLow
+                            : AppColors.surfaceContainerLow,
+                        isDark ? AppColors.darkOnSurface : AppColors.onSurface,
                       ),
                     ],
                   ),
@@ -267,7 +276,9 @@ class _SitterDashboardView extends StatelessWidget {
                       padding: const EdgeInsets.all(24),
                       width: double.infinity,
                       decoration: BoxDecoration(
-                        color: AppColors.surfaceContainerLowest,
+                        color: isDark
+                            ? AppColors.darkSurfaceContainer
+                            : AppColors.surfaceContainerLowest,
                         borderRadius: BorderRadius.circular(20),
                         border: Border.all(
                           color: AppColors.outlineVariant.withValues(
@@ -402,44 +413,35 @@ class _SitterDashboardView extends StatelessWidget {
                   Text('Hızlı Yönetim', style: AppTypography.headlineSection),
                   const SizedBox(height: 12),
                   _buildActionTile(
+                    context,
                     icon: Icons.storefront_outlined,
                     title: 'İlanımı ve Fiyatlarımı Düzenle',
                     subtitle: 'Gecelik ücret, fotoğraflar ve olanaklar',
                     onTap: () {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('İlan düzenleme modülü hazır.'),
-                          backgroundColor: AppColors.primary,
-                        ),
-                      );
+                      final appState = AppStateScope.of(context);
+                      appState.setSitterNavIndex(1);
                     },
                   ),
                   const SizedBox(height: 10),
                   _buildActionTile(
+                    context,
                     icon: Icons.calendar_month_outlined,
                     title: 'Müsaitlik Takvimini Güncelle',
                     subtitle: 'Dolu günler ve oda kontenjanları',
                     onTap: () {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Müsaitlik takvimi açılıyor...'),
-                          backgroundColor: AppColors.primary,
-                        ),
-                      );
+                      final appState = AppStateScope.of(context);
+                      appState.setSitterNavIndex(2);
                     },
                   ),
                   const SizedBox(height: 10),
                   _buildActionTile(
+                    context,
                     icon: Icons.star_outline,
                     title: 'Değerlendirmelerim & Puanlar',
                     subtitle: '4.9 ortalama puan (128 yorum)',
                     onTap: () {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('128 yorum inceleniyor.'),
-                          backgroundColor: AppColors.primary,
-                        ),
-                      );
+                      final appState = AppStateScope.of(context);
+                      appState.setSitterNavIndex(3);
                     },
                   ),
                   const SizedBox(height: 24),
@@ -460,10 +462,13 @@ class _SitterDashboardView extends StatelessWidget {
     required String avatarPath,
     required String statusBadge,
   }) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: AppColors.surfaceContainerLowest,
+        color: isDark
+            ? AppColors.darkSurfaceContainer
+            : AppColors.surfaceContainerLowest,
         borderRadius: BorderRadius.circular(22),
         boxShadow: AppColors.cardShadow,
         border: Border.all(
@@ -584,19 +589,23 @@ class _SitterDashboardView extends StatelessWidget {
     );
   }
 
-  Widget _buildActionTile({
+  Widget _buildActionTile(
+    BuildContext context, {
     required IconData icon,
     required String title,
     required String subtitle,
     required VoidCallback onTap,
   }) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(18),
       child: Container(
         padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(
-          color: AppColors.surfaceContainerLowest,
+          color: isDark
+              ? AppColors.darkSurfaceContainer
+              : AppColors.surfaceContainerLowest,
           borderRadius: BorderRadius.circular(18),
           border: Border.all(
             color: AppColors.outlineVariant.withValues(alpha: 0.3),
@@ -606,8 +615,10 @@ class _SitterDashboardView extends StatelessWidget {
           children: [
             Container(
               padding: const EdgeInsets.all(10),
-              decoration: const BoxDecoration(
-                color: AppColors.surfaceContainerLow,
+              decoration: BoxDecoration(
+                color: isDark
+                    ? AppColors.darkSurfaceContainerLow
+                    : AppColors.surfaceContainerLow,
                 shape: BoxShape.circle,
               ),
               child: Icon(icon, color: AppColors.primary, size: 20),

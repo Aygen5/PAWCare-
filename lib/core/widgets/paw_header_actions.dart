@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../app/router/route_names.dart';
+import '../../domain/entities/user_role.dart';
 import '../../features/notifications/view/notifications_sheet.dart';
 import '../utils/app_state.dart';
 import '../theme/app_colors.dart';
@@ -32,7 +33,11 @@ class PawHeaderActions extends StatelessWidget {
       onProfileTap!();
       return;
     }
-    state.setOwnerNavIndex(4);
+    if (state.role == UserRole.sitter) {
+      state.setSitterNavIndex(4);
+    } else {
+      state.setOwnerNavIndex(4);
+    }
     try {
       context.go(RoutePaths.profile);
     } catch (_) {
@@ -43,6 +48,7 @@ class PawHeaderActions extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final state = AppStateScope.of(context);
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     final unreadCount = state.unreadNotificationCount;
 
     return Row(
@@ -56,10 +62,14 @@ class PawHeaderActions extends StatelessWidget {
             width: 42,
             height: 42,
             decoration: BoxDecoration(
-              color: AppColors.surfaceContainerLowest,
+              color: isDark
+                  ? AppColors.darkSurfaceContainer
+                  : AppColors.surfaceContainerLowest,
               borderRadius: BorderRadius.circular(14),
               border: Border.all(
-                color: AppColors.outlineVariant.withValues(alpha: 0.4),
+                color: isDark
+                    ? AppColors.darkOutlineVariant.withValues(alpha: 0.5)
+                    : AppColors.outlineVariant.withValues(alpha: 0.4),
               ),
               boxShadow: AppColors.cardShadow,
             ),
@@ -67,10 +77,10 @@ class PawHeaderActions extends StatelessWidget {
               clipBehavior: Clip.none,
               alignment: Alignment.center,
               children: [
-                const Icon(
+                Icon(
                   Icons.notifications_outlined,
                   size: 20,
-                  color: AppColors.secondary,
+                  color: isDark ? AppColors.darkSecondary : AppColors.secondary,
                 ),
                 if (unreadCount > 0)
                   Positioned(
@@ -99,18 +109,22 @@ class PawHeaderActions extends StatelessWidget {
               width: 42,
               height: 42,
               decoration: BoxDecoration(
-                color: AppColors.surfaceContainerLowest,
+                color: isDark
+                    ? AppColors.darkSurfaceContainer
+                    : AppColors.surfaceContainerLowest,
                 borderRadius: BorderRadius.circular(14),
                 border: Border.all(
-                  color: AppColors.outlineVariant.withValues(alpha: 0.4),
+                  color: isDark
+                      ? AppColors.darkOutlineVariant.withValues(alpha: 0.5)
+                      : AppColors.outlineVariant.withValues(alpha: 0.4),
                 ),
                 boxShadow: AppColors.cardShadow,
               ),
               alignment: Alignment.center,
-              child: const Icon(
+              child: Icon(
                 Icons.person_outline,
                 size: 22,
-                color: AppColors.primary,
+                color: isDark ? AppColors.darkPrimary : AppColors.primary,
               ),
             ),
           ),

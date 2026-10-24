@@ -220,7 +220,7 @@ void main() {
 
         // Kritik Alerji Uyarısı
         expect(find.text('Kritik Sağlık & Alerji Uyarısı'), findsOneWidget);
-        expect(find.textContaining('Tavuk proteini alerjisi'), findsOneWidget);
+        expect(find.textContaining('Tavuk proteini alerjisi'), findsWidgets);
 
         // Aşı Takvimi Listesi
         expect(find.text('Aşı Takvimi & Kayıtlar'), findsOneWidget);

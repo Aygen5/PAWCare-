@@ -20,7 +20,7 @@ class ProfileState {
 
   const ProfileState({
     this.status = ProfileStatus.initial,
-    this.userName = 'Aygen Y.',
+    this.userName = 'Aygen Yıldırım',
     this.userEmail = 'aygen@pawcare.com',
     this.userPhone = '+90 532 123 45 67',
     this.role = UserRole.owner,

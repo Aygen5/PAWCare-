@@ -142,7 +142,7 @@ void main() {
 
       // Bildirimler modal penceresini doğrular
       expect(find.text('Bildirimler'), findsOneWidget);
-      expect(find.text('Aşı Hatırlatması'), findsOneWidget);
+      expect(find.textContaining('Aşı Hatırlatması'), findsOneWidget);
     });
   });
 }

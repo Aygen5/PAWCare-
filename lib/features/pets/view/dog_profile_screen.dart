@@ -106,10 +106,13 @@ class _DogProfileView extends StatelessWidget {
 
     return BlocBuilder<PetsCubit, PetsState>(
       builder: (context, state) {
+        final isDark = Theme.of(context).brightness == Brightness.dark;
         final dog = state.dog ?? appState.currentDog;
 
         return Scaffold(
-          backgroundColor: AppColors.background,
+          backgroundColor: isDark
+              ? AppColors.darkBackground
+              : AppColors.background,
           body: SafeArea(
             child: SingleChildScrollView(
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
@@ -168,7 +171,52 @@ class _DogProfileView extends StatelessWidget {
                       ),
                     ],
                   ),
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 16),
+
+                  // 2 veya daha fazla köpek varsa Köpek Seçici (Pati Değiştirici)
+                  if (appState.dogs.length > 1) ...[
+                    SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Row(
+                        children: appState.dogs.map((d) {
+                          final isSelected = d.id == dog.id;
+                          return Padding(
+                            padding: const EdgeInsets.only(right: 8),
+                            child: FilterChip(
+                              avatar: CircleAvatar(
+                                radius: 12,
+                                backgroundImage: AssetImage(d.photoPath),
+                                onBackgroundImageError: (_, _) {},
+                                child: const Icon(Icons.pets, size: 12),
+                              ),
+                              label: Text(d.name),
+                              selected: isSelected,
+                              selectedColor: AppColors.primary,
+                              checkmarkColor: Colors.white,
+                              backgroundColor: isDark
+                                  ? AppColors.darkSurfaceContainer
+                                  : AppColors.surfaceContainerLowest,
+                              labelStyle: AppTypography.bodyMedium.copyWith(
+                                color: isSelected
+                                    ? Colors.white
+                                    : (isDark
+                                          ? AppColors.darkOnSurface
+                                          : AppColors.onSurface),
+                                fontWeight: isSelected
+                                    ? FontWeight.w700
+                                    : FontWeight.w500,
+                              ),
+                              onSelected: (_) {
+                                appState.selectDog(d);
+                                context.read<PetsCubit>().updateDogProfile(d);
+                              },
+                            ),
+                          );
+                        }).toList(),
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                  ],
 
                   // Büyük Profil Fotoğrafı ve Fotoğraf Seçim Butonu
                   Center(
@@ -285,15 +333,7 @@ class _DogProfileView extends StatelessWidget {
                       const SizedBox(width: 12),
                       Expanded(
                         child: ElevatedButton.icon(
-                          onPressed: () {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text(
-                                  'Yeni köpek ekleme sihirbazı başlatıldı.',
-                                ),
-                              ),
-                            );
-                          },
+                          onPressed: () => _showAddDogDialog(context),
                           icon: const Icon(Icons.add, size: 18),
                           label: const Text('Yeni Köpek Ekle'),
                           style: ElevatedButton.styleFrom(
@@ -481,19 +521,58 @@ class _DogProfileView extends StatelessWidget {
                   ),
                   const SizedBox(height: 24),
 
-                  // Beslenme & Davranış Özellikleri
-                  Text(
-                    'Beslenme & Davranış Özellikleri',
-                    style: AppTypography.headlineSection,
+                  // Beslenme & Davranış Özellikleri (Düzenlenebilir ve temaya duyarlı)
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Expanded(
+                        child: Text(
+                          'Beslenme & Davranış Özellikleri',
+                          style: AppTypography.headlineSection,
+                        ),
+                      ),
+                      IconButton(
+                        icon: const Icon(
+                          Icons.edit_outlined,
+                          size: 20,
+                          color: AppColors.primary,
+                        ),
+                        tooltip: 'Beslenme ve Davranışı Düzenle',
+                        onPressed: () => _showEditBehaviorDialog(context, dog),
+                        style: IconButton.styleFrom(
+                          backgroundColor: isDark
+                              ? AppColors.darkSurfaceContainer
+                              : AppColors.surfaceContainerLowest,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            side: BorderSide(
+                              color: isDark
+                                  ? AppColors.darkOutlineVariant.withValues(
+                                      alpha: 0.4,
+                                    )
+                                  : AppColors.outlineVariant.withValues(
+                                      alpha: 0.4,
+                                    ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                   const SizedBox(height: 10),
                   Container(
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
-                      color: AppColors.surfaceContainerLowest,
+                      color: isDark
+                          ? AppColors.darkSurfaceContainer
+                          : AppColors.surfaceContainerLowest,
                       borderRadius: BorderRadius.circular(18),
                       border: Border.all(
-                        color: AppColors.outlineVariant.withValues(alpha: 0.3),
+                        color: isDark
+                            ? AppColors.darkOutlineVariant.withValues(
+                                alpha: 0.3,
+                              )
+                            : AppColors.outlineVariant.withValues(alpha: 0.3),
                       ),
                     ),
                     child: Column(
@@ -508,14 +587,14 @@ class _DogProfileView extends StatelessWidget {
                             ),
                             const SizedBox(width: 8),
                             Text(
-                              'Günlük Beslenme Planı',
+                              'Beslenme & Alerji Notu',
                               style: AppTypography.bodyMedium,
                             ),
                           ],
                         ),
                         const SizedBox(height: 6),
                         Text(
-                          'Günde 2 öğün 280g kuzu etli kuru mama (sabah 08:30 / akşam 19:00). Bol taze su.',
+                          dog.allergyNote.isNotEmpty ? dog.allergyNote : 'Günde 2 öğün 280g kuzu etli kuru mama (sabah 08:30 / akşam 19:00). Bol taze su.',
                           style: AppTypography.bodyDefault,
                         ),
                         const Divider(
@@ -538,7 +617,7 @@ class _DogProfileView extends StatelessWidget {
                         ),
                         const SizedBox(height: 6),
                         Text(
-                          dog.behaviorNote,
+                          dog.behaviorNote.isNotEmpty ? dog.behaviorNote : 'İnsanlara ve diğer köpeklere karşı son derece dost canlısı ve oyuncu.',
                           style: AppTypography.bodyDefault,
                         ),
                       ],
@@ -555,11 +634,17 @@ class _DogProfileView extends StatelessWidget {
                   Container(
                     padding: const EdgeInsets.all(18),
                     decoration: BoxDecoration(
-                      color: AppColors.surfaceContainerLowest,
+                      color: isDark
+                          ? AppColors.darkSurfaceContainer
+                          : AppColors.surfaceContainerLowest,
                       borderRadius: BorderRadius.circular(20),
                       boxShadow: AppColors.cardShadow,
                       border: Border.all(
-                        color: AppColors.outlineVariant.withValues(alpha: 0.3),
+                        color: isDark
+                            ? AppColors.darkOutlineVariant.withValues(
+                                alpha: 0.3,
+                              )
+                            : AppColors.outlineVariant.withValues(alpha: 0.3),
                       ),
                     ),
                     child: Row(
@@ -636,34 +721,521 @@ class _DogProfileView extends StatelessWidget {
   }
 
   void _showEditProfileDialog(BuildContext context, Dog dog) {
+    final nameController = TextEditingController(text: dog.name);
+    final breedController = TextEditingController(text: dog.breed);
+    final ageController = TextEditingController(text: dog.ageYears.toString());
     final weightController = TextEditingController(
       text: dog.weightKg.toString(),
     );
     final allergyController = TextEditingController(text: dog.allergyNote);
+    String selectedGender = dog.gender;
+
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    showDialog(
+      context: context,
+      builder: (ctx) => StatefulBuilder(
+        builder: (ctx, setDialogState) => AlertDialog(
+          title: Text(
+            '${dog.name} Profilini Düzenle',
+            style: AppTypography.titleCard.copyWith(fontSize: 18),
+          ),
+          content: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                TextField(
+                  controller: nameController,
+                  style: AppTypography.bodyMedium.copyWith(
+                    color: isDark ? AppColors.darkOnSurface : AppColors.primary,
+                    fontWeight: FontWeight.w600,
+                  ),
+                  cursorColor: isDark
+                      ? AppColors.darkPrimary
+                      : AppColors.primary,
+                  decoration: const InputDecoration(labelText: 'Köpek Adı'),
+                ),
+                const SizedBox(height: 10),
+                TextField(
+                  controller: breedController,
+                  style: AppTypography.bodyMedium.copyWith(
+                    color: isDark ? AppColors.darkOnSurface : AppColors.primary,
+                    fontWeight: FontWeight.w600,
+                  ),
+                  cursorColor: isDark
+                      ? AppColors.darkPrimary
+                      : AppColors.primary,
+                  decoration: const InputDecoration(labelText: 'Türü / Irkı'),
+                ),
+                const SizedBox(height: 10),
+                Row(
+                  children: [
+                    Expanded(
+                      child: TextField(
+                        controller: ageController,
+                        keyboardType: TextInputType.number,
+                        style: AppTypography.bodyMedium.copyWith(
+                          color: isDark
+                              ? AppColors.darkOnSurface
+                              : AppColors.primary,
+                          fontWeight: FontWeight.w600,
+                        ),
+                        cursorColor: isDark
+                            ? AppColors.darkPrimary
+                            : AppColors.primary,
+                        decoration: const InputDecoration(
+                          labelText: 'Yaş (yıl)',
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: TextField(
+                        controller: weightController,
+                        keyboardType: const TextInputType.numberWithOptions(
+                          decimal: true,
+                        ),
+                        style: AppTypography.bodyMedium.copyWith(
+                          color: isDark
+                              ? AppColors.darkOnSurface
+                              : AppColors.primary,
+                          fontWeight: FontWeight.w600,
+                        ),
+                        cursorColor: isDark
+                            ? AppColors.darkPrimary
+                            : AppColors.primary,
+                        decoration: const InputDecoration(
+                          labelText: 'Ağırlık (kg)',
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 14),
+                Text(
+                  'Cinsiyet',
+                  style: AppTypography.labelTag.copyWith(
+                    color: isDark
+                        ? AppColors.darkOnSurfaceVariant
+                        : AppColors.secondary,
+                  ),
+                ),
+                const SizedBox(height: 6),
+                Row(
+                  children: ['Erkek', 'Dişi'].map((g) {
+                    final isSel = selectedGender == g;
+                    return Padding(
+                      padding: const EdgeInsets.only(right: 8),
+                      child: ChoiceChip(
+                        label: Text(g),
+                        selected: isSel,
+                        selectedColor: AppColors.primary,
+                        labelStyle: AppTypography.bodyMedium.copyWith(
+                          color: isSel
+                              ? Colors.white
+                              : (isDark
+                                    ? AppColors.darkOnSurface
+                                    : AppColors.onSurface),
+                          fontWeight: isSel ? FontWeight.w700 : FontWeight.w500,
+                        ),
+                        onSelected: (_) =>
+                            setDialogState(() => selectedGender = g),
+                      ),
+                    );
+                  }).toList(),
+                ),
+                const SizedBox(height: 12),
+                TextField(
+                  controller: allergyController,
+                  maxLines: 2,
+                  style: AppTypography.bodyMedium.copyWith(
+                    color: isDark ? AppColors.darkOnSurface : AppColors.primary,
+                    fontWeight: FontWeight.w600,
+                  ),
+                  cursorColor: isDark
+                      ? AppColors.darkPrimary
+                      : AppColors.primary,
+                  decoration: const InputDecoration(
+                    labelText: 'Alerji / Özel Not',
+                  ),
+                ),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(ctx).pop(),
+              child: const Text('İptal'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                final newAge = int.tryParse(ageController.text) ?? dog.ageYears;
+                final newWeight =
+                    double.tryParse(weightController.text) ?? dog.weightKg;
+                final updated = dog.copyWith(
+                  name: nameController.text.trim().isNotEmpty
+                      ? nameController.text.trim()
+                      : dog.name,
+                  breed: breedController.text.trim().isNotEmpty
+                      ? breedController.text.trim()
+                      : dog.breed,
+                  ageYears: newAge,
+                  weightKg: newWeight,
+                  gender: selectedGender,
+                  allergyNote: allergyController.text.trim(),
+                );
+                context.read<PetsCubit>().updateDogProfile(updated);
+                AppStateScope.of(context, listen: false).updateDog(updated);
+                Navigator.of(ctx).pop();
+              },
+              child: const Text('Kaydet'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _showAddDogDialog(BuildContext context) {
+    final nameController = TextEditingController();
+    final breedController = TextEditingController();
+    final ageController = TextEditingController(text: '1');
+    final weightController = TextEditingController(text: '12.0');
+    final microchipController = TextEditingController(
+      text:
+          '9002150029${DateTime.now().millisecondsSinceEpoch.toString().substring(8)}',
+    );
+    final allergyController = TextEditingController();
+    final clinicController = TextEditingController(
+      text: 'Kadıköy Veteriner Polikliniği',
+    );
+    String selectedGender = 'Dişi';
+
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    showDialog(
+      context: context,
+      builder: (ctx) => StatefulBuilder(
+        builder: (ctx, setDialogState) => AlertDialog(
+          title: Row(
+            children: [
+              const Icon(Icons.pets, color: AppColors.primary, size: 22),
+              const SizedBox(width: 8),
+              Text(
+                'Yeni Köpek Ekle',
+                style: AppTypography.titleCard.copyWith(fontSize: 18),
+              ),
+            ],
+          ),
+          content: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                TextField(
+                  controller: nameController,
+                  autofocus: true,
+                  style: AppTypography.bodyMedium.copyWith(
+                    color: isDark ? AppColors.darkOnSurface : AppColors.primary,
+                    fontWeight: FontWeight.w600,
+                  ),
+                  cursorColor: isDark
+                      ? AppColors.darkPrimary
+                      : AppColors.primary,
+                  decoration: const InputDecoration(
+                    labelText: 'Köpek Adı *',
+                    hintText: 'Örn. Luna, Karabaş, Max',
+                  ),
+                ),
+                const SizedBox(height: 10),
+                TextField(
+                  controller: breedController,
+                  style: AppTypography.bodyMedium.copyWith(
+                    color: isDark ? AppColors.darkOnSurface : AppColors.primary,
+                    fontWeight: FontWeight.w600,
+                  ),
+                  cursorColor: isDark
+                      ? AppColors.darkPrimary
+                      : AppColors.primary,
+                  decoration: const InputDecoration(
+                    labelText: 'Irk / Tür *',
+                    hintText: 'Örn. Labrador, Pug, Golden Retriever',
+                  ),
+                ),
+                const SizedBox(height: 10),
+                Row(
+                  children: [
+                    Expanded(
+                      child: TextField(
+                        controller: ageController,
+                        keyboardType: TextInputType.number,
+                        style: AppTypography.bodyMedium.copyWith(
+                          color: isDark
+                              ? AppColors.darkOnSurface
+                              : AppColors.primary,
+                          fontWeight: FontWeight.w600,
+                        ),
+                        cursorColor: isDark
+                            ? AppColors.darkPrimary
+                            : AppColors.primary,
+                        decoration: const InputDecoration(
+                          labelText: 'Yaş (yıl)',
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: TextField(
+                        controller: weightController,
+                        keyboardType: const TextInputType.numberWithOptions(
+                          decimal: true,
+                        ),
+                        style: AppTypography.bodyMedium.copyWith(
+                          color: isDark
+                              ? AppColors.darkOnSurface
+                              : AppColors.primary,
+                          fontWeight: FontWeight.w600,
+                        ),
+                        cursorColor: isDark
+                            ? AppColors.darkPrimary
+                            : AppColors.primary,
+                        decoration: const InputDecoration(
+                          labelText: 'Ağırlık (kg)',
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 14),
+                Text(
+                  'Cinsiyet',
+                  style: AppTypography.labelTag.copyWith(
+                    color: isDark
+                        ? AppColors.darkOnSurfaceVariant
+                        : AppColors.secondary,
+                  ),
+                ),
+                const SizedBox(height: 6),
+                Row(
+                  children: ['Dişi', 'Erkek'].map((g) {
+                    final isSel = selectedGender == g;
+                    return Padding(
+                      padding: const EdgeInsets.only(right: 8),
+                      child: ChoiceChip(
+                        label: Text(g),
+                        selected: isSel,
+                        selectedColor: AppColors.primary,
+                        labelStyle: AppTypography.bodyMedium.copyWith(
+                          color: isSel
+                              ? Colors.white
+                              : (isDark
+                                    ? AppColors.darkOnSurface
+                                    : AppColors.onSurface),
+                          fontWeight: isSel ? FontWeight.w700 : FontWeight.w500,
+                        ),
+                        onSelected: (_) =>
+                            setDialogState(() => selectedGender = g),
+                      ),
+                    );
+                  }).toList(),
+                ),
+                const SizedBox(height: 10),
+                TextField(
+                  controller: microchipController,
+                  style: AppTypography.bodyMedium.copyWith(
+                    color: isDark ? AppColors.darkOnSurface : AppColors.primary,
+                    fontWeight: FontWeight.w600,
+                  ),
+                  cursorColor: isDark
+                      ? AppColors.darkPrimary
+                      : AppColors.primary,
+                  decoration: const InputDecoration(
+                    labelText: 'Mikroçip Numarası',
+                  ),
+                ),
+                const SizedBox(height: 10),
+                TextField(
+                  controller: allergyController,
+                  style: AppTypography.bodyMedium.copyWith(
+                    color: isDark ? AppColors.darkOnSurface : AppColors.primary,
+                    fontWeight: FontWeight.w600,
+                  ),
+                  cursorColor: isDark
+                      ? AppColors.darkPrimary
+                      : AppColors.primary,
+                  decoration: const InputDecoration(
+                    labelText: 'Alerji / Özel Not',
+                    hintText: 'Örn. Tavuk alerjisi, hassas mide...',
+                  ),
+                ),
+                const SizedBox(height: 10),
+                TextField(
+                  controller: clinicController,
+                  style: AppTypography.bodyMedium.copyWith(
+                    color: isDark ? AppColors.darkOnSurface : AppColors.primary,
+                    fontWeight: FontWeight.w600,
+                  ),
+                  cursorColor: isDark
+                      ? AppColors.darkPrimary
+                      : AppColors.primary,
+                  decoration: const InputDecoration(
+                    labelText: 'Veteriner Kliniği',
+                  ),
+                ),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(ctx).pop(),
+              child: const Text('İptal'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                final name = nameController.text.trim();
+                if (name.isEmpty) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Lütfen köpeğin adını giriniz.'),
+                    ),
+                  );
+                  return;
+                }
+                final breed = breedController.text.trim().isNotEmpty
+                    ? breedController.text.trim()
+                    : 'Melez';
+                final age = int.tryParse(ageController.text) ?? 1;
+                final weight = double.tryParse(weightController.text) ?? 12.0;
+                final microchip = microchipController.text.trim().isNotEmpty
+                    ? microchipController.text.trim()
+                    : '9002150029${DateTime.now().millisecondsSinceEpoch.toString().substring(8)}';
+                final allergy = allergyController.text.trim().isNotEmpty
+                    ? allergyController.text.trim()
+                    : 'Bilinen bir alerjisi bulunmuyor.';
+                final clinic = clinicController.text.trim().isNotEmpty
+                    ? clinicController.text.trim()
+                    : 'Kadıköy Veteriner Polikliniği';
+
+                final newDog = Dog(
+                  id: 'dog_${DateTime.now().millisecondsSinceEpoch}',
+                  name: name,
+                  breed: breed,
+                  ageYears: age,
+                  weightKg: weight,
+                  gender: selectedGender,
+                  microchip: microchip,
+                  photoPath: 'assets/images/barley.jpg',
+                  allergyNote: allergy,
+                  behaviorNote: 'İnsanlara ve diğer köpeklere karşı son derece dost canlısı.',
+                  clinicName: clinic,
+                  clinicPhone: '+90 216 345 67 89',
+                  vaccinations: [
+                    Vaccination(
+                      id: 'v_${DateTime.now().millisecondsSinceEpoch}_1',
+                      title: 'Karma Aşı (DHPPi+L)',
+                      dueDate: '15 Kasım 2026',
+                      status: VaccineStatus.upcoming,
+                      vetName: 'Dr. Selin Bulut',
+                    ),
+                    Vaccination(
+                      id: 'v_${DateTime.now().millisecondsSinceEpoch}_2',
+                      title: 'Kuduz Aşısı (Rabies)',
+                      dueDate: '20 Aralık 2026',
+                      status: VaccineStatus.upcoming,
+                      vetName: 'Dr. Selin Bulut',
+                    ),
+                  ],
+                );
+
+                final appState = AppStateScope.of(context, listen: false);
+                appState.addDog(newDog);
+                context.read<PetsCubit>().saveNewDog(newDog);
+
+                Navigator.of(ctx).pop();
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(
+                      '${newDog.name} başarıyla eklendi ve seçildi! 🎉',
+                    ),
+                    backgroundColor: AppColors.primary,
+                  ),
+                );
+              },
+              child: const Text('Köpeği Ekle'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _showEditBehaviorDialog(BuildContext context, Dog dog) {
+    final allergyController = TextEditingController(text: dog.allergyNote);
+    final behaviorController = TextEditingController(text: dog.behaviorNote);
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: Text(
-          '${dog.name} Profilini Düzenle',
-          style: AppTypography.titleCard,
-        ),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
+        title: Row(
           children: [
-            TextField(
-              controller: weightController,
-              keyboardType: const TextInputType.numberWithOptions(
-                decimal: true,
-              ),
-              decoration: const InputDecoration(labelText: 'Ağırlık (kg)'),
-            ),
-            const SizedBox(height: 12),
-            TextField(
-              controller: allergyController,
-              decoration: const InputDecoration(labelText: 'Alerji / Özel Not'),
+            const Icon(Icons.edit_note, color: AppColors.primary, size: 22),
+            const SizedBox(width: 8),
+            Text(
+              'Beslenme & Davranışı Düzenle',
+              style: AppTypography.titleCard.copyWith(fontSize: 18),
             ),
           ],
+        ),
+        content: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Günlük Beslenme & Alerji Notu',
+                style: AppTypography.labelTag.copyWith(
+                  color: isDark
+                      ? AppColors.darkOnSurfaceVariant
+                      : AppColors.secondary,
+                ),
+              ),
+              const SizedBox(height: 6),
+              TextField(
+                controller: allergyController,
+                maxLines: 3,
+                style: AppTypography.bodyMedium.copyWith(
+                  color: isDark ? AppColors.darkOnSurface : AppColors.primary,
+                  fontWeight: FontWeight.w600,
+                ),
+                cursorColor: isDark ? AppColors.darkPrimary : AppColors.primary,
+                decoration: const InputDecoration(
+                  hintText: 'Mama türü, gramaj, öğün saatleri veya alerji uyarıları...',
+                ),
+              ),
+              const SizedBox(height: 16),
+              Text(
+                'Sosyal Davranış & Karakter',
+                style: AppTypography.labelTag.copyWith(
+                  color: isDark
+                      ? AppColors.darkOnSurfaceVariant
+                      : AppColors.secondary,
+                ),
+              ),
+              const SizedBox(height: 6),
+              TextField(
+                controller: behaviorController,
+                maxLines: 3,
+                style: AppTypography.bodyMedium.copyWith(
+                  color: isDark ? AppColors.darkOnSurface : AppColors.primary,
+                  fontWeight: FontWeight.w600,
+                ),
+                cursorColor: isDark ? AppColors.darkPrimary : AppColors.primary,
+                decoration: const InputDecoration(
+                  hintText: 'Diğer köpeklerle uyum, enerji seviyesi, korkular, sevdiği oyunlar...',
+                ),
+              ),
+            ],
+          ),
         ),
         actions: [
           TextButton(
@@ -672,15 +1244,21 @@ class _DogProfileView extends StatelessWidget {
           ),
           ElevatedButton(
             onPressed: () {
-              final newWeight =
-                  double.tryParse(weightController.text) ?? dog.weightKg;
               final updated = dog.copyWith(
-                weightKg: newWeight,
-                allergyNote: allergyController.text,
+                allergyNote: allergyController.text.trim(),
+                behaviorNote: behaviorController.text.trim(),
               );
               context.read<PetsCubit>().updateDogProfile(updated);
               AppStateScope.of(context, listen: false).updateDog(updated);
               Navigator.of(ctx).pop();
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text(
+                    'Beslenme ve davranış özellikleri güncellendi! 🐾',
+                  ),
+                  backgroundColor: AppColors.primary,
+                ),
+              );
             },
             child: const Text('Kaydet'),
           ),
@@ -690,29 +1268,48 @@ class _DogProfileView extends StatelessWidget {
   }
 
   Widget _buildStatCard(String label, String value) {
-    return Expanded(
-      child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 10),
-        decoration: BoxDecoration(
-          color: AppColors.surfaceContainerLowest,
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(
-            color: AppColors.outlineVariant.withValues(alpha: 0.3),
-          ),
-        ),
-        child: Column(
-          children: [
-            Text(label, style: AppTypography.caption),
-            const SizedBox(height: 4),
-            Text(
-              value,
-              style: AppTypography.titleCard.copyWith(
-                fontWeight: FontWeight.w700,
+    return Builder(
+      builder: (context) {
+        final isDark = Theme.of(context).brightness == Brightness.dark;
+        return Expanded(
+          child: Container(
+            padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 10),
+            decoration: BoxDecoration(
+              color: isDark
+                  ? AppColors.darkSurfaceContainer
+                  : AppColors.surfaceContainerLowest,
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(
+                color: isDark
+                    ? AppColors.darkOutlineVariant.withValues(alpha: 0.3)
+                    : AppColors.outlineVariant.withValues(alpha: 0.3),
               ),
             ),
-          ],
-        ),
-      ),
+            child: Column(
+              children: [
+                Text(
+                  label,
+                  style: AppTypography.caption.copyWith(
+                    color: isDark
+                        ? AppColors.darkOnSurfaceVariant
+                        : AppColors.onSurfaceVariant,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  value,
+                  style: AppTypography.titleCard.copyWith(
+                    fontWeight: FontWeight.w700,
+                    color: isDark
+                        ? AppColors.darkOnSurface
+                        : AppColors.onSurface,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 }

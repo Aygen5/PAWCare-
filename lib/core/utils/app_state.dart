@@ -50,7 +50,7 @@ class AppState extends ChangeNotifier {
   }
 
   // Köpek profil verileri
-  Dog _currentDog = Dog(
+  static final Dog _defaultDog = Dog(
     id: 'dog_1',
     name: 'Barley',
     breed: 'Golden Retriever',
@@ -97,15 +97,42 @@ class AppState extends ChangeNotifier {
     ],
   );
 
+  late final List<Dog> _dogs = [_defaultDog];
+  late Dog _currentDog = _defaultDog;
+
   Dog get currentDog => _currentDog;
+  List<Dog> get dogs => List.unmodifiable(_dogs);
+
+  void selectDog(Dog dog) {
+    _currentDog = dog;
+    notifyListeners();
+  }
+
+  void addDog(Dog newDog) {
+    _dogs.add(newDog);
+    _currentDog = newDog;
+    notifyListeners();
+  }
 
   void updateDog(Dog updated) {
-    _currentDog = updated;
+    final idx = _dogs.indexWhere((d) => d.id == updated.id);
+    if (idx != -1) {
+      _dogs[idx] = updated;
+    } else {
+      _dogs.add(updated);
+    }
+    if (_currentDog.id == updated.id) {
+      _currentDog = updated;
+    }
     notifyListeners();
   }
 
   void updateDogPhoto(String newPath) {
     _currentDog = _currentDog.copyWith(photoPath: newPath);
+    final idx = _dogs.indexWhere((d) => d.id == _currentDog.id);
+    if (idx != -1) {
+      _dogs[idx] = _currentDog;
+    }
     notifyListeners();
   }
 
@@ -294,46 +321,97 @@ class AppState extends ChangeNotifier {
     notifyListeners();
   }
 
-  // Bildirim yönetimi
-  List<entity.NotificationItem> _notifications = [
+  // Bildirim yönetimi — Rol Bazlı Ayrışım
+  List<entity.NotificationItem> _ownerNotifications = [
     NotificationItem(
-      id: 'notif_1',
-      title: 'Aşı Hatırlatması',
+      id: 'owner_notif_1',
+      title: 'Aşı Hatırlatması 💉',
       body: 'Barley için Karma Aşı (DHPPi+L) randevu zamanı yaklaşıyor.',
       timestamp: DateTime(2026, 10, 24, 9, 30),
       isRead: false,
+      type: 'vaccine',
     ),
     NotificationItem(
-      id: 'notif_2',
-      title: 'Rezervasyon Güncellemesi',
+      id: 'owner_notif_2',
+      title: 'Yürüyüş Zamanı 🦮',
+      body: 'Bugün saat 17:00 için planlanan Caddebostan sahil yürüyüşü yaklaşıyor.',
+      timestamp: DateTime(2026, 10, 24, 8, 15),
+      isRead: false,
+      type: 'system',
+    ),
+    NotificationItem(
+      id: 'owner_notif_3',
+      title: 'Rezervasyon Güncellemesi 🐾',
       body: 'Mert Demir sahil yürüyüşü talebinizi onayladı.',
       timestamp: DateTime(2026, 10, 23, 14, 0),
       isRead: true,
+      type: 'booking',
     ),
   ];
 
-  List<entity.NotificationItem> get notifications => _notifications;
+  List<entity.NotificationItem> _sitterNotifications = [
+    NotificationItem(
+      id: 'sitter_notif_1',
+      title: 'Yeni Rezervasyon Talebi 📋',
+      body: 'Aygen Yıldırım, Barley (Golden Retriever) için 2 gecelik otel konaklama talebi gönderdi.',
+      timestamp: DateTime(2026, 10, 24, 10, 15),
+      isRead: false,
+      type: 'booking',
+    ),
+    NotificationItem(
+      id: 'sitter_notif_2',
+      title: 'Misafir Pati Girişi 🐶',
+      body: 'Bugün saat 14:00\'te misafir pati "Luna" için süit odaya giriş yapılacak.',
+      timestamp: DateTime(2026, 10, 24, 8, 0),
+      isRead: false,
+      type: 'system',
+    ),
+    NotificationItem(
+      id: 'sitter_notif_3',
+      title: 'Ödeme Hesaba Aktarıldı 💳',
+      body: 'Barley konaklaması için ₺900 ön ödeme cüzdan bakiyenize eklendi.',
+      timestamp: DateTime(2026, 10, 23, 16, 30),
+      isRead: true,
+      type: 'booking',
+    ),
+  ];
+
+  List<entity.NotificationItem> get notifications =>
+      _role == UserRole.sitter ? _sitterNotifications : _ownerNotifications;
 
   int get unreadNotificationCount =>
-      _notifications.where((n) => !n.isRead).length;
+      notifications.where((n) => !n.isRead).length;
 
   void markNotificationAsRead(String id) {
-    final idx = _notifications.indexWhere((n) => n.id == id);
-    if (idx != -1 && !_notifications[idx].isRead) {
-      _notifications[idx] = _notifications[idx].copyWith(isRead: true);
+    final list = _role == UserRole.sitter
+        ? _sitterNotifications
+        : _ownerNotifications;
+    final idx = list.indexWhere((n) => n.id == id);
+    if (idx != -1 && !list[idx].isRead) {
+      list[idx] = list[idx].copyWith(isRead: true);
       notifyListeners();
     }
   }
 
   void addNotification(entity.NotificationItem notification) {
-    _notifications.insert(0, notification);
+    if (_role == UserRole.sitter) {
+      _sitterNotifications.insert(0, notification);
+    } else {
+      _ownerNotifications.insert(0, notification);
+    }
     notifyListeners();
   }
 
   void markAllNotificationsAsRead() {
-    _notifications = _notifications
-        .map((n) => n.copyWith(isRead: true))
-        .toList();
+    if (_role == UserRole.sitter) {
+      _sitterNotifications = _sitterNotifications
+          .map((n) => n.copyWith(isRead: true))
+          .toList();
+    } else {
+      _ownerNotifications = _ownerNotifications
+          .map((n) => n.copyWith(isRead: true))
+          .toList();
+    }
     notifyListeners();
   }
 }

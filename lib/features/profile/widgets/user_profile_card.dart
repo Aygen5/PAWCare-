@@ -24,12 +24,24 @@ class UserProfileCard extends StatelessWidget {
     final profileCubit = context.watch<ProfileCubit?>();
     final roleCubit = context.watch<RoleCubit?>();
 
-    final userName = profileCubit?.state.userName ?? 'Aygen Y.';
-    final userEmail = profileCubit?.state.userEmail ?? 'aygen@pawcare.com';
-    final userPhone = profileCubit?.state.userPhone ?? '+90 532 123 45 67';
     final activeRole =
         roleCubit?.state ?? profileCubit?.state.role ?? state.role;
     final isOwner = activeRole == UserRole.owner;
+    final isSitter = activeRole == UserRole.sitter;
+
+    final userName = isSitter
+        ? 'Ayşe Yılmaz'
+        : (profileCubit?.state.userName == 'Ayşe Yılmaz'
+              ? 'Aygen Yıldırım'
+              : (profileCubit?.state.userName ?? 'Aygen Yıldırım'));
+    final userEmail = isSitter
+        ? 'ayse@pawcare.com'
+        : (profileCubit?.state.userEmail == 'ayse@pawcare.com'
+              ? 'aygen@pawcare.com'
+              : (profileCubit?.state.userEmail ?? 'aygen@pawcare.com'));
+    final userPhone = isSitter
+        ? '+90 533 987 65 43'
+        : (profileCubit?.state.userPhone ?? '+90 532 123 45 67');
 
     final Dog dog = profileCubit?.state.dog ?? state.currentDog;
 
@@ -193,6 +205,11 @@ class UserProfileCard extends StatelessWidget {
                   roleCubit?.setRole(newRole);
                   profileCubit?.toggleRole();
                   state.setRole(newRole);
+                  if (newRole == UserRole.sitter) {
+                    state.setSitterNavIndex(4);
+                  } else {
+                    state.setOwnerNavIndex(4);
+                  }
                 },
                 borderRadius: BorderRadius.circular(8),
                 child: Padding(
@@ -305,6 +322,73 @@ class UserProfileCard extends StatelessWidget {
                 ],
               ),
             ),
+          ] else ...[
+            // Hizmet Veren İse İşletme / Tesis Özeti
+            const SizedBox(height: 14),
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: isDark
+                    ? AppColors.darkSurfaceContainerLowest
+                    : AppColors.surfaceContainerLow,
+                borderRadius: BorderRadius.circular(14),
+                border: Border.all(
+                  color: isDark
+                      ? AppColors.darkOutlineVariant.withValues(alpha: 0.5)
+                      : AppColors.outlineVariant.withValues(alpha: 0.4),
+                ),
+              ),
+              child: Row(
+                children: [
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(10),
+                    child: Container(
+                      width: 44,
+                      height: 44,
+                      color: isDark
+                          ? AppColors.darkPrimaryContainer
+                          : AppColors.secondaryContainer,
+                      child: Image.asset(
+                        'assets/images/ayse.jpg',
+                        fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) =>
+                            const Icon(
+                              Icons.storefront,
+                              color: AppColors.primary,
+                            ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Mutlu Patiler Butik Köpek Oteli',
+                          style: AppTypography.bodyMedium.copyWith(
+                            fontWeight: FontWeight.w700,
+                            color: isDark
+                                ? AppColors.darkOnSurface
+                                : AppColors.onSurface,
+                          ),
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        Text(
+                          'Caddebostan, Kadıköy • 4.9 ⭐ (128 Yorum)',
+                          style: AppTypography.caption.copyWith(
+                            color: isDark
+                                ? AppColors.darkOnSurfaceVariant
+                                : AppColors.onSurfaceVariant,
+                          ),
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
           ],
         ],
       ),
@@ -319,6 +403,7 @@ class UserProfileCard extends StatelessWidget {
     final nameCtrl = TextEditingController(text: currentName);
     final phoneCtrl = TextEditingController(text: currentPhone);
 
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     showDialog(
       context: context,
       builder: (ctx) {
@@ -329,6 +414,11 @@ class UserProfileCard extends StatelessWidget {
             children: [
               TextField(
                 controller: nameCtrl,
+                style: AppTypography.bodyMedium.copyWith(
+                  color: isDark ? AppColors.darkOnSurface : AppColors.primary,
+                  fontWeight: FontWeight.w600,
+                ),
+                cursorColor: isDark ? AppColors.darkPrimary : AppColors.primary,
                 decoration: const InputDecoration(
                   labelText: 'Ad Soyad',
                   prefixIcon: Icon(Icons.person_outline),
@@ -337,6 +427,11 @@ class UserProfileCard extends StatelessWidget {
               const SizedBox(height: 12),
               TextField(
                 controller: phoneCtrl,
+                style: AppTypography.bodyMedium.copyWith(
+                  color: isDark ? AppColors.darkOnSurface : AppColors.primary,
+                  fontWeight: FontWeight.w600,
+                ),
+                cursorColor: isDark ? AppColors.darkPrimary : AppColors.primary,
                 decoration: const InputDecoration(
                   labelText: 'Telefon Numarası',
                   prefixIcon: Icon(Icons.phone_outlined),

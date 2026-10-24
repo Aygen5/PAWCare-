@@ -49,9 +49,10 @@ class _OwnerBookingsView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final appState = AppStateScope.of(context);
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: isDark ? AppColors.darkBackground : AppColors.background,
       body: SafeArea(
         child: BlocConsumer<BookingsCubit, BookingsState>(
           listener: (context, state) {
@@ -106,12 +107,14 @@ class _OwnerBookingsView extends StatelessWidget {
                     child: Row(
                       children: [
                         _buildFilterChip(
+                          isDark: isDark,
                           label: 'Tümü (${state.allBookings.length})',
                           isSelected: state.activeFilter == BookingFilter.all,
                           onTap: () => cubit.setFilter(BookingFilter.all),
                         ),
                         const SizedBox(width: 8),
                         _buildFilterChip(
+                          isDark: isDark,
                           label: 'Bekleyen (${state.pendingCount})',
                           isSelected:
                               state.activeFilter == BookingFilter.pending,
@@ -119,6 +122,7 @@ class _OwnerBookingsView extends StatelessWidget {
                         ),
                         const SizedBox(width: 8),
                         _buildFilterChip(
+                          isDark: isDark,
                           label: 'Onaylı (${state.confirmedCount})',
                           isSelected:
                               state.activeFilter == BookingFilter.confirmed,
@@ -126,6 +130,7 @@ class _OwnerBookingsView extends StatelessWidget {
                         ),
                         const SizedBox(width: 8),
                         _buildFilterChip(
+                          isDark: isDark,
                           label: 'Geçmiş / Diğer',
                           isSelected: state.activeFilter == BookingFilter.past,
                           onTap: () => cubit.setFilter(BookingFilter.past),
@@ -144,7 +149,9 @@ class _OwnerBookingsView extends StatelessWidget {
                         vertical: 36,
                       ),
                       decoration: BoxDecoration(
-                        color: AppColors.surfaceContainerLowest,
+                        color: isDark
+                            ? AppColors.darkSurfaceContainer
+                            : AppColors.surfaceContainerLowest,
                         borderRadius: BorderRadius.circular(22),
                         border: Border.all(
                           color: AppColors.outlineVariant.withValues(
@@ -220,8 +227,9 @@ class _OwnerBookingsView extends StatelessWidget {
                             final confirm = await showDialog<bool>(
                               context: context,
                               builder: (ctx) => AlertDialog(
-                                backgroundColor:
-                                    AppColors.surfaceContainerLowest,
+                                backgroundColor: isDark
+                                    ? AppColors.darkSurfaceContainer
+                                    : AppColors.surfaceContainerLowest,
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(20),
                                 ),
@@ -286,6 +294,7 @@ class _OwnerBookingsView extends StatelessWidget {
   }
 
   Widget _buildFilterChip({
+    required bool isDark,
     required String label,
     required bool isSelected,
     required VoidCallback onTap,
@@ -299,7 +308,9 @@ class _OwnerBookingsView extends StatelessWidget {
         decoration: BoxDecoration(
           color: isSelected
               ? AppColors.primary
-              : AppColors.surfaceContainerLowest,
+              : (isDark
+                    ? AppColors.darkSurfaceContainer
+                    : AppColors.surfaceContainerLowest),
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
             color: isSelected

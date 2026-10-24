@@ -8,6 +8,7 @@ import '../../../core/widgets/paw_header_actions.dart';
 import '../../../data/models/models.dart';
 import '../cubit/discovery_cubit.dart';
 import '../cubit/discovery_state.dart';
+import '../widgets/explore_filter_modal.dart';
 
 /// Hizmet Keşfet ve Arama Ekranı — Clean Architecture ve DiscoveryCubit ile yönetilir.
 class ExploreScreen extends StatelessWidget {
@@ -46,10 +47,15 @@ class _ExploreViewState extends State<_ExploreView> {
     'Köpek Oteli',
     'Köpek Gezdirme',
     'Gündüz Bakımı',
+    'Evde Bakım',
+    'Veteriner & Bakım',
   ];
 
   late final TextEditingController _searchController;
   bool _initializedFromAppState = false;
+  double _minRating = 0.0;
+  double _maxPrice = 2000.0;
+  String _sortBy = 'Önerilen';
 
   @override
   void initState() {
@@ -91,11 +97,14 @@ class _ExploreViewState extends State<_ExploreView> {
         }
       },
       builder: (context, state) {
+        final isDark = Theme.of(context).brightness == Brightness.dark;
         final sitters = state.sitters;
         final selectedCategory = state.selectedCategory;
 
         return Scaffold(
-          backgroundColor: AppColors.background,
+          backgroundColor: isDark
+              ? AppColors.darkBackground
+              : AppColors.background,
           body: SafeArea(
             child: RefreshIndicator(
               onRefresh: () => context.read<DiscoveryCubit>().refresh(),
@@ -162,24 +171,49 @@ class _ExploreViewState extends State<_ExploreView> {
                                 color: AppColors.primary,
                               ),
                               onPressed: () {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                    content: Text(
-                                      'Gelişmiş filtreleme paneli açıldı.',
-                                    ),
-                                    duration: Duration(seconds: 2),
-                                  ),
+                                ExploreFilterModal.show(
+                                  context,
+                                  currentCategory: selectedCategory,
+                                  currentMinRating: _minRating,
+                                  currentMaxPrice: _maxPrice,
+                                  currentSortBy: _sortBy,
+                                  onApply:
+                                      ({
+                                        required String category,
+                                        required double minRating,
+                                        required double maxPrice,
+                                        required String sortBy,
+                                      }) {
+                                        setState(() {
+                                          _minRating = minRating;
+                                          _maxPrice = maxPrice;
+                                          _sortBy = sortBy;
+                                        });
+                                        appState.setSelectedCategory(category);
+                                        context
+                                            .read<DiscoveryCubit>()
+                                            .applyFilters(
+                                              category: category,
+                                              minRating: minRating,
+                                              maxPrice: maxPrice,
+                                              sortBy: sortBy,
+                                            );
+                                      },
                                 );
                               },
                               style: IconButton.styleFrom(
-                                backgroundColor:
-                                    AppColors.surfaceContainerLowest,
+                                backgroundColor: isDark
+                                    ? AppColors.darkSurfaceContainer
+                                    : AppColors.surfaceContainerLowest,
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(14),
                                   side: BorderSide(
-                                    color: AppColors.outlineVariant.withValues(
-                                      alpha: 0.4,
-                                    ),
+                                    color: isDark
+                                        ? AppColors.darkOutlineVariant
+                                              .withValues(alpha: 0.4)
+                                        : AppColors.outlineVariant.withValues(
+                                            alpha: 0.4,
+                                          ),
                                   ),
                                 ),
                               ),
@@ -196,6 +230,15 @@ class _ExploreViewState extends State<_ExploreView> {
                     // Arama Giriş Alanı
                     TextField(
                       controller: _searchController,
+                      style: AppTypography.bodyMedium.copyWith(
+                        color: isDark
+                            ? AppColors.darkOnSurface
+                            : AppColors.primary,
+                        fontWeight: FontWeight.w600,
+                      ),
+                      cursorColor: isDark
+                          ? AppColors.darkPrimary
+                          : AppColors.primary,
                       onChanged: (val) {
                         context.read<DiscoveryCubit>().setSearchQuery(val);
                         appState.setSearchQuery(val);
@@ -203,14 +246,26 @@ class _ExploreViewState extends State<_ExploreView> {
                       decoration: InputDecoration(
                         hintText:
                             'Bakıcı, otel veya ilçe ara (örn. Kadıköy)...',
-                        hintStyle: AppTypography.bodyDefault,
-                        prefixIcon: const Icon(
+                        hintStyle: AppTypography.bodyDefault.copyWith(
+                          color: isDark
+                              ? AppColors.darkOnSurfaceVariant
+                              : AppColors.secondary.withValues(alpha: 0.7),
+                        ),
+                        prefixIcon: Icon(
                           Icons.search,
-                          color: AppColors.secondary,
+                          color: isDark
+                              ? AppColors.darkPrimary
+                              : AppColors.secondary,
                         ),
                         suffixIcon: _searchController.text.isNotEmpty
                             ? IconButton(
-                                icon: const Icon(Icons.clear, size: 18),
+                                icon: Icon(
+                                  Icons.clear,
+                                  size: 18,
+                                  color: isDark
+                                      ? AppColors.darkOnSurface
+                                      : AppColors.secondary,
+                                ),
                                 onPressed: () {
                                   _searchController.clear();
                                   context.read<DiscoveryCubit>().setSearchQuery(
@@ -221,7 +276,9 @@ class _ExploreViewState extends State<_ExploreView> {
                               )
                             : null,
                         filled: true,
-                        fillColor: AppColors.surfaceContainerLowest,
+                        fillColor: isDark
+                            ? AppColors.darkSurfaceContainer
+                            : AppColors.surfaceContainerLowest,
                         contentPadding: const EdgeInsets.symmetric(
                           horizontal: 16,
                           vertical: 14,
@@ -229,23 +286,33 @@ class _ExploreViewState extends State<_ExploreView> {
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(18),
                           borderSide: BorderSide(
-                            color: AppColors.outlineVariant.withValues(
-                              alpha: 0.4,
-                            ),
+                            color: isDark
+                                ? AppColors.darkOutlineVariant.withValues(
+                                    alpha: 0.4,
+                                  )
+                                : AppColors.outlineVariant.withValues(
+                                    alpha: 0.4,
+                                  ),
                           ),
                         ),
                         enabledBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(18),
                           borderSide: BorderSide(
-                            color: AppColors.outlineVariant.withValues(
-                              alpha: 0.4,
-                            ),
+                            color: isDark
+                                ? AppColors.darkOutlineVariant.withValues(
+                                    alpha: 0.4,
+                                  )
+                                : AppColors.outlineVariant.withValues(
+                                    alpha: 0.4,
+                                  ),
                           ),
                         ),
                         focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(18),
-                          borderSide: const BorderSide(
-                            color: AppColors.primary,
+                          borderSide: BorderSide(
+                            color: isDark
+                                ? AppColors.darkPrimary
+                                : AppColors.primary,
                             width: 1.5,
                           ),
                         ),
@@ -344,7 +411,9 @@ class _ExploreViewState extends State<_ExploreView> {
                         width: double.infinity,
                         padding: const EdgeInsets.all(24),
                         decoration: BoxDecoration(
-                          color: AppColors.surfaceContainerLowest,
+                          color: isDark
+                              ? AppColors.darkSurfaceContainer
+                              : AppColors.surfaceContainerLowest,
                           borderRadius: BorderRadius.circular(20),
                           border: Border.all(
                             color: AppColors.outlineVariant.withValues(
@@ -401,7 +470,9 @@ class _ExploreViewState extends State<_ExploreView> {
                           final s = sitters[index];
                           return Container(
                             decoration: BoxDecoration(
-                              color: AppColors.surfaceContainerLowest,
+                              color: isDark
+                                  ? AppColors.darkSurfaceContainer
+                                  : AppColors.surfaceContainerLowest,
                               borderRadius: BorderRadius.circular(24),
                               boxShadow: AppColors.cardShadow,
                               border: Border.all(

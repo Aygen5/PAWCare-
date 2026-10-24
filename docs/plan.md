@@ -273,10 +273,40 @@ Ekranları feature klasörlerine taşımadan önce:
 - **Etkilenecek Dosyalar:** Tüm proje.
 - **Tamamlanma Kontrolü:** Tüm komutların başarıyla sıfır hata ile tamamlanması.
 
-#### Adım 6.5: Proje Dokümantasyonu (README.md) Yazımı
+#### Adım 6.5: [TAMAMLANDI] Proje Dokümantasyonu (README.md) Yazımı
 - **Yapılacak İş:** Projenin amacını, mimarisini (Feature-first + Cubit + Hive), kurulum adımlarını, ekran görüntülerini ve özelliklerini açıklayan öz ve profesyonel bir `README.md` hazırlamak.
 - **Etkilenecek Dosyalar:** `README.md`
 - **Tamamlanma Kontrolü:** `README.md` dosyasının projenin güncel durumunu doğru yansıtacak şekilde tamamlanması.
+
+---
+
+### FAZ 7: Kullanıcı Denetimi, Fonksiyonel & Görsel İyileştirmeler (14 Madde)
+
+> **Amaç:** Manuel inceleme ve tasarım sadakati testleri sonrasında tespit edilen 14 işlevsel ve görsel konunun 5 aşamalı katı kural (3 - 3 - 3 - 3 - 2) sırasıyla çözümlenmesi.
+
+#### Adım 7.1: [TAMAMLANDI] 1., 2. ve 3. Maddeler (Ana Sayfa, Chat ve Keşfet Arama Görünürlüğü)
+- Popüler Hizmetler kartları yatay kaydırılabilir, hover efektli ve tıklanmaz hale getirildi; gereksiz arama çubuğu kaldırıldı.
+- Günün Rezervasyonu canlı sohbet modalında açık ve koyu temada metin rengi zeytin/koyu yeşil kontrastına kavuşturuldu.
+- Keşfet arama girdi alanı metin rengi açık ve koyu haki temada tam okunabilir yapıldı.
+
+#### Adım 7.2: [TAMAMLANDI] 4., 5. ve 6. Maddeler (Keşfet Filtreleme, Profil Düzenleme ve Çoklu Köpek)
+- Keşfet ekranı sağ üst filtre butonu modalı (hizmet türü, fiyat aralığı, sıralama) oluşturuldu.
+- Köpek Profili Düzenleme Modalında tüm alanlar (isim, ırk, yaş, cinsiyet, kilo, alerji uyarısı) düzenlenebilir ve kaydedilebilir kılındı.
+- Yeni Köpek Ekleme Sihirbazı ve çoklu köpek profili desteği sağlandı.
+
+#### Adım 7.3: [TAMAMLANDI] 7., 8. ve 9. Maddeler (Beslenme Düzenleme, Koyu Haki Teması ve Sade Hakkında)
+- "Beslenme & Davranış Özellikleri" kartına düzenleme kalemi ve modal eklendi.
+- Koyu Haki teması tüm ekranlara, alt çekmecelere ve diyaloglara tam yansıtıldı.
+- "PawCare Hakkında" açıklaması teknik terimlerden arındırılarak sade, samimi 1 paragrafa dönüştürüldü.
+
+#### Adım 7.4: [TAMAMLANDI] 10., 11. ve 12. Maddeler (Rol Geçişi, İsim Ayrışımı ve Bildirim Ayrışımı)
+- Hizmet Veren modunda "Rolü Değiştir" tıklandığında Yorumlar yerine doğrudan Profil (indeks 4) sekmesine geçilmesi sağlandı.
+- Bakıcı "Ayşe Yılmaz" (ayse@pawcare.com) ve Sahip "Aygen Yıldırım" (aygen@pawcare.com) isimleri ve bildirim tercihleri ayrıştırıldı.
+- Zil bildirimleri ve üst bar eylemleri her iki rol için dinamik ve bağımsız hale getirildi.
+
+#### Adım 7.5: [TAMAMLANDI] 13. ve 14. Maddeler (Sitter Hızlı Yönetim ve Alt Navigasyon Aktifleştirme)
+- Sitter Dashboard "Hızlı Yönetim" butonları ilgili sekmelere (İlanım, Takvim, Yorumlar) anında yönlendirir ve alt çubuğu senkronize eder hale getirildi.
+- Bakıcı alt navigasyon çubuğu (İlanım, Takvim, Yorumlar, Profil) ve karşılama ekranından bakıcı girişi tam duyarlı, tıklanabilir ve fonksiyonel yapıldı.
 
 ---
 

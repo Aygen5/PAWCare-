@@ -22,13 +22,16 @@ class BookingRequestCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     final dateStr =
         '${booking.startDate.day}.${booking.startDate.month}.${booking.startDate.year} - ${booking.endDate.day}.${booking.endDate.month}.${booking.endDate.year}';
 
     return Container(
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
-        color: AppColors.surfaceContainerLowest,
+        color: isDark
+            ? AppColors.darkSurfaceContainer
+            : AppColors.surfaceContainerLowest,
         borderRadius: BorderRadius.circular(22),
         boxShadow: AppColors.cardShadow,
         border: Border.all(
@@ -86,7 +89,9 @@ class BookingRequestCard extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: AppColors.surfaceContainerLow,
+              color: isDark
+                  ? AppColors.darkSurfaceContainerLow
+                  : AppColors.surfaceContainerLow,
               borderRadius: BorderRadius.circular(14),
             ),
             child: Column(

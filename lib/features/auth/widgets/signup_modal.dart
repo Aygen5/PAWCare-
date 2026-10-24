@@ -107,6 +107,7 @@ class _SignUpModalState extends State<SignUpModal> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return BackdropFilter(
       filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
       child: Dialog(
@@ -115,11 +116,15 @@ class _SignUpModalState extends State<SignUpModal> {
         child: Container(
           constraints: const BoxConstraints(maxWidth: 460),
           decoration: BoxDecoration(
-            color: AppColors.surfaceContainerLowest,
+            color: isDark
+                ? AppColors.darkSurface
+                : AppColors.surfaceContainerLowest,
             borderRadius: BorderRadius.circular(28),
             boxShadow: AppColors.floatingShadow,
             border: Border.all(
-              color: AppColors.outlineVariant.withValues(alpha: 0.5),
+              color: isDark
+                  ? AppColors.darkOutlineVariant.withValues(alpha: 0.5)
+                  : AppColors.outlineVariant.withValues(alpha: 0.5),
             ),
           ),
           child: SingleChildScrollView(
@@ -303,17 +308,58 @@ class _SignUpModalState extends State<SignUpModal> {
                 const SizedBox(height: 8),
                 TextField(
                   controller: _nameController,
+                  style: AppTypography.bodyMedium.copyWith(
+                    color: isDark ? AppColors.darkOnSurface : AppColors.primary,
+                    fontWeight: FontWeight.w600,
+                  ),
+                  cursorColor: isDark
+                      ? AppColors.darkPrimary
+                      : AppColors.primary,
                   decoration: InputDecoration(
                     hintText: 'Adınız Soyadınız',
-                    prefixIcon: const Icon(
+                    hintStyle: AppTypography.bodyDefault.copyWith(
+                      color: isDark
+                          ? AppColors.darkOnSurfaceVariant
+                          : AppColors.secondary.withValues(alpha: 0.7),
+                    ),
+                    prefixIcon: Icon(
                       Icons.person_outline,
-                      color: AppColors.secondary,
+                      color: isDark
+                          ? AppColors.darkPrimary
+                          : AppColors.secondary,
                     ),
                     filled: true,
-                    fillColor: AppColors.surfaceContainerLow,
+                    fillColor: isDark
+                        ? AppColors.darkSurfaceContainer
+                        : AppColors.surfaceContainerLow,
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(16),
-                      borderSide: BorderSide.none,
+                      borderSide: BorderSide(
+                        color: isDark
+                            ? AppColors.darkOutlineVariant.withValues(
+                                alpha: 0.4,
+                              )
+                            : AppColors.outlineVariant.withValues(alpha: 0.4),
+                      ),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(16),
+                      borderSide: BorderSide(
+                        color: isDark
+                            ? AppColors.darkOutlineVariant.withValues(
+                                alpha: 0.4,
+                              )
+                            : AppColors.outlineVariant.withValues(alpha: 0.4),
+                      ),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(16),
+                      borderSide: BorderSide(
+                        color: isDark
+                            ? AppColors.darkPrimary
+                            : AppColors.primary,
+                        width: 1.5,
+                      ),
                     ),
                   ),
                 ),
@@ -323,17 +369,58 @@ class _SignUpModalState extends State<SignUpModal> {
                 TextField(
                   controller: _emailController,
                   keyboardType: TextInputType.emailAddress,
+                  style: AppTypography.bodyMedium.copyWith(
+                    color: isDark ? AppColors.darkOnSurface : AppColors.primary,
+                    fontWeight: FontWeight.w600,
+                  ),
+                  cursorColor: isDark
+                      ? AppColors.darkPrimary
+                      : AppColors.primary,
                   decoration: InputDecoration(
                     hintText: 'ornek@pawcare.com',
-                    prefixIcon: const Icon(
+                    hintStyle: AppTypography.bodyDefault.copyWith(
+                      color: isDark
+                          ? AppColors.darkOnSurfaceVariant
+                          : AppColors.secondary.withValues(alpha: 0.7),
+                    ),
+                    prefixIcon: Icon(
                       Icons.mail_outline,
-                      color: AppColors.secondary,
+                      color: isDark
+                          ? AppColors.darkPrimary
+                          : AppColors.secondary,
                     ),
                     filled: true,
-                    fillColor: AppColors.surfaceContainerLow,
+                    fillColor: isDark
+                        ? AppColors.darkSurfaceContainer
+                        : AppColors.surfaceContainerLow,
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(16),
-                      borderSide: BorderSide.none,
+                      borderSide: BorderSide(
+                        color: isDark
+                            ? AppColors.darkOutlineVariant.withValues(
+                                alpha: 0.4,
+                              )
+                            : AppColors.outlineVariant.withValues(alpha: 0.4),
+                      ),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(16),
+                      borderSide: BorderSide(
+                        color: isDark
+                            ? AppColors.darkOutlineVariant.withValues(
+                                alpha: 0.4,
+                              )
+                            : AppColors.outlineVariant.withValues(alpha: 0.4),
+                      ),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(16),
+                      borderSide: BorderSide(
+                        color: isDark
+                            ? AppColors.darkPrimary
+                            : AppColors.primary,
+                        width: 1.5,
+                      ),
                     ),
                   ),
                 ),
@@ -343,17 +430,58 @@ class _SignUpModalState extends State<SignUpModal> {
                 TextField(
                   controller: _passwordController,
                   obscureText: true,
+                  style: AppTypography.bodyMedium.copyWith(
+                    color: isDark ? AppColors.darkOnSurface : AppColors.primary,
+                    fontWeight: FontWeight.w600,
+                  ),
+                  cursorColor: isDark
+                      ? AppColors.darkPrimary
+                      : AppColors.primary,
                   decoration: InputDecoration(
                     hintText: '••••••••',
-                    prefixIcon: const Icon(
+                    hintStyle: AppTypography.bodyDefault.copyWith(
+                      color: isDark
+                          ? AppColors.darkOnSurfaceVariant
+                          : AppColors.secondary.withValues(alpha: 0.7),
+                    ),
+                    prefixIcon: Icon(
                       Icons.lock_outline,
-                      color: AppColors.secondary,
+                      color: isDark
+                          ? AppColors.darkPrimary
+                          : AppColors.secondary,
                     ),
                     filled: true,
-                    fillColor: AppColors.surfaceContainerLow,
+                    fillColor: isDark
+                        ? AppColors.darkSurfaceContainer
+                        : AppColors.surfaceContainerLow,
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(16),
-                      borderSide: BorderSide.none,
+                      borderSide: BorderSide(
+                        color: isDark
+                            ? AppColors.darkOutlineVariant.withValues(
+                                alpha: 0.4,
+                              )
+                            : AppColors.outlineVariant.withValues(alpha: 0.4),
+                      ),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(16),
+                      borderSide: BorderSide(
+                        color: isDark
+                            ? AppColors.darkOutlineVariant.withValues(
+                                alpha: 0.4,
+                              )
+                            : AppColors.outlineVariant.withValues(alpha: 0.4),
+                      ),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(16),
+                      borderSide: BorderSide(
+                        color: isDark
+                            ? AppColors.darkPrimary
+                            : AppColors.primary,
+                        width: 1.5,
+                      ),
                     ),
                   ),
                 ),
@@ -363,17 +491,58 @@ class _SignUpModalState extends State<SignUpModal> {
                 TextField(
                   controller: _confirmPasswordController,
                   obscureText: true,
+                  style: AppTypography.bodyMedium.copyWith(
+                    color: isDark ? AppColors.darkOnSurface : AppColors.primary,
+                    fontWeight: FontWeight.w600,
+                  ),
+                  cursorColor: isDark
+                      ? AppColors.darkPrimary
+                      : AppColors.primary,
                   decoration: InputDecoration(
                     hintText: '••••••••',
-                    prefixIcon: const Icon(
+                    hintStyle: AppTypography.bodyDefault.copyWith(
+                      color: isDark
+                          ? AppColors.darkOnSurfaceVariant
+                          : AppColors.secondary.withValues(alpha: 0.7),
+                    ),
+                    prefixIcon: Icon(
                       Icons.lock_outline,
-                      color: AppColors.secondary,
+                      color: isDark
+                          ? AppColors.darkPrimary
+                          : AppColors.secondary,
                     ),
                     filled: true,
-                    fillColor: AppColors.surfaceContainerLow,
+                    fillColor: isDark
+                        ? AppColors.darkSurfaceContainer
+                        : AppColors.surfaceContainerLow,
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(16),
-                      borderSide: BorderSide.none,
+                      borderSide: BorderSide(
+                        color: isDark
+                            ? AppColors.darkOutlineVariant.withValues(
+                                alpha: 0.4,
+                              )
+                            : AppColors.outlineVariant.withValues(alpha: 0.4),
+                      ),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(16),
+                      borderSide: BorderSide(
+                        color: isDark
+                            ? AppColors.darkOutlineVariant.withValues(
+                                alpha: 0.4,
+                              )
+                            : AppColors.outlineVariant.withValues(alpha: 0.4),
+                      ),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(16),
+                      borderSide: BorderSide(
+                        color: isDark
+                            ? AppColors.darkPrimary
+                            : AppColors.primary,
+                        width: 1.5,
+                      ),
                     ),
                   ),
                 ),

@@ -111,6 +111,50 @@ class DiscoveryCubit extends Cubit<DiscoveryState> {
     }
   }
 
+  /// Gelişmiş filtreleme ve sıralama parametrelerini uygular.
+  Future<void> applyFilters({
+    String? category,
+    double? minRating,
+    double? maxPrice,
+    String? sortBy,
+  }) async {
+    final activeCategory = category ?? state.selectedCategory;
+    emit(
+      state.copyWith(
+        status: DiscoveryStatus.loading,
+        selectedCategory: activeCategory,
+      ),
+    );
+
+    try {
+      final rawSitters = await _searchSittersUseCase.call(
+        category: activeCategory,
+        query: state.searchQuery,
+      );
+      var list = rawSitters.whereType<SitterListing>().toList();
+
+      if (minRating != null && minRating > 0) {
+        list = list.where((s) => s.rating >= minRating).toList();
+      }
+
+      if (maxPrice != null && maxPrice > 0) {
+        list = list.where((s) => s.pricePerUnit <= maxPrice).toList();
+      }
+
+      if (sortBy == 'Puan (En Yüksek)') {
+        list.sort((a, b) => b.rating.compareTo(a.rating));
+      } else if (sortBy == 'Fiyat (Artan)') {
+        list.sort((a, b) => a.pricePerUnit.compareTo(b.pricePerUnit));
+      } else if (sortBy == 'Mesafe (En Yakın)') {
+        list.sort((a, b) => a.distanceKm.compareTo(b.distanceKm));
+      }
+
+      emit(state.copyWith(status: DiscoveryStatus.loaded, sitters: list));
+    } catch (e) {
+      emit(state.copyWith(status: DiscoveryStatus.error, errorMessage: '$e'));
+    }
+  }
+
   /// Yeni rezervasyon talebi oluşturur ve BookingRepository'ye (Hive) kaydeder.
   Future<bool> createBooking(BookingRequest booking) async {
     try {

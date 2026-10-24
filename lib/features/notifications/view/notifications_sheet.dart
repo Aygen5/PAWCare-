@@ -6,6 +6,7 @@ import '../../../core/theme/app_typography.dart';
 import '../../../core/utils/app_state.dart';
 import '../../../data/repositories/notification_repository.dart';
 import '../../../domain/entities/notification.dart';
+import '../../../domain/entities/user_role.dart';
 import '../../../domain/usecases/notification/get_notifications_use_case.dart';
 import '../../../domain/usecases/notification/mark_notification_read_use_case.dart';
 import '../cubit/notifications_cubit.dart';
@@ -51,14 +52,17 @@ class NotificationsSheet extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final appState = AppStateScope.of(context);
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Container(
       constraints: BoxConstraints(
         maxHeight: MediaQuery.of(context).size.height * 0.85,
       ),
-      decoration: const BoxDecoration(
-        color: AppColors.surfaceContainerLowest,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+      decoration: BoxDecoration(
+        color: isDark
+            ? AppColors.darkSurfaceContainer
+            : AppColors.surfaceContainerLowest,
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
       ),
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
       child: BlocBuilder<NotificationsCubit, NotificationsState>(
@@ -157,7 +161,7 @@ class NotificationsSheet extends StatelessWidget {
               ),
               const SizedBox(height: 12),
 
-              // Filtreleme Çipleri
+              // Filtreleme Çipleri — Rol Bazlı
               SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
                 child: Row(
@@ -175,19 +179,39 @@ class NotificationsSheet extends StatelessWidget {
                       onTap: () => cubit.setFilter(NotificationFilter.unread),
                     ),
                     const SizedBox(width: 8),
-                    _buildFilterChip(
-                      label: 'Aşılar',
-                      isSelected:
-                          state.activeFilter == NotificationFilter.vaccine,
-                      onTap: () => cubit.setFilter(NotificationFilter.vaccine),
-                    ),
-                    const SizedBox(width: 8),
-                    _buildFilterChip(
-                      label: 'Rezervasyonlar',
-                      isSelected:
-                          state.activeFilter == NotificationFilter.booking,
-                      onTap: () => cubit.setFilter(NotificationFilter.booking),
-                    ),
+                    if (appState.role == UserRole.owner) ...[
+                      _buildFilterChip(
+                        label: 'Aşılar',
+                        isSelected:
+                            state.activeFilter == NotificationFilter.vaccine,
+                        onTap: () =>
+                            cubit.setFilter(NotificationFilter.vaccine),
+                      ),
+                      const SizedBox(width: 8),
+                      _buildFilterChip(
+                        label: 'Rezervasyonlar',
+                        isSelected:
+                            state.activeFilter == NotificationFilter.booking,
+                        onTap: () =>
+                            cubit.setFilter(NotificationFilter.booking),
+                      ),
+                    ] else ...[
+                      _buildFilterChip(
+                        label: 'Gelen Talepler',
+                        isSelected:
+                            state.activeFilter == NotificationFilter.booking,
+                        onTap: () =>
+                            cubit.setFilter(NotificationFilter.booking),
+                      ),
+                      const SizedBox(width: 8),
+                      _buildFilterChip(
+                        label: 'Misafirler & Sistem',
+                        isSelected:
+                            state.activeFilter == NotificationFilter.vaccine,
+                        onTap: () =>
+                            cubit.setFilter(NotificationFilter.vaccine),
+                      ),
+                    ],
                   ],
                 ),
               ),
@@ -312,28 +336,54 @@ class NotificationsSheet extends StatelessWidget {
     String body;
     String type;
 
-    switch (typeIndex) {
-      case 1:
-        title = 'Rezervasyon Oluşturuldu 📋';
-        body = 'Rezervasyon talebiniz iletildi: Köpek Oteli — 2 Gece Konaklama - Beklemede';
-        type = 'booking';
-        break;
-      case 2:
-        title = 'Rezervasyon Onaylandı! 🐾';
-        body = 'Mert Demir ile yürüyüş seansı talebiniz onaylandı.';
-        type = 'booking';
-        break;
-      case 3:
-        title = 'Aşı Hatırlatıcısı 💉';
-        body = 'Barley için Karma Aşı zamanı yaklaşıyor (26 Ekim 2026).';
-        type = 'vaccine';
-        break;
-      case 4:
-      default:
-        title = 'Demo Yürüyüş Durumu 🦮';
-        body = 'Mert Demir yürüyüş seansını başlattı.';
-        type = 'walk';
-        break;
+    if (appState.role == UserRole.sitter) {
+      switch (typeIndex) {
+        case 1:
+          title = 'Yeni Rezervasyon Talebi Alındı 📋';
+          body = 'Aygen Yıldırım, Barley (Golden Retriever) için 2 gecelik otel talebi gönderdi.';
+          type = 'booking';
+          break;
+        case 2:
+          title = 'Misafir Pati Girişi Yapıldı 🐶';
+          body = 'Misafir pati "Luna" başarıyla otele giriş yaptı.';
+          type = 'system';
+          break;
+        case 3:
+          title = 'Ödeme Cüzdana Aktarıldı 💳';
+          body = 'Barley konaklaması için ₺900 ön ödeme cüzdan bakiyenize eklendi.';
+          type = 'booking';
+          break;
+        case 4:
+        default:
+          title = 'Müşteri Mesajı 💬';
+          body = 'Aygen Yıldırım: "Barley mamasını severek yedi mi acaba?"';
+          type = 'system';
+          break;
+      }
+    } else {
+      switch (typeIndex) {
+        case 1:
+          title = 'Rezervasyon Oluşturuldu 📋';
+          body = 'Rezervasyon talebiniz iletildi: Köpek Oteli — 2 Gece Konaklama - Beklemede';
+          type = 'booking';
+          break;
+        case 2:
+          title = 'Rezervasyon Onaylandı! 🐾';
+          body = 'Mert Demir ile yürüyüş seansı talebiniz onaylandı.';
+          type = 'booking';
+          break;
+        case 3:
+          title = 'Aşı Hatırlatıcısı 💉';
+          body = 'Barley için Karma Aşı zamanı yaklaşıyor (26 Ekim 2026).';
+          type = 'vaccine';
+          break;
+        case 4:
+        default:
+          title = 'Demo Yürüyüş Durumu 🦮';
+          body = 'Mert Demir yürüyüş seansını başlattı.';
+          type = 'walk';
+          break;
+      }
     }
 
     cubit.triggerLocalEventNotification(title: title, body: body, type: type);

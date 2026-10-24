@@ -73,6 +73,10 @@ class _OwnerHomeViewState extends State<_OwnerHomeView>
   @override
   Widget build(BuildContext context) {
     final appState = AppStateScope.of(context);
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final cardBg = isDark
+        ? AppColors.darkSurfaceContainer
+        : AppColors.surfaceContainerLowest;
 
     return BlocBuilder<HomeCubit, HomeState>(
       builder: (context, homeState) {
@@ -85,7 +89,9 @@ class _OwnerHomeViewState extends State<_OwnerHomeView>
         final upcomingVaccine = homeState.upcomingVaccine;
 
         return Scaffold(
-          backgroundColor: AppColors.background,
+          backgroundColor: isDark
+              ? AppColors.darkBackground
+              : AppColors.background,
           body: SafeArea(
             child: RefreshIndicator(
               onRefresh: () => context.read<HomeCubit>().refresh(),
@@ -172,7 +178,7 @@ class _OwnerHomeViewState extends State<_OwnerHomeView>
                     Container(
                       padding: const EdgeInsets.all(16),
                       decoration: BoxDecoration(
-                        color: AppColors.surfaceContainerLowest,
+                        color: cardBg,
                         borderRadius: BorderRadius.circular(22),
                         boxShadow: AppColors.cardShadow,
                         border: Border.all(
@@ -322,66 +328,7 @@ class _OwnerHomeViewState extends State<_OwnerHomeView>
                     ),
                     const SizedBox(height: 20),
 
-                    // Arama Çubuğu
-                    TextField(
-                      onChanged: (val) => appState.setSearchQuery(val),
-                      onSubmitted: (_) {
-                        appState.setOwnerNavIndex(1);
-                        context.go(RoutePaths.explore);
-                      },
-                      decoration: InputDecoration(
-                        hintText: 'Bakıcı, otel veya gezdirici ara...',
-                        hintStyle: AppTypography.bodyDefault,
-                        prefixIcon: const Icon(
-                          Icons.search,
-                          color: AppColors.secondary,
-                        ),
-                        suffixIcon: Container(
-                          margin: const EdgeInsets.all(8),
-                          decoration: BoxDecoration(
-                            color: AppColors.primary,
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          child: const Icon(
-                            Icons.tune,
-                            color: Colors.white,
-                            size: 18,
-                          ),
-                        ),
-                        filled: true,
-                        fillColor: AppColors.surfaceContainerLowest,
-                        contentPadding: const EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 14,
-                        ),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(18),
-                          borderSide: BorderSide(
-                            color: AppColors.outlineVariant.withValues(
-                              alpha: 0.4,
-                            ),
-                          ),
-                        ),
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(18),
-                          borderSide: BorderSide(
-                            color: AppColors.outlineVariant.withValues(
-                              alpha: 0.4,
-                            ),
-                          ),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(18),
-                          borderSide: const BorderSide(
-                            color: AppColors.primary,
-                            width: 1.5,
-                          ),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 22),
-
-                    // Popüler Hizmetler Kategorileri
+                    // Popüler Hizmetler (Yatay kaydırılabilir, üzerine gelince renk değiştiren bilgilendirici çip listesi)
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -408,26 +355,42 @@ class _OwnerHomeViewState extends State<_OwnerHomeView>
                     const SizedBox(height: 10),
                     SingleChildScrollView(
                       scrollDirection: Axis.horizontal,
+                      physics: const BouncingScrollPhysics(),
                       child: Row(
-                        children: [
-                          _buildCategoryPill('Tümü', Icons.apps, appState),
-                          const SizedBox(width: 8),
-                          _buildCategoryPill(
-                            'Köpek Oteli',
-                            Icons.home_work_outlined,
-                            appState,
+                        children: const [
+                          _HoverableServicePill(
+                            title: 'Köpek Oteli',
+                            icon: Icons.home_work_outlined,
                           ),
-                          const SizedBox(width: 8),
-                          _buildCategoryPill(
-                            'Köpek Gezdirme',
-                            Icons.directions_walk,
-                            appState,
+                          SizedBox(width: 8),
+                          _HoverableServicePill(
+                            title: 'Köpek Gezdirme',
+                            icon: Icons.directions_walk,
                           ),
-                          const SizedBox(width: 8),
-                          _buildCategoryPill(
-                            'Gündüz Bakımı',
-                            Icons.wb_sunny_outlined,
-                            appState,
+                          SizedBox(width: 8),
+                          _HoverableServicePill(
+                            title: 'Gündüz Bakımı',
+                            icon: Icons.wb_sunny_outlined,
+                          ),
+                          SizedBox(width: 8),
+                          _HoverableServicePill(
+                            title: 'Evde Bakım',
+                            icon: Icons.cottage_outlined,
+                          ),
+                          SizedBox(width: 8),
+                          _HoverableServicePill(
+                            title: 'Veteriner & Aşı',
+                            icon: Icons.medical_services_outlined,
+                          ),
+                          SizedBox(width: 8),
+                          _HoverableServicePill(
+                            title: 'Eğitim & Davranış',
+                            icon: Icons.sports_kabaddi_outlined,
+                          ),
+                          SizedBox(width: 8),
+                          _HoverableServicePill(
+                            title: 'Pati Taksi',
+                            icon: Icons.local_taxi_outlined,
                           ),
                         ],
                       ),
@@ -601,7 +564,7 @@ class _OwnerHomeViewState extends State<_OwnerHomeView>
                       Container(
                         padding: const EdgeInsets.all(18),
                         decoration: BoxDecoration(
-                          color: AppColors.surfaceContainerLowest,
+                          color: cardBg,
                           borderRadius: BorderRadius.circular(22),
                           boxShadow: AppColors.cardShadow,
                           border: Border.all(
@@ -744,7 +707,7 @@ class _OwnerHomeViewState extends State<_OwnerHomeView>
                       Container(
                         padding: const EdgeInsets.all(16),
                         decoration: BoxDecoration(
-                          color: AppColors.surfaceContainerLowest,
+                          color: cardBg,
                           borderRadius: BorderRadius.circular(20),
                           border: Border.all(
                             color: AppColors.outlineVariant.withValues(
@@ -813,7 +776,7 @@ class _OwnerHomeViewState extends State<_OwnerHomeView>
                           child: Container(
                             padding: const EdgeInsets.all(14),
                             decoration: BoxDecoration(
-                              color: AppColors.surfaceContainerLowest,
+                              color: cardBg,
                               borderRadius: BorderRadius.circular(20),
                               boxShadow: AppColors.cardShadow,
                               border: Border.all(
@@ -917,42 +880,78 @@ class _OwnerHomeViewState extends State<_OwnerHomeView>
       },
     );
   }
+}
 
-  Widget _buildCategoryPill(String title, IconData icon, AppState state) {
-    final isSelected = state.selectedCategory == title;
-    return InkWell(
-      onTap: () {
-        state.setSelectedCategory(title);
-        state.setOwnerNavIndex(1);
-        context.go(RoutePaths.explore);
-      },
-      borderRadius: BorderRadius.circular(20),
-      child: Container(
+/// Popüler hizmetler için fare üzerine gelindiğinde rengi değişen,
+/// ancak tıklanamayan (filtreleme keşfet ekranında yapıldığı için) bilgilendirici çip bileşeni.
+class _HoverableServicePill extends StatefulWidget {
+  final String title;
+  final IconData icon;
+
+  const _HoverableServicePill({required this.title, required this.icon});
+
+  @override
+  State<_HoverableServicePill> createState() => _HoverableServicePillState();
+}
+
+class _HoverableServicePillState extends State<_HoverableServicePill> {
+  bool _isHovered = false;
+
+  @override
+  Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final defaultBg = isDark
+        ? AppColors.darkSurfaceContainer
+        : AppColors.surfaceContainerLowest;
+    final hoverBg = isDark
+        ? AppColors.darkPrimaryContainer
+        : AppColors.primaryFixed;
+    final defaultBorder = isDark
+        ? AppColors.darkOutlineVariant.withValues(alpha: 0.4)
+        : AppColors.outlineVariant.withValues(alpha: 0.4);
+    final hoverBorder = isDark ? AppColors.darkPrimary : AppColors.primary;
+    final iconColor = _isHovered
+        ? (isDark ? AppColors.darkPrimary : AppColors.primary)
+        : (isDark ? AppColors.darkSecondary : AppColors.secondary);
+    final textColor = _isHovered
+        ? (isDark ? AppColors.darkOnSurface : AppColors.primary)
+        : (isDark ? AppColors.darkOnSurfaceVariant : AppColors.onSurface);
+
+    return MouseRegion(
+      cursor: SystemMouseCursors.basic, // Tıklanamaz normal imleç
+      onEnter: (_) => setState(() => _isHovered = true),
+      onExit: (_) => setState(() => _isHovered = false),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 180),
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
         decoration: BoxDecoration(
-          color: isSelected
-              ? AppColors.primary
-              : AppColors.surfaceContainerLowest,
+          color: _isHovered ? hoverBg : defaultBg,
           borderRadius: BorderRadius.circular(20),
           border: Border.all(
-            color: isSelected
-                ? AppColors.primary
-                : AppColors.outlineVariant.withValues(alpha: 0.4),
+            color: _isHovered ? hoverBorder : defaultBorder,
+            width: _isHovered ? 1.5 : 1.0,
           ),
+          boxShadow: _isHovered
+              ? [
+                  BoxShadow(
+                    color: (isDark ? Colors.black : AppColors.primary)
+                        .withValues(alpha: 0.1),
+                    blurRadius: 6,
+                    offset: const Offset(0, 2),
+                  ),
+                ]
+              : null,
         ),
         child: Row(
+          mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(
-              icon,
-              size: 16,
-              color: isSelected ? Colors.white : AppColors.secondary,
-            ),
+            Icon(widget.icon, size: 16, color: iconColor),
             const SizedBox(width: 6),
             Text(
-              title,
+              widget.title,
               style: AppTypography.bodyMedium.copyWith(
-                color: isSelected ? Colors.white : AppColors.onSurface,
-                fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
+                color: textColor,
+                fontWeight: _isHovered ? FontWeight.w700 : FontWeight.w500,
               ),
             ),
           ],

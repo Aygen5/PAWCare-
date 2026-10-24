@@ -82,6 +82,16 @@ class AppTheme {
         color: AppColors.outlineVariant.withValues(alpha: 0.5),
         thickness: 1,
       ),
+      inputDecorationTheme: InputDecorationTheme(
+        hintStyle: AppTypography.bodyDefault.copyWith(
+          color: AppColors.secondary.withValues(alpha: 0.7),
+        ),
+      ),
+      textSelectionTheme: const TextSelectionThemeData(
+        cursorColor: AppColors.primary,
+        selectionColor: AppColors.primaryFixed,
+        selectionHandleColor: AppColors.primary,
+      ),
     );
   }
 
@@ -108,6 +118,16 @@ class AppTheme {
       dividerTheme: DividerThemeData(
         color: AppColors.darkOutlineVariant.withValues(alpha: 0.5),
         thickness: 1,
+      ),
+      inputDecorationTheme: InputDecorationTheme(
+        hintStyle: AppTypography.bodyDefault.copyWith(
+          color: AppColors.darkOnSurfaceVariant.withValues(alpha: 0.7),
+        ),
+      ),
+      textSelectionTheme: const TextSelectionThemeData(
+        cursorColor: AppColors.darkPrimary,
+        selectionColor: AppColors.darkPrimaryContainer,
+        selectionHandleColor: AppColors.darkPrimary,
       ),
     );
   }

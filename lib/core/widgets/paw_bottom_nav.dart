@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../app/router/route_names.dart';
 import '../../data/models/models.dart';
-import '../../features/auth/cubit/role_cubit.dart';
 import '../utils/app_state.dart';
 import '../theme/app_colors.dart';
 import '../theme/app_typography.dart';
@@ -18,21 +16,20 @@ class PawBottomNav extends StatelessWidget {
     AppState state,
     bool isOwner,
   ) {
+    if (!isOwner) {
+      return state.sitterNavIndex;
+    }
     try {
       final location = GoRouterState.of(context).uri.path;
-      if (isOwner) {
-        if (location.startsWith(RoutePaths.explore)) return 1;
-        if (location.startsWith(RoutePaths.pets)) return 2;
-        if (location.startsWith(RoutePaths.bookings)) return 3;
-        if (location.startsWith(RoutePaths.profile)) return 4;
-        if (location.startsWith(RoutePaths.home)) return 0;
-      } else {
-        if (location.startsWith(RoutePaths.sitterDashboard)) return 0;
-      }
+      if (location.startsWith(RoutePaths.explore)) return 1;
+      if (location.startsWith(RoutePaths.pets)) return 2;
+      if (location.startsWith(RoutePaths.bookings)) return 3;
+      if (location.startsWith(RoutePaths.profile)) return 4;
+      if (location.startsWith(RoutePaths.home)) return 0;
     } catch (_) {
       // GoRouter henüz bağlı değilse durum indeksi kullanılır.
     }
-    return isOwner ? state.ownerNavIndex : state.sitterNavIndex;
+    return state.ownerNavIndex;
   }
 
   void _onItemTapped(
@@ -63,7 +60,18 @@ class PawBottomNav extends StatelessWidget {
     } else {
       state.setSitterNavIndex(index);
       if (index == 0) {
-        context.go(RoutePaths.sitterDashboard);
+        try {
+          context.go(RoutePaths.sitterDashboard);
+        } catch (_) {}
+      } else if (index == 4) {
+        try {
+          context.go(RoutePaths.profile);
+        } catch (_) {}
+      } else {
+        // İlanım (1), Takvim (2), Yorumlar (3) sekmeleri
+        try {
+          context.go(RoutePaths.sitterDashboard);
+        } catch (_) {}
       }
     }
   }
@@ -71,8 +79,7 @@ class PawBottomNav extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final state = AppStateScope.of(context);
-    final activeRole = context.watch<RoleCubit?>()?.state ?? state.role;
-    final isOwner = activeRole == UserRole.owner;
+    final isOwner = state.role == UserRole.owner;
     final currentIndex = _calculateCurrentIndex(context, state, isOwner);
 
     final ownerItems = const [

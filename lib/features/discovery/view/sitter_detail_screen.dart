@@ -140,11 +140,12 @@ class _SitterDetailScreenState extends State<SitterDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     final state = AppStateScope.of(context);
     final dog = state.currentDog;
 
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: isDark ? AppColors.darkBackground : AppColors.background,
       body: SafeArea(
         child: SingleChildScrollView(
           child: Column(
@@ -474,30 +475,56 @@ class _SitterDetailScreenState extends State<SitterDetailScreen> {
                     TextField(
                       controller: _careNotesController,
                       maxLines: 3,
+                      style: AppTypography.bodyMedium.copyWith(
+                        color: isDark
+                            ? AppColors.darkOnSurface
+                            : AppColors.primary,
+                        fontWeight: FontWeight.w600,
+                      ),
+                      cursorColor: isDark
+                          ? AppColors.darkPrimary
+                          : AppColors.primary,
                       decoration: InputDecoration(
                         hintText: 'Alerjiler, rutinler, ilaçlar veya özel istekler...',
+                        hintStyle: AppTypography.bodyDefault.copyWith(
+                          color: isDark
+                              ? AppColors.darkOnSurfaceVariant
+                              : AppColors.secondary.withValues(alpha: 0.7),
+                        ),
                         filled: true,
-                        fillColor: AppColors.surfaceContainerLowest,
+                        fillColor: isDark
+                            ? AppColors.darkSurfaceContainer
+                            : AppColors.surfaceContainerLowest,
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(16),
                           borderSide: BorderSide(
-                            color: AppColors.outlineVariant.withValues(
-                              alpha: 0.4,
-                            ),
+                            color: isDark
+                                ? AppColors.darkOutlineVariant.withValues(
+                                    alpha: 0.4,
+                                  )
+                                : AppColors.outlineVariant.withValues(
+                                    alpha: 0.4,
+                                  ),
                           ),
                         ),
                         enabledBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(16),
                           borderSide: BorderSide(
-                            color: AppColors.outlineVariant.withValues(
-                              alpha: 0.4,
-                            ),
+                            color: isDark
+                                ? AppColors.darkOutlineVariant.withValues(
+                                    alpha: 0.4,
+                                  )
+                                : AppColors.outlineVariant.withValues(
+                                    alpha: 0.4,
+                                  ),
                           ),
                         ),
                         focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(16),
-                          borderSide: const BorderSide(
-                            color: AppColors.primary,
+                          borderSide: BorderSide(
+                            color: isDark
+                                ? AppColors.darkPrimary
+                                : AppColors.primary,
                             width: 1.5,
                           ),
                         ),

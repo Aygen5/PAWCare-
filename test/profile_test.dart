@@ -86,7 +86,7 @@ void main() {
 
     test('Başlangıç durumunda varsayılan değerler atanır', () {
       expect(cubit.state.status, equals(ProfileStatus.initial));
-      expect(cubit.state.userName, equals('Aygen Y.'));
+      expect(cubit.state.userName, equals('Aygen Yıldırım'));
       expect(cubit.state.role, equals(UserRole.owner));
       expect(cubit.state.notificationsEnabled, isTrue);
     });
@@ -196,7 +196,7 @@ void main() {
         await tester.pumpAndSettle();
 
         expect(find.text('Hesap & Profil'), findsOneWidget);
-        expect(find.text('Aygen Y.'), findsOneWidget);
+        expect(find.text('Aygen Yıldırım'), findsOneWidget);
         expect(find.text('aygen@pawcare.com'), findsOneWidget);
         expect(find.text('Köpek Sahibi'), findsOneWidget);
         expect(find.text('Görünüm ve Tema'), findsOneWidget);

@@ -60,11 +60,17 @@ class ProfileCubit extends Cubit<ProfileState> {
       final savedThemeStr = _getAppSettingsUseCase.getThemeMode();
       final effectiveTheme = currentThemeMode ?? _parseThemeMode(savedThemeStr);
 
+      final isSitter = effectiveRole == UserRole.sitter;
+      final defaultName = isSitter ? 'Ayşe Yılmaz' : 'Aygen Yıldırım';
+      final defaultEmail = isSitter ? 'ayse@pawcare.com' : 'aygen@pawcare.com';
+      final defaultPhone = isSitter ? '+90 533 987 65 43' : '+90 532 123 45 67';
+
       emit(
         state.copyWith(
           status: ProfileStatus.loaded,
-          userName: initialName ?? state.userName,
-          userEmail: initialEmail ?? state.userEmail,
+          userName: initialName ?? defaultName,
+          userEmail: initialEmail ?? defaultEmail,
+          userPhone: defaultPhone,
           role: effectiveRole,
           dog: dog,
           themeMode: effectiveTheme,
@@ -105,7 +111,31 @@ class ProfileCubit extends Cubit<ProfileState> {
     await _updateAppSettingsUseCase.setUserRole(
       newRole == UserRole.sitter ? 'sitter' : 'owner',
     );
-    emit(state.copyWith(role: newRole));
+    final isSitter = newRole == UserRole.sitter;
+    emit(
+      state.copyWith(
+        role: newRole,
+        userName: isSitter ? 'Ayşe Yılmaz' : 'Aygen Yıldırım',
+        userEmail: isSitter ? 'ayse@pawcare.com' : 'aygen@pawcare.com',
+        userPhone: isSitter ? '+90 533 987 65 43' : '+90 532 123 45 67',
+      ),
+    );
+  }
+
+  /// Belirli bir role geçiş yapar.
+  Future<void> setRole(UserRole newRole) async {
+    await _updateAppSettingsUseCase.setUserRole(
+      newRole == UserRole.sitter ? 'sitter' : 'owner',
+    );
+    final isSitter = newRole == UserRole.sitter;
+    emit(
+      state.copyWith(
+        role: newRole,
+        userName: isSitter ? 'Ayşe Yılmaz' : 'Aygen Yıldırım',
+        userEmail: isSitter ? 'ayse@pawcare.com' : 'aygen@pawcare.com',
+        userPhone: isSitter ? '+90 533 987 65 43' : '+90 532 123 45 67',
+      ),
+    );
   }
 
   /// Bildirim tercihlerini açıp kapatır.
