@@ -661,25 +661,51 @@ class _OwnerHomeViewState extends State<_OwnerHomeView>
                             Row(
                               children: [
                                 Expanded(
-                                  child: ElevatedButton.icon(
-                                    onPressed: () =>
-                                        LiveTrackingModal.show(context),
-                                    icon: const Icon(
-                                      Icons.navigation_outlined,
-                                      size: 18,
-                                    ),
-                                    label: const Text('Canlı Takip'),
-                                    style: ElevatedButton.styleFrom(
-                                      backgroundColor: AppColors.primary,
-                                      foregroundColor: AppColors.onPrimary,
-                                      elevation: 0,
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(14),
-                                      ),
-                                      padding: const EdgeInsets.symmetric(
-                                        vertical: 12,
-                                      ),
-                                    ),
+                                  child: Builder(
+                                    builder: (context) {
+                                      final isHotel = activeBooking.serviceTitle
+                                              .toLowerCase()
+                                              .contains('otel') ||
+                                          activeBooking.sitterName
+                                              .toLowerCase()
+                                              .contains('ayşe') ||
+                                          activeBooking.sitterName
+                                              .toLowerCase()
+                                              .contains('ayse');
+
+                                      return ElevatedButton.icon(
+                                        onPressed: () => LiveTrackingModal.show(
+                                          context,
+                                          isHotel: isHotel,
+                                          hotelName:
+                                              'Mutlu Patiler Köpek Oteli',
+                                          locationName: 'Caddebostan, Kadıköy',
+                                        ),
+                                        icon: Icon(
+                                          isHotel
+                                              ? Icons.hotel_outlined
+                                              : Icons.navigation_outlined,
+                                          size: 18,
+                                        ),
+                                        label: Text(
+                                          isHotel
+                                              ? 'Otelin Konumu'
+                                              : 'Canlı Takip',
+                                        ),
+                                        style: ElevatedButton.styleFrom(
+                                          backgroundColor: AppColors.primary,
+                                          foregroundColor: AppColors.onPrimary,
+                                          elevation: 0,
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(14),
+                                          ),
+                                          padding: const EdgeInsets.symmetric(
+                                            vertical: 12,
+                                          ),
+                                        ),
+                                      );
+                                    },
                                   ),
                                 ),
                                 const SizedBox(width: 10),

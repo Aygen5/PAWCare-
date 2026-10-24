@@ -5,15 +5,33 @@ import 'package:flutter/material.dart';
 import '../../theme/app_colors.dart';
 import '../../theme/app_typography.dart';
 
-/// Canlı yürüyüş ve rota simülasyon modalı.
+/// Canlı yürüyüş ve otel konumu simülasyon modalı.
 class LiveTrackingModal extends StatelessWidget {
-  const LiveTrackingModal({super.key});
+  final bool isHotel;
+  final String hotelName;
+  final String locationName;
 
-  static Future<void> show(BuildContext context) {
+  const LiveTrackingModal({
+    super.key,
+    this.isHotel = false,
+    this.hotelName = 'Mutlu Patiler Köpek Oteli',
+    this.locationName = 'Caddebostan, Kadıköy',
+  });
+
+  static Future<void> show(
+    BuildContext context, {
+    bool isHotel = false,
+    String hotelName = 'Mutlu Patiler Köpek Oteli',
+    String locationName = 'Caddebostan, Kadıköy',
+  }) {
     return showDialog(
       context: context,
       barrierColor: Colors.black.withValues(alpha: 0.45),
-      builder: (ctx) => const LiveTrackingModal(),
+      builder: (ctx) => LiveTrackingModal(
+        isHotel: isHotel,
+        hotelName: hotelName,
+        locationName: locationName,
+      ),
     );
   }
 
@@ -43,9 +61,7 @@ class LiveTrackingModal extends StatelessWidget {
             color: cardBg,
             borderRadius: BorderRadius.circular(28),
             boxShadow: AppColors.floatingShadow,
-            border: Border.all(
-              color: outlineColor,
-            ),
+            border: Border.all(color: outlineColor),
           ),
           child: SingleChildScrollView(
             padding: const EdgeInsets.all(24),
@@ -70,7 +86,7 @@ class LiveTrackingModal extends StatelessWidget {
                           const SizedBox(width: 8),
                           Expanded(
                             child: Text(
-                              'Canlı Yürüyüş Takibi',
+                              isHotel ? 'Otelin Konumu' : 'Canlı Yürüyüş Takibi',
                               style: AppTypography.titleCard.copyWith(
                                 color: textColor,
                                 fontWeight: FontWeight.w700,
@@ -82,10 +98,7 @@ class LiveTrackingModal extends StatelessWidget {
                       ),
                     ),
                     IconButton(
-                      icon: Icon(
-                        Icons.close,
-                        color: closeBtnColor,
-                      ),
+                      icon: Icon(Icons.close, color: closeBtnColor),
                       onPressed: () => Navigator.of(context).pop(),
                       style: IconButton.styleFrom(
                         backgroundColor: closeBtnBg,
@@ -136,7 +149,7 @@ class LiveTrackingModal extends StatelessWidget {
                           ),
                         ),
                       ),
-                      // Park yeşil alanı
+                      // Park / Semt Konumu etiketi
                       Positioned(
                         top: 20,
                         left: 20,
@@ -146,68 +159,157 @@ class LiveTrackingModal extends StatelessWidget {
                             vertical: 4,
                           ),
                           decoration: BoxDecoration(
-                            color: Colors.white.withValues(alpha: 0.9),
+                            color: Colors.white.withValues(alpha: 0.95),
                             borderRadius: BorderRadius.circular(8),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withValues(alpha: 0.08),
+                                blurRadius: 4,
+                                offset: const Offset(0, 2),
+                              ),
+                            ],
                           ),
-                          child: Text(
-                            'Caddebostan Sahil Parkı',
-                            style: AppTypography.caption.copyWith(
-                              color: AppColors.primary,
-                              fontWeight: FontWeight.w700,
-                            ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(
+                                isHotel
+                                    ? Icons.location_on
+                                    : Icons.park_outlined,
+                                size: 14,
+                                color: AppColors.primary,
+                              ),
+                              const SizedBox(width: 4),
+                              Text(
+                                isHotel
+                                    ? locationName
+                                    : 'Caddebostan Sahil Parkı',
+                                style: AppTypography.caption.copyWith(
+                                  color: AppColors.primary,
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              ),
+                            ],
                           ),
                         ),
                       ),
-                      // Simüle edilmiş rota çizgisi
-                      Positioned.fill(
-                        child: CustomPaint(painter: _RoutePainter()),
-                      ),
-                      // Gezdirici pini ve avatarı
-                      Positioned(
-                        top: 85,
-                        left: 175,
-                        child: Column(
-                          children: [
-                            Container(
-                              padding: const EdgeInsets.all(3),
-                              decoration: const BoxDecoration(
-                                color: AppColors.primary,
-                                shape: BoxShape.circle,
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.black26,
-                                    blurRadius: 8,
-                                    offset: Offset(0, 3),
+                      if (isHotel) ...[
+                        // Otel bahçe alanı ve konumu
+                        Center(
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Container(
+                                padding: const EdgeInsets.all(4),
+                                decoration: const BoxDecoration(
+                                  color: AppColors.primary,
+                                  shape: BoxShape.circle,
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.black26,
+                                      blurRadius: 10,
+                                      offset: Offset(0, 4),
+                                    ),
+                                  ],
+                                ),
+                                child: const CircleAvatar(
+                                  radius: 20,
+                                  backgroundImage: AssetImage(
+                                    'assets/images/ayse.jpg',
                                   ),
-                                ],
-                              ),
-                              child: const CircleAvatar(
-                                radius: 16,
-                                backgroundImage: AssetImage(
-                                  'assets/images/mert.jpg',
                                 ),
                               ),
-                            ),
-                            Container(
-                              margin: const EdgeInsets.only(top: 4),
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 8,
-                                vertical: 2,
-                              ),
-                              decoration: BoxDecoration(
-                                color: AppColors.primary,
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                              child: Text(
-                                'Mert & Barley',
-                                style: AppTypography.labelTag.copyWith(
-                                  color: Colors.white,
+                              const SizedBox(height: 6),
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 10,
+                                  vertical: 4,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: AppColors.primary,
+                                  borderRadius: BorderRadius.circular(12),
+                                  boxShadow: const [
+                                    BoxShadow(
+                                      color: Colors.black12,
+                                      blurRadius: 6,
+                                      offset: Offset(0, 2),
+                                    ),
+                                  ],
+                                ),
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    const Icon(
+                                      Icons.home_work_outlined,
+                                      size: 13,
+                                      color: Colors.white,
+                                    ),
+                                    const SizedBox(width: 5),
+                                    Text(
+                                      hotelName,
+                                      style: AppTypography.labelTag.copyWith(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.w700,
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
-                      ),
+                      ] else ...[
+                        // Simüle edilmiş rota çizgisi
+                        Positioned.fill(
+                          child: CustomPaint(painter: _RoutePainter()),
+                        ),
+                        // Gezdirici pini ve avatarı
+                        Positioned(
+                          top: 85,
+                          left: 175,
+                          child: Column(
+                            children: [
+                              Container(
+                                padding: const EdgeInsets.all(3),
+                                decoration: const BoxDecoration(
+                                  color: AppColors.primary,
+                                  shape: BoxShape.circle,
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.black26,
+                                      blurRadius: 8,
+                                      offset: Offset(0, 3),
+                                    ),
+                                  ],
+                                ),
+                                child: const CircleAvatar(
+                                  radius: 16,
+                                  backgroundImage: AssetImage(
+                                    'assets/images/mert.jpg',
+                                  ),
+                                ),
+                              ),
+                              Container(
+                                margin: const EdgeInsets.only(top: 4),
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 8,
+                                  vertical: 2,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: AppColors.primary,
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                child: Text(
+                                  'Mert & Barley',
+                                  style: AppTypography.labelTag.copyWith(
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
                     ],
                   ),
                 ),
@@ -231,7 +333,7 @@ class LiveTrackingModal extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              'Geçen Süre',
+                              isHotel ? 'Tesis / Hizmet' : 'Geçen Süre',
                               style: AppTypography.caption.copyWith(
                                 color: isDark
                                     ? AppColors.darkOnSurfaceVariant
@@ -240,7 +342,7 @@ class LiveTrackingModal extends StatelessWidget {
                             ),
                             const SizedBox(height: 4),
                             Text(
-                              '24 dakika',
+                              isHotel ? 'Köpek Oteli' : '24 dakika',
                               style: AppTypography.headlineSection.copyWith(
                                 color: textColor,
                                 fontWeight: FontWeight.w800,
@@ -267,7 +369,7 @@ class LiveTrackingModal extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              'Yürüyüş Mesafesi',
+                              isHotel ? 'Konum' : 'Yürüyüş Mesafesi',
                               style: AppTypography.caption.copyWith(
                                 color: isDark
                                     ? AppColors.darkOnSurfaceVariant
@@ -276,7 +378,7 @@ class LiveTrackingModal extends StatelessWidget {
                             ),
                             const SizedBox(height: 4),
                             Text(
-                              '1.4 km',
+                              isHotel ? 'Caddebostan' : '1.4 km',
                               style: AppTypography.headlineSection.copyWith(
                                 color: textColor,
                                 fontWeight: FontWeight.w800,
@@ -305,13 +407,16 @@ class LiveTrackingModal extends StatelessWidget {
                       Icon(
                         Icons.info_outline,
                         size: 18,
-                        color:
-                            isDark ? AppColors.darkPrimary : AppColors.secondary,
+                        color: isDark
+                            ? AppColors.darkPrimary
+                            : AppColors.secondary,
                       ),
                       const SizedBox(width: 10),
                       Expanded(
                         child: Text(
-                          'Demo modu simüle edilmiş yürüyüş rotasıdır. Canlı GPS bağlantısı gerektirmez.',
+                          isHotel
+                              ? '$hotelName: Geniş çim bahçe, 7/24 kamera takibi ve veteriner anlaşmalı güvenli konaklama sunar.'
+                              : 'Demo modu simüle edilmiş yürüyüş rotasıdır. Canlı GPS bağlantısı gerektirmez.',
                           style: AppTypography.caption.copyWith(
                             color: isDark
                                 ? AppColors.darkOnSurfaceVariant

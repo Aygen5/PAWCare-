@@ -305,10 +305,22 @@ class _SitterDetailScreenState extends State<SitterDetailScreen> {
                             vertical: 6,
                           ),
                           decoration: BoxDecoration(
-                            color: AppColors.secondaryContainer,
+                            color: isDark
+                                ? AppColors.darkSurfaceContainerHigh
+                                : AppColors.secondaryContainer,
                             borderRadius: BorderRadius.circular(12),
+                            border: Border.all(
+                              color: isDark
+                                  ? AppColors.darkOutlineVariant.withValues(
+                                      alpha: 0.6,
+                                    )
+                                  : AppColors.outlineVariant.withValues(
+                                      alpha: 0.3,
+                                    ),
+                            ),
                           ),
                           child: Row(
+                            mainAxisSize: MainAxisSize.min,
                             children: [
                               const Icon(
                                 Icons.star,
@@ -318,11 +330,21 @@ class _SitterDetailScreenState extends State<SitterDetailScreen> {
                               const SizedBox(width: 4),
                               Text(
                                 '${widget.sitter.rating}',
-                                style: AppTypography.titleCard,
+                                style: AppTypography.titleCard.copyWith(
+                                  color: isDark
+                                      ? AppColors.darkOnSurface
+                                      : AppColors.primary,
+                                  fontWeight: FontWeight.w800,
+                                ),
                               ),
                               Text(
                                 ' (${widget.sitter.reviewsCount})',
-                                style: AppTypography.caption,
+                                style: AppTypography.caption.copyWith(
+                                  color: isDark
+                                      ? AppColors.darkOnSurfaceVariant
+                                      : AppColors.onSurfaceVariant,
+                                  fontWeight: FontWeight.w600,
+                                ),
                               ),
                             ],
                           ),

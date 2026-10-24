@@ -192,62 +192,79 @@ class BookingCard extends StatelessWidget {
 
           // Duruma Özel Aksiyon Butonları
           if (booking.status == BookingStatus.confirmed) ...[
-            Row(
-              children: [
-                Expanded(
-                  child: ElevatedButton.icon(
-                    onPressed: () => LiveTrackingModal.show(context),
-                    icon: const Icon(Icons.location_on, size: 16),
-                    label: const Text('Canlı Takip'),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.primary,
-                      foregroundColor: Colors.white,
-                      elevation: 0,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(14),
+            Builder(
+              builder: (context) {
+                final isHotel =
+                    booking.serviceTitle.toLowerCase().contains('otel') ||
+                    booking.sitterName.toLowerCase().contains('ayşe') ||
+                    booking.sitterName.toLowerCase().contains('ayse');
+
+                return Row(
+                  children: [
+                    Expanded(
+                      child: ElevatedButton.icon(
+                        onPressed: () => LiveTrackingModal.show(
+                          context,
+                          isHotel: isHotel,
+                          hotelName: 'Mutlu Patiler Köpek Oteli',
+                          locationName: 'Caddebostan, Kadıköy',
+                        ),
+                        icon: Icon(
+                          isHotel ? Icons.hotel_outlined : Icons.location_on,
+                          size: 16,
+                        ),
+                        label: Text(isHotel ? 'Otelin Konumu' : 'Canlı Takip'),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors.primary,
+                          foregroundColor: Colors.white,
+                          elevation: 0,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(14),
+                          ),
+                          padding: const EdgeInsets.symmetric(vertical: 10),
+                        ),
                       ),
-                      padding: const EdgeInsets.symmetric(vertical: 10),
                     ),
-                  ),
-                ),
-                const SizedBox(width: 8),
-                IconButton(
-                  onPressed: () => ChatModal.show(
-                    context,
-                    sitterName: booking.sitterName,
-                    avatarPath: booking.sitterPhoto,
-                  ),
-                  icon: Icon(
-                    Icons.chat_bubble_outline,
-                    color: isDark ? AppColors.darkPrimary : AppColors.primary,
-                  ),
-                  style: IconButton.styleFrom(
-                    backgroundColor: isDark
-                        ? AppColors.darkSurfaceContainerLow
-                        : AppColors.surfaceContainerLow,
-                    shape: const CircleBorder(),
-                  ),
-                ),
-                const SizedBox(width: 4),
-                IconButton(
-                  onPressed: () => CallModal.show(
-                    context,
-                    contactName: booking.sitterName,
-                    roleSubtitle: 'Hizmet Veren',
-                    phoneNumber: '+90 532 890 12 34',
-                  ),
-                  icon: Icon(
-                    Icons.phone_outlined,
-                    color: isDark ? AppColors.darkPrimary : AppColors.primary,
-                  ),
-                  style: IconButton.styleFrom(
-                    backgroundColor: isDark
-                        ? AppColors.darkSurfaceContainerLow
-                        : AppColors.surfaceContainerLow,
-                    shape: const CircleBorder(),
-                  ),
-                ),
-              ],
+                    const SizedBox(width: 8),
+                    IconButton(
+                      onPressed: () => ChatModal.show(
+                        context,
+                        sitterName: booking.sitterName,
+                        avatarPath: booking.sitterPhoto,
+                      ),
+                      icon: Icon(
+                        Icons.chat_bubble_outline,
+                        color: isDark ? AppColors.darkPrimary : AppColors.primary,
+                      ),
+                      style: IconButton.styleFrom(
+                        backgroundColor: isDark
+                            ? AppColors.darkSurfaceContainerLow
+                            : AppColors.surfaceContainerLow,
+                        shape: const CircleBorder(),
+                      ),
+                    ),
+                    const SizedBox(width: 4),
+                    IconButton(
+                      onPressed: () => CallModal.show(
+                        context,
+                        contactName: booking.sitterName,
+                        roleSubtitle: 'Hizmet Veren',
+                        phoneNumber: '+90 532 890 12 34',
+                      ),
+                      icon: Icon(
+                        Icons.phone_outlined,
+                        color: isDark ? AppColors.darkPrimary : AppColors.primary,
+                      ),
+                      style: IconButton.styleFrom(
+                        backgroundColor: isDark
+                            ? AppColors.darkSurfaceContainerLow
+                            : AppColors.surfaceContainerLow,
+                        shape: const CircleBorder(),
+                      ),
+                    ),
+                  ],
+                );
+              },
             ),
           ] else if (booking.status == BookingStatus.pending) ...[
             Row(
