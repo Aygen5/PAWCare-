@@ -154,7 +154,7 @@ Ekranları feature klasörlerine taşımadan önce:
 - **Etkilenecek Dosyalar:** `lib/features/onboarding/`, `lib/features/auth/`
 - **Tamamlanma Kontrolü:** Karşılama ekranı açılmalı; modallar ve demo giriş akışı hatasız çalışmalı.
 
-#### Adım 4.2: Köpek Sahibi Ana Sayfası (`Home`)
+#### Adım 4.2: [TAMAMLANDI] Köpek Sahibi Ana Sayfası (`Home`)
 - **Yapılacak İş:**
   - `owner_home_screen.dart` → `lib/features/home/view/owner_home_screen.dart`
   - Üst başlığa Faz 3'te hazırlanan sağ üst profil ve bildirim ikonlarını yerleştirmek.
@@ -163,7 +163,7 @@ Ekranları feature klasörlerine taşımadan önce:
 - **Etkilenecek Dosyalar:** `lib/features/home/`
 - **Tamamlanma Kontrolü:** Ana sayfa verileri Hive'dan gelmeli; nabız animasyonu ve başlık butonları çalışmalı.
 
-#### Adım 4.3: Keşfet ve Hizmet Detayı (`Discovery`)
+#### Adım 4.3: [TAMAMLANDI] Keşfet ve Hizmet Detayı (`Discovery`)
 - **Yapılacak İş:**
   - `explore_screen.dart` → `lib/features/discovery/view/explore_screen.dart`
   - `sitter_detail_screen.dart` → `lib/features/discovery/view/sitter_detail_screen.dart`

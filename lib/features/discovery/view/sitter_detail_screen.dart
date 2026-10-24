@@ -4,18 +4,25 @@ import 'package:table_calendar/table_calendar.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_typography.dart';
 import '../../../core/utils/app_state.dart';
+import '../../../core/widgets/paw_header_actions.dart';
 import '../../../data/models/models.dart';
+import '../../../data/repositories/booking_repository.dart';
+import '../../../domain/repositories/booking_repository_interface.dart';
+import '../widgets/call_modal.dart';
 
+/// Bakıcı ve Hizmet Detay Ekranı — Tarih seçimi, fiyatlama ve Clean Architecture rezervasyon akışı.
 class SitterDetailScreen extends StatefulWidget {
   final SitterListing sitter;
   final VoidCallback onBack;
   final VoidCallback onBookingCompleted;
+  final BookingRepositoryInterface? bookingRepository;
 
   const SitterDetailScreen({
     super.key,
     required this.sitter,
     required this.onBack,
     required this.onBookingCompleted,
+    this.bookingRepository,
   });
 
   @override
@@ -48,7 +55,7 @@ class _SitterDetailScreenState extends State<SitterDetailScreen> {
   double get _serviceFee => 50.0;
   double get _totalPrice => _subtotal + _serviceFee;
 
-  void _sendBookingRequest() {
+  Future<void> _sendBookingRequest() async {
     final state = AppStateScope.of(context);
     final booking = BookingRequest(
       id: 'book_${DateTime.now().millisecondsSinceEpoch}',
@@ -66,7 +73,14 @@ class _SitterDetailScreenState extends State<SitterDetailScreen> {
       status: BookingStatus.pending,
     );
 
+    // 1. Clean Architecture: Rezervasyonu BookingRepository'ye (Hive) kalıcı kaydet
+    final repo = widget.bookingRepository ?? BookingRepository();
+    await repo.addBooking(booking);
+
+    // 2. Uygulama durumunu (AppState) güncelle
     state.addBooking(booking);
+
+    if (!mounted) return;
 
     showDialog(
       context: context,
@@ -136,7 +150,7 @@ class _SitterDetailScreenState extends State<SitterDetailScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Photo Gallery Carousel with Back Button
+              // Fotoğraf Galerisi, Geri Dönüş ve Sağ Üst Aksiyonlar
               Stack(
                 children: [
                   SizedBox(
@@ -151,6 +165,15 @@ class _SitterDetailScreenState extends State<SitterDetailScreen> {
                           widget.sitter.galleryPaths[idx],
                           fit: BoxFit.cover,
                           width: double.infinity,
+                          errorBuilder: (_, _, _) => Container(
+                            height: 280,
+                            color: AppColors.surfaceContainerLow,
+                            child: const Icon(
+                              Icons.storefront,
+                              size: 48,
+                              color: AppColors.primary,
+                            ),
+                          ),
                         );
                       },
                     ),
@@ -167,6 +190,34 @@ class _SitterDetailScreenState extends State<SitterDetailScreen> {
                         ),
                         onPressed: widget.onBack,
                       ),
+                    ),
+                  ),
+                  Positioned(
+                    top: 16,
+                    right: 16,
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        CircleAvatar(
+                          backgroundColor: Colors.white.withValues(alpha: 0.9),
+                          child: IconButton(
+                            icon: const Icon(
+                              Icons.phone,
+                              color: AppColors.primary,
+                              size: 20,
+                            ),
+                            onPressed: () => CallModal.show(
+                              context,
+                              contactName: widget.sitter.name,
+                              roleSubtitle: widget.sitter.facilityTitle,
+                              phoneNumber: '+90 532 555 01 23',
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        // Standart Profil ve Bildirim Başlık Aksiyonları
+                        const PawHeaderActions(),
+                      ],
                     ),
                   ),
                   Positioned(
@@ -191,62 +242,76 @@ class _SitterDetailScreenState extends State<SitterDetailScreen> {
                   ),
                 ],
               ),
-              // Sitter Info Body
+              // Bakıcı Detay Gövdesi
               Padding(
                 padding: const EdgeInsets.all(20),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                children: [
+                                  Flexible(
+                                    child: Text(
+                                      widget.sitter.facilityTitle,
+                                      style: AppTypography.headlineScreen,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 6),
+                                  const Icon(
+                                    Icons.verified,
+                                    size: 20,
+                                    color: AppColors.primary,
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                '${widget.sitter.name} • ${widget.sitter.location}',
+                                style: AppTypography.bodyDefault,
+                              ),
+                            ],
+                          ),
+                        ),
                         Container(
                           padding: const EdgeInsets.symmetric(
                             horizontal: 10,
-                            vertical: 4,
+                            vertical: 6,
                           ),
                           decoration: BoxDecoration(
                             color: AppColors.secondaryContainer,
                             borderRadius: BorderRadius.circular(12),
                           ),
-                          child: Text(
-                            widget.sitter.category,
-                            style: AppTypography.labelTag.copyWith(
-                              color: AppColors.primary,
-                            ),
+                          child: Row(
+                            children: [
+                              const Icon(
+                                Icons.star,
+                                size: 16,
+                                color: Color(0xFFE5A823),
+                              ),
+                              const SizedBox(width: 4),
+                              Text(
+                                '${widget.sitter.rating}',
+                                style: AppTypography.titleCard,
+                              ),
+                              Text(
+                                ' (${widget.sitter.reviewsCount})',
+                                style: AppTypography.caption,
+                              ),
+                            ],
                           ),
-                        ),
-                        const Spacer(),
-                        const Icon(
-                          Icons.star,
-                          size: 18,
-                          color: Color(0xFFE5A823),
-                        ),
-                        const SizedBox(width: 4),
-                        Text(
-                          '${widget.sitter.rating}',
-                          style: AppTypography.titleCard.copyWith(
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
-                        Text(
-                          ' (${widget.sitter.reviewsCount} değerlendirme)',
-                          style: AppTypography.caption,
                         ),
                       ],
                     ),
-                    const SizedBox(height: 10),
-                    Text(
-                      widget.sitter.facilityTitle,
-                      style: AppTypography.headlineHero,
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      '${widget.sitter.name} • ${widget.sitter.location}',
-                      style: AppTypography.bodyMedium.copyWith(
-                        color: AppColors.secondary,
-                      ),
-                    ),
-                    const SizedBox(height: 18),
+                    const SizedBox(height: 16),
                     const Divider(color: AppColors.outlineVariant),
                     const SizedBox(height: 14),
                     Text(
@@ -297,7 +362,8 @@ class _SitterDetailScreenState extends State<SitterDetailScreen> {
                     const SizedBox(height: 24),
                     const Divider(color: AppColors.outlineVariant),
                     const SizedBox(height: 18),
-                    // Pet Selection
+
+                    // Rezervasyon Yapılacak Evcil Hayvan Bilgisi
                     Text(
                       'Rezervasyon Yapılacak Köpek',
                       style: AppTypography.headlineSection,
@@ -318,6 +384,7 @@ class _SitterDetailScreenState extends State<SitterDetailScreen> {
                           CircleAvatar(
                             radius: 20,
                             backgroundImage: AssetImage(dog.photoPath),
+                            onBackgroundImageError: (_, _) {},
                           ),
                           const SizedBox(width: 12),
                           Expanded(
@@ -340,7 +407,8 @@ class _SitterDetailScreenState extends State<SitterDetailScreen> {
                       ),
                     ),
                     const SizedBox(height: 24),
-                    // Calendar Section
+
+                    // TableCalendar Tarih Aralığı Seçim Takvimi
                     Text(
                       'Tarih Aralığı Seçimi',
                       style: AppTypography.headlineSection,
@@ -396,7 +464,8 @@ class _SitterDetailScreenState extends State<SitterDetailScreen> {
                       ),
                     ),
                     const SizedBox(height: 20),
-                    // Care notes input
+
+                    // Özel Bakım ve Not Alanı
                     Text(
                       'Özel Bakım ve Beslenme Notu',
                       style: AppTypography.headlineSection,
@@ -435,7 +504,8 @@ class _SitterDetailScreenState extends State<SitterDetailScreen> {
                       ),
                     ),
                     const SizedBox(height: 24),
-                    // Price Summary Box
+
+                    // Fiyat Hesaplama ve Özeti Kutusu
                     Container(
                       padding: const EdgeInsets.all(18),
                       decoration: BoxDecoration(
@@ -500,7 +570,8 @@ class _SitterDetailScreenState extends State<SitterDetailScreen> {
                       ),
                     ),
                     const SizedBox(height: 24),
-                    // Submit Booking Button
+
+                    // Rezervasyon Talebi Gönder Butonu
                     SizedBox(
                       width: double.infinity,
                       height: 54,

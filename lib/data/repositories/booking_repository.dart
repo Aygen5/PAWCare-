@@ -1,3 +1,5 @@
+import 'package:hive/hive.dart';
+
 import '../../domain/repositories/booking_repository_interface.dart';
 import '../local/hive_boxes.dart';
 import '../models/models.dart';
@@ -6,9 +8,14 @@ class BookingRepository implements BookingRepositoryInterface {
   /// Başlangıç tarihine göre sıralı tüm rezervasyonları getirir.
   @override
   List<BookingRequest> getAllBookings() {
-    final list = HiveBoxes.bookings.values.toList();
-    list.sort((a, b) => b.startDate.compareTo(a.startDate));
-    return list;
+    try {
+      if (!Hive.isBoxOpen(HiveBoxes.bookingsBox)) return [];
+      final list = HiveBoxes.bookings.values.toList();
+      list.sort((a, b) => b.startDate.compareTo(a.startDate));
+      return list;
+    } catch (_) {
+      return [];
+    }
   }
 
   /// Belirli bir duruma göre filtrelenmiş rezervasyonları getirir.

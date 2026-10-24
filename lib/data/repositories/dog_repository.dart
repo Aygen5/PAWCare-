@@ -1,3 +1,5 @@
+import 'package:hive/hive.dart';
+
 import '../../domain/repositories/dog_repository_interface.dart';
 import '../local/hive_boxes.dart';
 import '../models/models.dart';
@@ -6,8 +8,14 @@ class DogRepository implements DogRepositoryInterface {
   /// Birincil köpek profilini getirir (varsayılan 'dog_1' veya ilk kayıt).
   @override
   Dog? getCurrentDog() {
-    if (HiveBoxes.dogs.isEmpty) return null;
-    return HiveBoxes.dogs.get('dog_1') ?? HiveBoxes.dogs.values.first;
+    try {
+      if (!Hive.isBoxOpen(HiveBoxes.dogsBox) || HiveBoxes.dogs.isEmpty) {
+        return null;
+      }
+      return HiveBoxes.dogs.get('dog_1') ?? HiveBoxes.dogs.values.first;
+    } catch (_) {
+      return null;
+    }
   }
 
   /// Köpek profilini Hive veritabanına kaydeder veya günceller.
