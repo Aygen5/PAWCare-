@@ -113,7 +113,7 @@ Ekranları feature klasörlerine taşımadan önce:
 - **Etkilenecek Dosyalar:** `lib/app/router/route_names.dart`, `lib/app/router/app_router.dart`, `lib/app/app.dart`
 - **Tamamlanma Kontrolü:** Rota geçiş mantığının doğru dallara ayrıldığı doğrulanmalı.
 
-#### Adım 3.2: Uygulama İskeleti, Alt Bar ve Üst Yeşil Çubuğun Kaldırılması
+#### Adım 3.2: [TAMAMLANDI] Uygulama İskeleti, Alt Bar ve Üst Yeşil Çubuğun Kaldırılması
 - **Yapılacak İş:**
   - `AppShell` içerisindeki geçici yeşil "Ekranlar:" demo çubuğunu tamamen kaldırmak.
   - `PawBottomNav` bileşenini `lib/core/widgets/paw_bottom_nav.dart` altına almak ve GoRouter sekme indeksleriyle senkronize etmek.
@@ -121,7 +121,7 @@ Ekranları feature klasörlerine taşımadan önce:
 - **Etkilenecek Dosyalar:** `lib/app/router/app_shell.dart`, `lib/core/widgets/paw_bottom_nav.dart`
 - **Tamamlanma Kontrolü:** Yeşil çubuğun ekrandan tamamen kalktığı ve alt bar sekmelerinin aktif rota ile uyumlu çalıştığı doğrulanmalı.
 
-#### Adım 3.3: Standart Üst Başlık Şablonu (Profil ve Bildirim İkonları)
+#### Adım 3.3: [TAMAMLANDI] Standart Üst Başlık Şablonu (Profil ve Bildirim İkonları)
 - **Yapılacak İş:**
   - Ekranlarda kullanılacak ortak başlık eklentisini (`PawHeaderActions` veya standart `AppBar`) hazırlamak.
   - Sağ üst köşeye profil ikonu ve okunmamış bildirim rozetli (badge) bildirim ikonu yerleştirmek.

@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 
-import '../theme/app_colors.dart';
-import '../theme/app_typography.dart';
+import '../core/widgets/paw_header_actions.dart';
 import '../models/models.dart';
 import '../state/app_state.dart';
+import '../theme/app_colors.dart';
+import '../theme/app_typography.dart';
+import '../widgets/modals/chat_modal.dart';
 import '../widgets/modals/health_card_modal.dart';
 import '../widgets/modals/live_tracking_modal.dart';
-import '../widgets/modals/chat_modal.dart';
 
 class OwnerHomeScreen extends StatefulWidget {
   final Function(SitterListing) onSitterSelected;
@@ -71,35 +72,43 @@ class _OwnerHomeScreenState extends State<OwnerHomeScreen>
                     ),
                   ),
                   const SizedBox(width: 8),
-                  InkWell(
-                    onTap: () => state.setRole(UserRole.sitter),
-                    borderRadius: BorderRadius.circular(20),
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 8,
-                      ),
-                      decoration: BoxDecoration(
-                        color: AppColors.secondaryContainer,
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      InkWell(
+                        onTap: () => state.setRole(UserRole.sitter),
                         borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: Row(
-                        children: [
-                          const Icon(
-                            Icons.swap_horiz,
-                            size: 16,
-                            color: AppColors.primary,
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 10,
+                            vertical: 8,
                           ),
-                          const SizedBox(width: 4),
-                          Text(
-                            'Hizmet Veren',
-                            style: AppTypography.labelTag.copyWith(
-                              color: AppColors.primary,
-                            ),
+                          decoration: BoxDecoration(
+                            color: AppColors.secondaryContainer,
+                            borderRadius: BorderRadius.circular(20),
                           ),
-                        ],
+                          child: Row(
+                            children: [
+                              const Icon(
+                                Icons.swap_horiz,
+                                size: 16,
+                                color: AppColors.primary,
+                              ),
+                              const SizedBox(width: 4),
+                              Text(
+                                'Hizmet Veren',
+                                style: AppTypography.labelTag.copyWith(
+                                  color: AppColors.primary,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
                       ),
-                    ),
+                      const SizedBox(width: 8),
+                      // Standart bildirim ve profil üst eylemleri
+                      const PawHeaderActions(),
+                    ],
                   ),
                 ],
               ),

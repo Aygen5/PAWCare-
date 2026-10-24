@@ -27,9 +27,12 @@ class DogProfileScreen extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(
-                    'Köpek Profili & Sağlık',
-                    style: AppTypography.headlineScreen,
+                  Expanded(
+                    child: Text(
+                      'Köpek Profili & Sağlık',
+                      style: AppTypography.headlineScreen,
+                      overflow: TextOverflow.ellipsis,
+                    ),
                   ),
                   IconButton(
                     icon: const Icon(Icons.qr_code, color: AppColors.primary),
@@ -235,9 +238,12 @@ class DogProfileScreen extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(
-                    'Aşı Takvimi & Kayıtlar',
-                    style: AppTypography.headlineSection,
+                  Expanded(
+                    child: Text(
+                      'Aşı Takvimi & Kayıtlar',
+                      style: AppTypography.headlineSection,
+                      overflow: TextOverflow.ellipsis,
+                    ),
                   ),
                   TextButton.icon(
                     onPressed: () => HealthCardModal.show(context),

@@ -286,6 +286,36 @@ class AppState extends ChangeNotifier {
     );
     notifyListeners();
   }
+
+  // Bildirim yönetimi
+  List<NotificationItem> _notifications = [
+    NotificationItem(
+      id: 'notif_1',
+      title: 'Aşı Hatırlatması',
+      body: 'Barley için Karma Aşı (DHPPi+L) randevu zamanı yaklaşıyor.',
+      timestamp: DateTime(2026, 10, 24, 9, 30),
+      isRead: false,
+    ),
+    NotificationItem(
+      id: 'notif_2',
+      title: 'Rezervasyon Güncellemesi',
+      body: 'Mert Demir sahil yürüyüşü talebinizi onayladı.',
+      timestamp: DateTime(2026, 10, 23, 14, 0),
+      isRead: true,
+    ),
+  ];
+
+  List<NotificationItem> get notifications => _notifications;
+
+  int get unreadNotificationCount =>
+      _notifications.where((n) => !n.isRead).length;
+
+  void markAllNotificationsAsRead() {
+    _notifications = _notifications
+        .map((n) => n.copyWith(isRead: true))
+        .toList();
+    notifyListeners();
+  }
 }
 
 // InheritedWidget wrapper for AppState access

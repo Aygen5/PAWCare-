@@ -13,12 +13,15 @@ import '../../screens/sitter_dashboard_screen.dart';
 import '../../screens/sitter_detail_screen.dart';
 import '../../screens/welcome_screen.dart';
 import '../../state/app_state.dart';
+import 'app_shell.dart';
 import 'route_names.dart';
 
 /// PawCare GoRouter rota yöneticisi ve sayfa geçiş yapılandırması.
 class AppRouter {
   static final GlobalKey<NavigatorState> rootNavigatorKey =
       GlobalKey<NavigatorState>(debugLabel: 'rootNav');
+  static final GlobalKey<NavigatorState> shellNavigatorKey =
+      GlobalKey<NavigatorState>(debugLabel: 'shellNav');
 
   /// Belirtilen başlangıç konumuyla GoRouter örneği oluşturur.
   static GoRouter createRouter({
@@ -65,72 +68,11 @@ class AppRouter {
           },
         ),
 
-        // 3. Köpek Sahibi Ana Sayfası
-        GoRoute(
-          path: RoutePaths.home,
-          name: RouteNames.home,
-          builder: (context, state) => OwnerHomeScreen(
-            onSitterSelected: (sitter) =>
-                context.push(RoutePaths.sitterDetail, extra: sitter),
-          ),
-        ),
-
-        // 4. Hizmet Arama ve Keşfet Ekranı
-        GoRoute(
-          path: RoutePaths.explore,
-          name: RouteNames.explore,
-          builder: (context, state) => ExploreScreen(
-            onSitterSelected: (sitter) =>
-                context.push(RoutePaths.sitterDetail, extra: sitter),
-          ),
-        ),
-
-        // 5. Köpek Profili Ekranı
-        GoRoute(
-          path: RoutePaths.pets,
-          name: RouteNames.pets,
-          builder: (context, state) => const DogProfileScreen(),
-        ),
-
-        // 6. Rezervasyon Talepleri Sekmesi
-        GoRoute(
-          path: RoutePaths.bookings,
-          name: RouteNames.bookings,
-          builder: (context, state) {
-            final appState = AppStateScope.of(context);
-            appState.setOwnerNavIndex(3);
-            return OwnerHomeScreen(
-              onSitterSelected: (sitter) =>
-                  context.push(RoutePaths.sitterDetail, extra: sitter),
-            );
-          },
-        ),
-
-        // 7. Profil ve Ayarlar Sekmesi
-        GoRoute(
-          path: RoutePaths.profile,
-          name: RouteNames.profile,
-          builder: (context, state) {
-            final appState = AppStateScope.of(context);
-            appState.setOwnerNavIndex(4);
-            return OwnerHomeScreen(
-              onSitterSelected: (sitter) =>
-                  context.push(RoutePaths.sitterDetail, extra: sitter),
-            );
-          },
-        ),
-
-        // 8. Hizmet Veren / Bakıcı Paneli
-        GoRoute(
-          path: RoutePaths.sitterDashboard,
-          name: RouteNames.sitterDashboard,
-          builder: (context, state) => const SitterDashboardScreen(),
-        ),
-
-        // 9. Bakıcı Detay Ekranı
+        // 3. Bakıcı Detay Ekranı (Tam Ekran)
         GoRoute(
           path: RoutePaths.sitterDetail,
           name: RouteNames.sitterDetail,
+          parentNavigatorKey: rootNavigatorKey,
           builder: (context, state) {
             final appState = AppStateScope.of(context);
             final sitter =
@@ -144,6 +86,75 @@ class AppRouter {
               },
             );
           },
+        ),
+
+        // 4. Alt Navigasyonlu ve Mobil Çerçeveli Ana Uygulama İskeleti (AppShell)
+        ShellRoute(
+          navigatorKey: shellNavigatorKey,
+          builder: (context, state, child) => AppShell(child: child),
+          routes: [
+            // Köpek Sahibi Ana Sayfası
+            GoRoute(
+              path: RoutePaths.home,
+              name: RouteNames.home,
+              builder: (context, state) => OwnerHomeScreen(
+                onSitterSelected: (sitter) =>
+                    context.push(RoutePaths.sitterDetail, extra: sitter),
+              ),
+            ),
+
+            // Hizmet Arama ve Keşfet Ekranı
+            GoRoute(
+              path: RoutePaths.explore,
+              name: RouteNames.explore,
+              builder: (context, state) => ExploreScreen(
+                onSitterSelected: (sitter) =>
+                    context.push(RoutePaths.sitterDetail, extra: sitter),
+              ),
+            ),
+
+            // Köpek Profili Ekranı
+            GoRoute(
+              path: RoutePaths.pets,
+              name: RouteNames.pets,
+              builder: (context, state) => const DogProfileScreen(),
+            ),
+
+            // Rezervasyon Talepleri Sekmesi
+            GoRoute(
+              path: RoutePaths.bookings,
+              name: RouteNames.bookings,
+              builder: (context, state) {
+                final appState = AppStateScope.of(context);
+                appState.setOwnerNavIndex(3);
+                return OwnerHomeScreen(
+                  onSitterSelected: (sitter) =>
+                      context.push(RoutePaths.sitterDetail, extra: sitter),
+                );
+              },
+            ),
+
+            // Profil ve Ayarlar Sekmesi
+            GoRoute(
+              path: RoutePaths.profile,
+              name: RouteNames.profile,
+              builder: (context, state) {
+                final appState = AppStateScope.of(context);
+                appState.setOwnerNavIndex(4);
+                return OwnerHomeScreen(
+                  onSitterSelected: (sitter) =>
+                      context.push(RoutePaths.sitterDetail, extra: sitter),
+                );
+              },
+            ),
+
+            // Hizmet Veren / Bakıcı Paneli
+            GoRoute(
+              path: RoutePaths.sitterDashboard,
+              name: RouteNames.sitterDashboard,
+              builder: (context, state) => const SitterDashboardScreen(),
+            ),
+          ],
         ),
       ],
       errorBuilder: (context, state) => Scaffold(
