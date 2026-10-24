@@ -170,7 +170,9 @@ class BookingCard extends StatelessWidget {
                   Text(
                     'Not: ${booking.careNotes}',
                     style: AppTypography.caption.copyWith(
-                      color: AppColors.onSurfaceVariant,
+                      color: isDark
+                          ? AppColors.darkOnSurfaceVariant
+                          : AppColors.onSurfaceVariant,
                     ),
                   ),
                 ],

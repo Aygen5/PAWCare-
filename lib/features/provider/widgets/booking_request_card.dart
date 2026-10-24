@@ -119,16 +119,20 @@ class BookingRequestCard extends StatelessWidget {
                 const SizedBox(height: 4),
                 Row(
                   children: [
-                    const Icon(
+                    Icon(
                       Icons.schedule,
                       size: 14,
-                      color: AppColors.onSurfaceVariant,
+                      color: isDark
+                          ? AppColors.darkOnSurfaceVariant
+                          : AppColors.onSurfaceVariant,
                     ),
                     const SizedBox(width: 6),
                     Text(
                       dateStr,
                       style: AppTypography.caption.copyWith(
-                        color: AppColors.onSurfaceVariant,
+                        color: isDark
+                            ? AppColors.darkOnSurfaceVariant
+                            : AppColors.onSurfaceVariant,
                       ),
                     ),
                   ],
@@ -138,7 +142,9 @@ class BookingRequestCard extends StatelessWidget {
                   Text(
                     'Not: ${booking.careNotes}',
                     style: AppTypography.caption.copyWith(
-                      color: AppColors.onSurfaceVariant,
+                      color: isDark
+                          ? AppColors.darkOnSurfaceVariant
+                          : AppColors.onSurfaceVariant,
                     ),
                   ),
                 ],

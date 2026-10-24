@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../domain/repositories/settings_repository_interface.dart';
 import '../core/theme/app_theme.dart';
+import '../core/theme/app_typography.dart';
 import '../core/theme/theme_cubit.dart';
 import '../data/repositories/settings_repository.dart';
 import '../features/auth/cubit/auth_cubit.dart';
@@ -85,6 +86,12 @@ class _PawCareAppState extends State<PawCareApp> {
         notifier: _appState,
         child: BlocBuilder<ThemeCubit, ThemeMode>(
           builder: (context, themeMode) {
+            final brightness = MediaQuery.maybePlatformBrightnessOf(context) ??
+                View.of(context).platformDispatcher.platformBrightness;
+            final isDark = themeMode == ThemeMode.dark ||
+                (themeMode == ThemeMode.system &&
+                    brightness == Brightness.dark);
+            AppTypography.isDark = isDark;
             return MaterialApp.router(
               title: 'PawCare — Evcil Hayvan Yönetimi',
               debugShowCheckedModeBanner: false,

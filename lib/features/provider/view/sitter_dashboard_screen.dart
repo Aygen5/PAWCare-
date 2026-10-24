@@ -569,9 +569,7 @@ class _SitterDashboardView extends StatelessWidget {
           children: [
             Text(
               title,
-              style: AppTypography.caption.copyWith(
-                color: AppColors.onSurfaceVariant,
-              ),
+              style: AppTypography.caption,
             ),
             const SizedBox(height: 6),
             Text(
@@ -633,10 +631,12 @@ class _SitterDashboardView extends StatelessWidget {
                 ],
               ),
             ),
-            const Icon(
+            Icon(
               Icons.arrow_forward_ios,
               size: 14,
-              color: AppColors.onSurfaceVariant,
+              color: isDark
+                  ? AppColors.darkOnSurfaceVariant
+                  : AppColors.onSurfaceVariant,
             ),
           ],
         ),
