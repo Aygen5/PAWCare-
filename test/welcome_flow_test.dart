@@ -3,8 +3,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:paw_care/data/repositories/settings_repository.dart';
 import 'package:paw_care/main.dart';
-import 'package:paw_care/widgets/modals/login_modal.dart';
-import 'package:paw_care/widgets/modals/signup_modal.dart';
+import 'package:paw_care/features/auth/widgets/login_modal.dart';
+import 'package:paw_care/features/auth/widgets/signup_modal.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();

@@ -7,7 +7,7 @@ import 'package:paw_care/app/router/route_names.dart';
 import 'package:paw_care/core/widgets/paw_bottom_nav.dart';
 import 'package:paw_care/core/widgets/paw_header_actions.dart';
 import 'package:paw_care/data/repositories/settings_repository.dart';
-import 'package:paw_care/screens/explore_screen.dart';
+import 'package:paw_care/features/discovery/view/explore_screen.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();

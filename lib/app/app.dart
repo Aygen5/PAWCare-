@@ -7,7 +7,7 @@ import '../core/theme/theme_cubit.dart';
 import '../data/repositories/settings_repository.dart';
 import '../features/auth/cubit/auth_cubit.dart';
 import '../features/auth/cubit/role_cubit.dart';
-import '../state/app_state.dart';
+import '../core/utils/app_state.dart';
 import 'router/app_router.dart';
 import 'router/route_names.dart';
 

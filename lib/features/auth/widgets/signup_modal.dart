@@ -6,7 +6,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_typography.dart';
 import '../../../data/models/models.dart';
-import '../../../state/app_state.dart';
+import '../../../core/utils/app_state.dart';
 import '../cubit/auth_cubit.dart';
 import '../cubit/role_cubit.dart';
 import 'login_modal.dart';

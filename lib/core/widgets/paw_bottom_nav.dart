@@ -5,7 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../../app/router/route_names.dart';
 import '../../data/models/models.dart';
 import '../../features/auth/cubit/role_cubit.dart';
-import '../../state/app_state.dart';
+import '../utils/app_state.dart';
 import '../theme/app_colors.dart';
 import '../theme/app_typography.dart';
 

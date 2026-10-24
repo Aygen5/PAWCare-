@@ -4,13 +4,13 @@ import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_typography.dart';
 import '../../core/widgets/paw_bottom_nav.dart';
 import '../../data/models/models.dart';
-import '../../screens/dog_profile_screen.dart';
-import '../../screens/explore_screen.dart';
-import '../../screens/owner_home_screen.dart';
-import '../../screens/sitter_dashboard_screen.dart';
-import '../../screens/sitter_detail_screen.dart';
-import '../../screens/welcome_screen.dart';
-import '../../state/app_state.dart';
+import '../../core/utils/app_state.dart';
+import '../../features/discovery/view/explore_screen.dart';
+import '../../features/discovery/view/sitter_detail_screen.dart';
+import '../../features/home/view/owner_home_screen.dart';
+import '../../features/onboarding/view/welcome_screen.dart';
+import '../../features/pets/view/dog_profile_screen.dart';
+import '../../features/provider/view/sitter_dashboard_screen.dart';
 
 /// PawCare ana uygulama iskeleti; 480px mobil genişlik sınırı ve alt navigasyon barını barındırır.
 class AppShell extends StatefulWidget {

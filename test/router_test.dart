@@ -5,11 +5,11 @@ import 'package:paw_care/app/app.dart';
 import 'package:paw_care/app/router/app_router.dart';
 import 'package:paw_care/app/router/route_names.dart';
 import 'package:paw_care/data/repositories/settings_repository.dart';
-import 'package:paw_care/screens/dog_profile_screen.dart';
-import 'package:paw_care/screens/explore_screen.dart';
-import 'package:paw_care/screens/owner_home_screen.dart';
-import 'package:paw_care/screens/sitter_dashboard_screen.dart';
-import 'package:paw_care/screens/welcome_screen.dart';
+import 'package:paw_care/features/discovery/view/explore_screen.dart';
+import 'package:paw_care/features/home/view/owner_home_screen.dart';
+import 'package:paw_care/features/onboarding/view/welcome_screen.dart';
+import 'package:paw_care/features/pets/view/dog_profile_screen.dart';
+import 'package:paw_care/features/provider/view/sitter_dashboard_screen.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();

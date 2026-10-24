@@ -7,7 +7,7 @@ import 'package:paw_care/core/widgets/paw_bottom_nav.dart';
 import 'package:paw_care/data/models/models.dart';
 import 'package:paw_care/data/repositories/settings_repository.dart';
 import 'package:paw_care/features/auth/cubit/role_cubit.dart';
-import 'package:paw_care/screens/sitter_dashboard_screen.dart';
+import 'package:paw_care/features/provider/view/sitter_dashboard_screen.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
