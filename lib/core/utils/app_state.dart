@@ -279,45 +279,150 @@ class AppState extends ChangeNotifier {
     }
   }
 
-  // Demo sohbet mesajları
-  final List<ChatMessage> _chatMessages = [
-    ChatMessage(
-      id: 'm1',
-      senderName: 'Mert Demir',
-      text: 'Merhaba Aygen Hanım! Barley ile Caddebostan Sahil Parkı girişinde buluştuk.',
-      time: '14:02',
-      isMe: false,
-    ),
-    ChatMessage(
-      id: 'm2',
-      senderName: 'Aygen',
-      text: 'Harika Mert Bey! Enerjisi yerindedir umarım, sabah biraz heyecanlıydı.',
-      time: '14:05',
-      isMe: true,
-    ),
-    ChatMessage(
-      id: 'm3',
-      senderName: 'Mert Demir',
-      text: 'Çok neşeli! Çim alanda biraz koştuk, şimdi gölgelikte su molası veriyoruz. Canlı takip üzerinden konumumuzu izleyebilirsiniz 🐾',
-      time: '14:18',
-      isMe: false,
-    ),
-  ];
-
-  List<ChatMessage> get chatMessages => _chatMessages;
-
-  void sendChatMessage(String text) {
-    if (text.trim().isEmpty) return;
-    _chatMessages.add(
+  // Katılımcı bazlı demo sohbet mesajları
+  final Map<String, List<ChatMessage>> _conversations = {
+    'Mert Demir': [
       ChatMessage(
-        id: 'msg_${DateTime.now().millisecondsSinceEpoch}',
+        id: 'm1',
+        senderName: 'Mert Demir',
+        senderRole: UserRole.sitter,
+        text:
+            'Merhaba Aygen Hanım! Barley ile Caddebostan Sahil Parkı girişinde buluştuk.',
+        time: '14:02',
+        isMe: false,
+      ),
+      ChatMessage(
+        id: 'm2',
         senderName: 'Aygen',
-        text: text.trim(),
-        time:
-            '${DateTime.now().hour.toString().padLeft(2, '0')}:${DateTime.now().minute.toString().padLeft(2, '0')}',
+        senderRole: UserRole.owner,
+        text:
+            'Harika Mert Bey! Enerjisi yerindedir umarım, sabah biraz heyecanlıydı.',
+        time: '14:05',
         isMe: true,
       ),
-    );
+      ChatMessage(
+        id: 'm3',
+        senderName: 'Mert Demir',
+        senderRole: UserRole.sitter,
+        text:
+            'Çok neşeli! Çim alanda biraz koştuk, şimdi gölgelikte su molası veriyoruz. Canlı takip üzerinden konumumuzu izleyebilirsiniz 🐾',
+        time: '14:18',
+        isMe: false,
+      ),
+    ],
+    'Ayşe Yılmaz': [
+      ChatMessage(
+        id: 'ayse_1',
+        senderName: 'Ayşe Yılmaz',
+        senderRole: UserRole.sitter,
+        text:
+            'Merhaba Aygen Hanım! Barley için köpek oteli rezervasyon talebinizi aldım.',
+        time: '11:30',
+        isMe: false,
+      ),
+      ChatMessage(
+        id: 'ayse_2',
+        senderName: 'Aygen',
+        senderRole: UserRole.owner,
+        text:
+            'Merhaba Ayşe Hanım, tavuk alerjisine dikkat edebilirseniz çok sevinirim!',
+        time: '11:45',
+        isMe: true,
+      ),
+    ],
+  };
+
+  /// Sohbet oda adını normalize eder (ör. 'Aygen (Köpek Sahibi)' -> 'Ayşe Yılmaz')
+  String _normalizeConversationKey(String target) {
+    final lower = target.toLowerCase();
+    if (lower.contains('aygen')) {
+      return 'Ayşe Yılmaz';
+    }
+    if (lower.contains('ayşe') || lower.contains('ayse')) {
+      return 'Ayşe Yılmaz';
+    }
+    if (lower.contains('mert')) {
+      return 'Mert Demir';
+    }
+    return target;
+  }
+
+  /// Geriye dönük uyumluluk: parametresiz çağrıda varsayılan Mert Demir sohbetini döner
+  List<ChatMessage> get chatMessages => getChatMessagesFor('Mert Demir');
+
+  /// Katılımcıya ait sohbet mesajlarını getirir
+  List<ChatMessage> getChatMessagesFor([String participantName = 'Mert Demir']) {
+    final key = _normalizeConversationKey(participantName);
+    return _conversations.putIfAbsent(key, () => []);
+  }
+
+  /// Aktif role duyarlı mesaj gönderme ve karşı role anında bildirim oluşturma
+  void sendChatMessage(String text, {String participantName = 'Mert Demir'}) {
+    final cleanText = text.trim();
+    if (cleanText.isEmpty) return;
+
+    final key = _normalizeConversationKey(participantName);
+    final room = _conversations.putIfAbsent(key, () => []);
+
+    final now = DateTime.now();
+    final timeStr =
+        '${now.hour.toString().padLeft(2, '0')}:${now.minute.toString().padLeft(2, '0')}';
+
+    final UserRole senderRole = _role;
+    final String senderName;
+
+    if (_role == UserRole.sitter) {
+      senderName = 'Ayşe Yılmaz';
+      room.add(
+        ChatMessage(
+          id: 'msg_${now.millisecondsSinceEpoch}',
+          senderName: senderName,
+          senderRole: senderRole,
+          text: cleanText,
+          time: timeStr,
+          isMe: true,
+        ),
+      );
+
+      // Karşı tarafa (Köpek Sahibi - Aygen) anında bildirim düşer
+      addNotification(
+        entity.NotificationItem(
+          id: 'notif_chat_${now.millisecondsSinceEpoch}',
+          title: 'Ayşe Yılmaz\'dan Yeni Mesaj 💬',
+          body: cleanText,
+          timestamp: now,
+          isRead: false,
+          type: 'system',
+        ),
+        targetRole: UserRole.owner,
+      );
+    } else {
+      senderName = 'Aygen';
+      room.add(
+        ChatMessage(
+          id: 'msg_${now.millisecondsSinceEpoch}',
+          senderName: senderName,
+          senderRole: senderRole,
+          text: cleanText,
+          time: timeStr,
+          isMe: true,
+        ),
+      );
+
+      // Karşı tarafa (Hizmet Veren - Ayşe) anında bildirim düşer
+      addNotification(
+        entity.NotificationItem(
+          id: 'notif_chat_${now.millisecondsSinceEpoch}',
+          title: 'Aygen Yıldırım\'dan Yeni Mesaj 💬',
+          body: cleanText,
+          timestamp: now,
+          isRead: false,
+          type: 'system',
+        ),
+        targetRole: UserRole.sitter,
+      );
+    }
+
     notifyListeners();
   }
 
@@ -334,7 +439,8 @@ class AppState extends ChangeNotifier {
     NotificationItem(
       id: 'owner_notif_2',
       title: 'Yürüyüş Zamanı 🦮',
-      body: 'Bugün saat 17:00 için planlanan Caddebostan sahil yürüyüşü yaklaşıyor.',
+      body:
+          'Bugün saat 17:00 için planlanan Caddebostan sahil yürüyüşü yaklaşıyor.',
       timestamp: DateTime(2026, 10, 24, 8, 15),
       isRead: false,
       type: 'system',
@@ -353,7 +459,8 @@ class AppState extends ChangeNotifier {
     NotificationItem(
       id: 'sitter_notif_1',
       title: 'Yeni Rezervasyon Talebi 📋',
-      body: 'Aygen Yıldırım, Barley (Golden Retriever) için 2 gecelik otel konaklama talebi gönderdi.',
+      body:
+          'Aygen Yıldırım, Barley (Golden Retriever) için 2 gecelik otel konaklama talebi gönderdi.',
       timestamp: DateTime(2026, 10, 24, 10, 15),
       isRead: false,
       type: 'booking',
@@ -361,7 +468,8 @@ class AppState extends ChangeNotifier {
     NotificationItem(
       id: 'sitter_notif_2',
       title: 'Misafir Pati Girişi 🐶',
-      body: 'Bugün saat 14:00\'te misafir pati "Luna" için süit odaya giriş yapılacak.',
+      body:
+          'Bugün saat 14:00\'te misafir pati "Luna" için süit odaya giriş yapılacak.',
       timestamp: DateTime(2026, 10, 24, 8, 0),
       isRead: false,
       type: 'system',
@@ -393,8 +501,12 @@ class AppState extends ChangeNotifier {
     }
   }
 
-  void addNotification(entity.NotificationItem notification) {
-    if (_role == UserRole.sitter) {
+  void addNotification(
+    entity.NotificationItem notification, {
+    UserRole? targetRole,
+  }) {
+    final roleToUse = targetRole ?? _role;
+    if (roleToUse == UserRole.sitter) {
       _sitterNotifications.insert(0, notification);
     } else {
       _ownerNotifications.insert(0, notification);

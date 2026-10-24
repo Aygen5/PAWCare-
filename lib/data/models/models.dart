@@ -504,12 +504,16 @@ class ChatMessage extends HiveObject implements entity.ChatMessage {
   @HiveField(4)
   final bool isMe;
 
+  @override
+  final UserRole? senderRole;
+
   ChatMessage({
     required this.id,
     required this.senderName,
     required this.text,
     required this.time,
     required this.isMe,
+    this.senderRole,
   });
 
   ChatMessage copyWith({
@@ -518,6 +522,7 @@ class ChatMessage extends HiveObject implements entity.ChatMessage {
     String? text,
     String? time,
     bool? isMe,
+    UserRole? senderRole,
   }) {
     return ChatMessage(
       id: id ?? this.id,
@@ -525,6 +530,7 @@ class ChatMessage extends HiveObject implements entity.ChatMessage {
       text: text ?? this.text,
       time: time ?? this.time,
       isMe: isMe ?? this.isMe,
+      senderRole: senderRole ?? this.senderRole,
     );
   }
 

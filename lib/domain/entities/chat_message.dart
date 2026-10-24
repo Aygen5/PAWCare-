@@ -1,3 +1,5 @@
+import 'user_role.dart';
+
 /// Bakıcı ve köpek sahibi arasındaki mesajlaşma kaydını temsil eden saf iş alanı varlığı (Entity).
 class ChatMessage {
   final String id;
@@ -5,6 +7,7 @@ class ChatMessage {
   final String text;
   final String time;
   final bool isMe;
+  final UserRole? senderRole;
 
   const ChatMessage({
     required this.id,
@@ -12,6 +15,7 @@ class ChatMessage {
     required this.text,
     required this.time,
     required this.isMe,
+    this.senderRole,
   });
 
   ChatMessage copyWith({
@@ -20,6 +24,7 @@ class ChatMessage {
     String? text,
     String? time,
     bool? isMe,
+    UserRole? senderRole,
   }) {
     return ChatMessage(
       id: id ?? this.id,
@@ -27,6 +32,7 @@ class ChatMessage {
       text: text ?? this.text,
       time: time ?? this.time,
       isMe: isMe ?? this.isMe,
+      senderRole: senderRole ?? this.senderRole,
     );
   }
 }

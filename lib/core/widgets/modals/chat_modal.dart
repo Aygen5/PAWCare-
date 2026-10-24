@@ -50,7 +50,7 @@ class _ChatModalState extends State<ChatModal> {
     if (text.isEmpty) return;
 
     final state = AppStateScope.of(context);
-    state.sendChatMessage(text);
+    state.sendChatMessage(text, participantName: widget.sitterName);
     _textController.clear();
 
     Future.delayed(const Duration(milliseconds: 100), () {
@@ -68,7 +68,7 @@ class _ChatModalState extends State<ChatModal> {
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final state = AppStateScope.of(context);
-    final messages = state.chatMessages;
+    final messages = state.getChatMessagesFor(widget.sitterName);
 
     return BackdropFilter(
       filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
@@ -160,10 +160,13 @@ class _ChatModalState extends State<ChatModal> {
                   itemCount: messages.length,
                   itemBuilder: (context, index) {
                     final msg = messages[index];
+                    final isMe = msg.senderRole != null
+                        ? (msg.senderRole == state.role)
+                        : msg.isMe;
+
                     return Align(
-                      alignment: msg.isMe
-                          ? Alignment.centerRight
-                          : Alignment.centerLeft,
+                      alignment:
+                          isMe ? Alignment.centerRight : Alignment.centerLeft,
                       child: Container(
                         margin: const EdgeInsets.symmetric(vertical: 6),
                         constraints: const BoxConstraints(maxWidth: 290),
@@ -172,16 +175,16 @@ class _ChatModalState extends State<ChatModal> {
                           vertical: 12,
                         ),
                         decoration: BoxDecoration(
-                          color: msg.isMe
+                          color: isMe
                               ? AppColors.primaryContainer
                               : (isDark
                                     ? AppColors.darkSurfaceContainer
                                     : AppColors.surfaceContainerLow),
                           borderRadius: BorderRadius.circular(18).copyWith(
-                            bottomRight: msg.isMe
+                            bottomRight: isMe
                                 ? const Radius.circular(4)
                                 : const Radius.circular(18),
-                            bottomLeft: !msg.isMe
+                            bottomLeft: !isMe
                                 ? const Radius.circular(4)
                                 : const Radius.circular(18),
                           ),
@@ -189,10 +192,23 @@ class _ChatModalState extends State<ChatModal> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
+                            if (!isMe) ...[
+                              Text(
+                                msg.senderName,
+                                style: AppTypography.labelTag.copyWith(
+                                  color: isDark
+                                      ? AppColors.darkPrimary
+                                      : AppColors.primary,
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              ),
+                              const SizedBox(height: 3),
+                            ],
                             Text(
                               msg.text,
                               style: AppTypography.bodyDefault.copyWith(
-                                color: msg.isMe
+                                color: isMe
                                     ? Colors.white
                                     : (isDark
                                           ? AppColors.darkOnSurface
@@ -205,7 +221,7 @@ class _ChatModalState extends State<ChatModal> {
                               child: Text(
                                 msg.time,
                                 style: AppTypography.labelTag.copyWith(
-                                  color: msg.isMe
+                                  color: isMe
                                       ? AppColors.onPrimaryContainer
                                       : (isDark
                                             ? AppColors.darkOnSurfaceVariant
