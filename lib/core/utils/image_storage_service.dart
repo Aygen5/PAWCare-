@@ -1,4 +1,5 @@
 import 'dart:io';
+
 import 'package:flutter/foundation.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:image_picker/image_picker.dart';
@@ -21,7 +22,8 @@ class ImageStorageService {
         await petDir.create(recursive: true);
       }
 
-      final fileName = 'dog_${DateTime.now().millisecondsSinceEpoch}_${pickedFile.name}';
+      final fileName =
+          'dog_${DateTime.now().millisecondsSinceEpoch}_${pickedFile.name}';
       final permanentPath = '${petDir.path}/$fileName';
 
       final savedFile = await File(pickedFile.path).copy(permanentPath);

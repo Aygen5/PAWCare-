@@ -32,12 +32,16 @@ class _SplashPageState extends State<SplashPage>
       duration: const Duration(milliseconds: 1400),
     );
 
-    _scaleAnimation = Tween<double>(begin: 0.75, end: 1.0).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeOutBack),
-    );
+    _scaleAnimation = Tween<double>(
+      begin: 0.75,
+      end: 1.0,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOutBack));
 
     _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(parent: _controller, curve: const Interval(0.0, 0.6, curve: Curves.easeIn)),
+      CurvedAnimation(
+        parent: _controller,
+        curve: const Interval(0.0, 0.6, curve: Curves.easeIn),
+      ),
     );
 
     _glowAnimation = Tween<double>(begin: 0.85, end: 1.15).animate(
@@ -92,10 +96,11 @@ class _SplashPageState extends State<SplashPage>
                               height: 130,
                               decoration: BoxDecoration(
                                 shape: BoxShape.circle,
-                                color: (isDark
-                                        ? AppColors.darkPrimary
-                                        : AppColors.secondaryContainer)
-                                    .withValues(alpha: 0.25),
+                                color:
+                                    (isDark
+                                            ? AppColors.darkPrimary
+                                            : AppColors.secondaryContainer)
+                                        .withValues(alpha: 0.25),
                               ),
                             ),
                           ),

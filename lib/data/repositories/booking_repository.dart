@@ -20,7 +20,10 @@ class BookingRepository {
   }
 
   /// Rezervasyonun durumunu (onaylandı/reddedildi/tamamlandı) günceller.
-  Future<void> updateBookingStatus(String bookingId, BookingStatus newStatus) async {
+  Future<void> updateBookingStatus(
+    String bookingId,
+    BookingStatus newStatus,
+  ) async {
     final booking = HiveBoxes.bookings.get(bookingId);
     if (booking != null) {
       final updated = booking.copyWith(status: newStatus);

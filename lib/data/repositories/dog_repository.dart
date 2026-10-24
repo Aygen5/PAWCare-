@@ -17,7 +17,8 @@ class DogRepository {
   Future<void> addVaccination(String dogId, Vaccination vaccination) async {
     final dog = HiveBoxes.dogs.get(dogId);
     if (dog != null) {
-      final updatedVaccinations = List<Vaccination>.from(dog.vaccinations)..add(vaccination);
+      final updatedVaccinations = List<Vaccination>.from(dog.vaccinations)
+        ..add(vaccination);
       final updatedDog = dog.copyWith(vaccinations: updatedVaccinations);
       await saveDog(updatedDog);
     }

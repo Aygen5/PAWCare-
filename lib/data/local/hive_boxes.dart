@@ -1,4 +1,5 @@
 import 'package:hive_flutter/hive_flutter.dart';
+
 import '../models/models.dart';
 
 class HiveBoxes {
@@ -22,20 +23,40 @@ class HiveBoxes {
   }
 
   static void _registerAdapters() {
-    if (!Hive.isAdapterRegistered(0)) Hive.registerAdapter(UserRoleAdapter());
-    if (!Hive.isAdapterRegistered(1)) Hive.registerAdapter(VaccineStatusAdapter());
-    if (!Hive.isAdapterRegistered(2)) Hive.registerAdapter(VaccinationAdapter());
-    if (!Hive.isAdapterRegistered(3)) Hive.registerAdapter(DogAdapter());
-    if (!Hive.isAdapterRegistered(4)) Hive.registerAdapter(SitterListingAdapter());
-    if (!Hive.isAdapterRegistered(5)) Hive.registerAdapter(BookingStatusAdapter());
-    if (!Hive.isAdapterRegistered(6)) Hive.registerAdapter(BookingRequestAdapter());
-    if (!Hive.isAdapterRegistered(7)) Hive.registerAdapter(ChatMessageAdapter());
-    if (!Hive.isAdapterRegistered(8)) Hive.registerAdapter(NotificationItemAdapter());
+    if (!Hive.isAdapterRegistered(0)) {
+      Hive.registerAdapter(UserRoleAdapter());
+    }
+    if (!Hive.isAdapterRegistered(1)) {
+      Hive.registerAdapter(VaccineStatusAdapter());
+    }
+    if (!Hive.isAdapterRegistered(2)) {
+      Hive.registerAdapter(VaccinationAdapter());
+    }
+    if (!Hive.isAdapterRegistered(3)) {
+      Hive.registerAdapter(DogAdapter());
+    }
+    if (!Hive.isAdapterRegistered(4)) {
+      Hive.registerAdapter(SitterListingAdapter());
+    }
+    if (!Hive.isAdapterRegistered(5)) {
+      Hive.registerAdapter(BookingStatusAdapter());
+    }
+    if (!Hive.isAdapterRegistered(6)) {
+      Hive.registerAdapter(BookingRequestAdapter());
+    }
+    if (!Hive.isAdapterRegistered(7)) {
+      Hive.registerAdapter(ChatMessageAdapter());
+    }
+    if (!Hive.isAdapterRegistered(8)) {
+      Hive.registerAdapter(NotificationItemAdapter());
+    }
   }
 
   static Box<Dog> get dogs => Hive.box<Dog>(dogsBox);
-  static Box<BookingRequest> get bookings => Hive.box<BookingRequest>(bookingsBox);
-  static Box<NotificationItem> get notifications => Hive.box<NotificationItem>(notificationsBox);
+  static Box<BookingRequest> get bookings =>
+      Hive.box<BookingRequest>(bookingsBox);
+  static Box<NotificationItem> get notifications =>
+      Hive.box<NotificationItem>(notificationsBox);
   static Box<dynamic> get settings => Hive.box<dynamic>(settingsBox);
 
   /// İlk açılışta kutular boşsa başlangıç demo verilerini yükler.
@@ -51,7 +72,8 @@ class HiveBoxes {
         gender: 'Erkek',
         microchip: '900215002941842',
         photoPath: 'assets/images/barley.jpg',
-        allergyNote: 'Tavuk proteini alerjisi — Yalnızca kuzu etli mama veriniz.',
+        allergyNote:
+            'Tavuk proteini alerjisi — Yalnızca kuzu etli mama veriniz.',
         behaviorNote: 'İnsanlara ve diğer köpeklere karşı son derece uysal, oyuncu ve enerjik.',
         clinicName: 'Kadıköy Veteriner Polikliniği',
         clinicPhone: '+90 216 345 67 89',

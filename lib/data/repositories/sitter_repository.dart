@@ -1,5 +1,7 @@
 import 'dart:convert';
+
 import 'package:flutter/services.dart';
+
 import '../models/models.dart';
 
 class SitterRepository {
@@ -37,7 +39,8 @@ class SitterRepository {
     return all.where((s) {
       final matchesCategory = category == 'Tümü' || s.category == category;
       final cleanQuery = query.trim().toLowerCase();
-      final matchesSearch = cleanQuery.isEmpty ||
+      final matchesSearch =
+          cleanQuery.isEmpty ||
           s.name.toLowerCase().contains(cleanQuery) ||
           s.facilityTitle.toLowerCase().contains(cleanQuery) ||
           s.location.toLowerCase().contains(cleanQuery);

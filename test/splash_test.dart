@@ -18,66 +18,74 @@ void main() {
       settingsRepository = SettingsRepository.inMemory();
     });
 
-    test('SplashCubit initializeApp sonrası SplashReady durumunu yayınlar', () async {
-      final cubit = SplashCubit(
-        settingsRepository: settingsRepository,
-        minDisplayDuration: const Duration(milliseconds: 10),
-      );
+    test(
+      'SplashCubit initializeApp sonrası SplashReady durumunu yayınlar',
+      () async {
+        final cubit = SplashCubit(
+          settingsRepository: settingsRepository,
+          minDisplayDuration: const Duration(milliseconds: 10),
+        );
 
-      expect(cubit.state, isA<SplashInitial>());
+        expect(cubit.state, isA<SplashInitial>());
 
-      final states = <SplashState>[];
-      final subscription = cubit.stream.listen(states.add);
+        final states = <SplashState>[];
+        final subscription = cubit.stream.listen(states.add);
 
-      await cubit.initializeApp();
-      await Future<void>.delayed(const Duration(milliseconds: 20));
+        await cubit.initializeApp();
+        await Future<void>.delayed(const Duration(milliseconds: 20));
 
-      expect(states.length, 2);
-      expect(states[0], isA<SplashLoading>());
-      expect(states[1], isA<SplashReady>());
+        expect(states.length, 2);
+        expect(states[0], isA<SplashLoading>());
+        expect(states[1], isA<SplashReady>());
 
-      await subscription.cancel();
-      await cubit.close();
-    });
+        await subscription.cancel();
+        await cubit.close();
+      },
+    );
 
-    testWidgets('SplashPage pati logosunu, başlığı ve animasyonu başarıyla çizer', (tester) async {
-      final cubit = SplashCubit(
-        settingsRepository: settingsRepository,
-        minDisplayDuration: Duration.zero,
-      );
+    testWidgets(
+      'SplashPage pati logosunu, başlığı ve animasyonu başarıyla çizer',
+      (tester) async {
+        final cubit = SplashCubit(
+          settingsRepository: settingsRepository,
+          minDisplayDuration: Duration.zero,
+        );
 
-      bool readyCalled = false;
+        bool readyCalled = false;
 
-      await tester.pumpWidget(
-        MaterialApp(
-          theme: AppTheme.lightTheme,
-          home: BlocProvider.value(
-            value: cubit,
-            child: SplashPage(
-              onReady: (hasSeenOnboarding) {
-                readyCalled = true;
-              },
+        await tester.pumpWidget(
+          MaterialApp(
+            theme: AppTheme.lightTheme,
+            home: BlocProvider.value(
+              value: cubit,
+              child: SplashPage(
+                onReady: (hasSeenOnboarding) {
+                  readyCalled = true;
+                },
+              ),
             ),
           ),
-        ),
-      );
+        );
 
-      // Logo ve marka metninin varlığını doğrular
-      expect(find.text('PawCare'), findsOneWidget);
-      expect(find.byIcon(Icons.pets), findsOneWidget);
-      expect(find.textContaining('Güven & Sevgi'), findsOneWidget);
+        // Logo ve marka metninin varlığını doğrular
+        expect(find.text('PawCare'), findsOneWidget);
+        expect(find.byIcon(Icons.pets), findsOneWidget);
+        expect(find.textContaining('Güven & Sevgi'), findsOneWidget);
 
-      // Animasyonları ilerletir
-      await tester.pump(const Duration(milliseconds: 200));
-      await tester.pump(const Duration(milliseconds: 500));
+        // Animasyonları ilerletir
+        await tester.pump(const Duration(milliseconds: 200));
+        await tester.pump(const Duration(milliseconds: 500));
 
-      // Süre bitiminde onReady geri çağrımının tetiklendiğini doğrular
-      expect(readyCalled, isTrue);
+        // Süre bitiminde onReady geri çağrımının tetiklendiğini doğrular
+        expect(readyCalled, isTrue);
 
-      await cubit.close();
-    });
+        await cubit.close();
+      },
+    );
 
-    testWidgets('SplashPage koyu yeşil temada da başarıyla oluşturulur', (tester) async {
+    testWidgets('SplashPage koyu yeşil temada da başarıyla oluşturulur', (
+      tester,
+    ) async {
       final cubit = SplashCubit(
         settingsRepository: settingsRepository,
         minDisplayDuration: Duration.zero,
@@ -86,10 +94,7 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           theme: AppTheme.darkTheme,
-          home: BlocProvider.value(
-            value: cubit,
-            child: const SplashPage(),
-          ),
+          home: BlocProvider.value(value: cubit, child: const SplashPage()),
         ),
       );
 

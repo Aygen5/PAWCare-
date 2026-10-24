@@ -244,7 +244,8 @@ class WelcomeScreen extends StatelessWidget {
                   SizedBox(
                     height: 52,
                     child: ElevatedButton(
-                      onPressed: () => LoginModal.show(context),
+                      onPressed: () =>
+                          LoginModal.show(context, onLoginSuccess: onContinue),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppColors.primary,
                         foregroundColor: AppColors.onPrimary,
@@ -265,7 +266,10 @@ class WelcomeScreen extends StatelessWidget {
                   SizedBox(
                     height: 52,
                     child: OutlinedButton(
-                      onPressed: () => SignUpModal.show(context),
+                      onPressed: () => SignUpModal.show(
+                        context,
+                        onSignUpSuccess: onContinue,
+                      ),
                       style: OutlinedButton.styleFrom(
                         side: const BorderSide(
                           color: AppColors.primary,

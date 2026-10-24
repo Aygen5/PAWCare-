@@ -9,13 +9,18 @@ import '../../models/models.dart';
 import 'signup_modal.dart';
 
 class LoginModal extends StatefulWidget {
-  const LoginModal({super.key});
+  final VoidCallback? onLoginSuccess;
 
-  static Future<void> show(BuildContext context) {
+  const LoginModal({super.key, this.onLoginSuccess});
+
+  static Future<void> show(
+    BuildContext context, {
+    VoidCallback? onLoginSuccess,
+  }) {
     return showDialog(
       context: context,
       barrierColor: Colors.black.withValues(alpha: 0.45),
-      builder: (ctx) => const LoginModal(),
+      builder: (ctx) => LoginModal(onLoginSuccess: onLoginSuccess),
     );
   }
 
@@ -49,6 +54,7 @@ class _LoginModalState extends State<LoginModal> {
     state.setRole(UserRole.owner);
     state.setOwnerNavIndex(0);
     Navigator.of(context).pop();
+    widget.onLoginSuccess?.call();
 
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(

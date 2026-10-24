@@ -12,19 +12,25 @@ void main() {
   GoogleFonts.config.allowRuntimeFetching = false;
 
   group('Adım 2.1: AppTheme & Renk Paleti Kontrast Testleri', () {
-    test('Açık tema (lightTheme) tasarım sistemi tokenlarıyla uyumlu olmalı', () {
-      final theme = AppTheme.lightTheme;
-      expect(theme.brightness, Brightness.light);
-      expect(theme.scaffoldBackgroundColor, AppColors.background);
-      expect(theme.colorScheme.primary, AppColors.primary);
-      expect(theme.colorScheme.surface, AppColors.surface);
-      expect(theme.colorScheme.onSurface, AppColors.onSurface);
-      expect(theme.colorScheme.onSurfaceVariant, AppColors.onSurfaceVariant);
+    test(
+      'Açık tema (lightTheme) tasarım sistemi tokenlarıyla uyumlu olmalı',
+      () {
+        final theme = AppTheme.lightTheme;
+        expect(theme.brightness, Brightness.light);
+        expect(theme.scaffoldBackgroundColor, AppColors.background);
+        expect(theme.colorScheme.primary, AppColors.primary);
+        expect(theme.colorScheme.surface, AppColors.surface);
+        expect(theme.colorScheme.onSurface, AppColors.onSurface);
+        expect(theme.colorScheme.onSurfaceVariant, AppColors.onSurfaceVariant);
 
-      // Açık tema metin-arkaplan kontrastı
-      expect(theme.colorScheme.onSurface.computeLuminance(), lessThan(0.2));
-      expect(theme.scaffoldBackgroundColor.computeLuminance(), greaterThan(0.8));
-    });
+        // Açık tema metin-arkaplan kontrastı
+        expect(theme.colorScheme.onSurface.computeLuminance(), lessThan(0.2));
+        expect(
+          theme.scaffoldBackgroundColor.computeLuminance(),
+          greaterThan(0.8),
+        );
+      },
+    );
 
     test('Koyu tema (darkTheme) koyu zeytin/haki paletine uymalı ve saf siyah içermemeli', () {
       final theme = AppTheme.darkTheme;
@@ -60,21 +66,24 @@ void main() {
       expect(cubit.state, ThemeMode.system);
     });
 
-    test('ThemeCubit koyu temaya geçildiğinde durumu ve depolamayı günceller', () async {
-      final cubit = ThemeCubit(settingsRepository);
+    test(
+      'ThemeCubit koyu temaya geçildiğinde durumu ve depolamayı günceller',
+      () async {
+        final cubit = ThemeCubit(settingsRepository);
 
-      await cubit.setDark();
-      expect(cubit.state, ThemeMode.dark);
-      expect(settingsRepository.getThemeMode(), 'dark');
+        await cubit.setDark();
+        expect(cubit.state, ThemeMode.dark);
+        expect(settingsRepository.getThemeMode(), 'dark');
 
-      await cubit.setLight();
-      expect(cubit.state, ThemeMode.light);
-      expect(settingsRepository.getThemeMode(), 'light');
+        await cubit.setLight();
+        expect(cubit.state, ThemeMode.light);
+        expect(settingsRepository.getThemeMode(), 'light');
 
-      await cubit.setSystem();
-      expect(cubit.state, ThemeMode.system);
-      expect(settingsRepository.getThemeMode(), 'system');
-    });
+        await cubit.setSystem();
+        expect(cubit.state, ThemeMode.system);
+        expect(settingsRepository.getThemeMode(), 'system');
+      },
+    );
 
     test('ThemeCubit toggleTheme fonksiyonu iki yönlü geçişi sağlar', () async {
       final cubit = ThemeCubit(settingsRepository);

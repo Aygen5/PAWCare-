@@ -33,38 +33,47 @@ class SitterDashboardScreen extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Row(
-                    children: [
-                      const CircleAvatar(
-                        radius: 26,
-                        backgroundImage: AssetImage('assets/images/ayse.jpg'),
-                      ),
-                      const SizedBox(width: 14),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
+                  Expanded(
+                    child: Row(
+                      children: [
+                        const CircleAvatar(
+                          radius: 26,
+                          backgroundImage: AssetImage('assets/images/ayse.jpg'),
+                        ),
+                        const SizedBox(width: 14),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(
-                                'Ayşe Yılmaz',
-                                style: AppTypography.headlineSection,
+                              Row(
+                                children: [
+                                  Flexible(
+                                    child: Text(
+                                      'Ayşe Yılmaz',
+                                      style: AppTypography.headlineSection,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 4),
+                                  const Icon(
+                                    Icons.verified,
+                                    size: 16,
+                                    color: AppColors.primary,
+                                  ),
+                                ],
                               ),
-                              const SizedBox(width: 4),
-                              const Icon(
-                                Icons.verified,
-                                size: 16,
-                                color: AppColors.primary,
+                              Text(
+                                'Mutlu Patiler Köpek Oteli',
+                                style: AppTypography.caption,
+                                overflow: TextOverflow.ellipsis,
                               ),
                             ],
                           ),
-                          Text(
-                            'Mutlu Patiler Köpek Oteli',
-                            style: AppTypography.caption,
-                          ),
-                        ],
-                      ),
-                    ],
+                        ),
+                      ],
+                    ),
                   ),
+                  const SizedBox(width: 8),
                   OutlinedButton.icon(
                     onPressed: () => state.setRole(UserRole.owner),
                     icon: const Icon(
@@ -267,9 +276,12 @@ class SitterDashboardScreen extends StatelessWidget {
                                       color: AppColors.primary,
                                     ),
                                     const SizedBox(width: 6),
-                                    Text(
-                                      booking.serviceTitle,
-                                      style: AppTypography.bodyMedium,
+                                    Expanded(
+                                      child: Text(
+                                        booking.serviceTitle,
+                                        style: AppTypography.bodyMedium,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
                                     ),
                                   ],
                                 ),
@@ -416,10 +428,11 @@ class SitterDashboardScreen extends StatelessWidget {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Row(
+                          Wrap(
+                            crossAxisAlignment: WrapCrossAlignment.center,
+                            spacing: 6,
                             children: [
                               Text('Barley', style: AppTypography.titleCard),
-                              const SizedBox(width: 6),
                               Container(
                                 padding: const EdgeInsets.symmetric(
                                   horizontal: 6,

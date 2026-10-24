@@ -214,7 +214,8 @@ class Dog extends HiveObject {
       behaviorNote: json['behaviorNote'] as String,
       clinicName: json['clinicName'] as String,
       clinicPhone: json['clinicPhone'] as String,
-      vaccinations: (json['vaccinations'] as List<dynamic>?)
+      vaccinations:
+          (json['vaccinations'] as List<dynamic>?)
               ?.map((v) => Vaccination.fromJson(v as Map<String, dynamic>))
               .toList() ??
           [],
@@ -356,12 +357,14 @@ class SitterListing extends HiveObject {
       location: json['location'] as String,
       distanceKm: (json['distanceKm'] as num).toDouble(),
       imagePath: json['imagePath'] as String,
-      galleryPaths: (json['galleryPaths'] as List<dynamic>?)
+      galleryPaths:
+          (json['galleryPaths'] as List<dynamic>?)
               ?.map((e) => e as String)
               .toList() ??
           [],
       bio: json['bio'] as String,
-      amenities: (json['amenities'] as List<dynamic>?)
+      amenities:
+          (json['amenities'] as List<dynamic>?)
               ?.map((e) => e as String)
               .toList() ??
           [],

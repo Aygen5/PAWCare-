@@ -13,15 +13,23 @@ import 'dog_profile_screen.dart';
 import 'sitter_dashboard_screen.dart';
 
 class AppShell extends StatefulWidget {
-  const AppShell({super.key});
+  final bool initialShowingWelcome;
+
+  const AppShell({super.key, this.initialShowingWelcome = true});
 
   @override
   State<AppShell> createState() => _AppShellState();
 }
 
 class _AppShellState extends State<AppShell> {
-  bool _showingWelcome = false;
+  late bool _showingWelcome;
   SitterListing? _activeDetailSitter;
+
+  @override
+  void initState() {
+    super.initState();
+    _showingWelcome = widget.initialShowingWelcome;
+  }
 
   @override
   Widget build(BuildContext context) {

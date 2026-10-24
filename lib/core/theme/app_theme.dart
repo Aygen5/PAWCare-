@@ -76,9 +76,7 @@ class AppTheme {
       cardTheme: CardThemeData(
         color: AppColors.surfaceContainerLowest,
         elevation: 0,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       ),
       dividerTheme: DividerThemeData(
         color: AppColors.outlineVariant.withValues(alpha: 0.5),
@@ -105,9 +103,7 @@ class AppTheme {
       cardTheme: CardThemeData(
         color: AppColors.darkSurfaceContainer,
         elevation: 0,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       ),
       dividerTheme: DividerThemeData(
         color: AppColors.darkOutlineVariant.withValues(alpha: 0.5),

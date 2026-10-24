@@ -41,7 +41,8 @@ class _PawCareAppState extends State<PawCareApp> {
   void initState() {
     super.initState();
     _appState = AppState();
-    _settingsRepository = widget.settingsRepository ?? SettingsRepository.inMemory();
+    _settingsRepository =
+        widget.settingsRepository ?? SettingsRepository.inMemory();
     _themeCubit = ThemeCubit(_settingsRepository);
     _showSplash = widget.enableSplash;
   }
@@ -69,9 +70,8 @@ class _PawCareAppState extends State<PawCareApp> {
               themeMode: themeMode,
               home: _showSplash
                   ? BlocProvider(
-                      create: (_) => SplashCubit(
-                        settingsRepository: _settingsRepository,
-                      ),
+                      create: (_) =>
+                          SplashCubit(settingsRepository: _settingsRepository),
                       child: SplashPage(
                         onReady: (_) {
                           if (mounted) {
