@@ -1,27 +1,20 @@
+// ignore_for_file: annotate_overrides
+
 import 'package:hive/hive.dart';
+
+import '../../domain/entities/booking.dart' show BookingStatus;
+import '../../domain/entities/entities.dart' as entity;
+import '../../domain/entities/user_role.dart' show UserRole;
+import '../../domain/entities/vaccination.dart' show VaccineStatus;
+
+export '../../domain/entities/booking.dart' show BookingStatus;
+export '../../domain/entities/user_role.dart' show UserRole;
+export '../../domain/entities/vaccination.dart' show VaccineStatus;
 
 part 'models.g.dart';
 
-@HiveType(typeId: 0)
-enum UserRole {
-  @HiveField(0)
-  owner,
-  @HiveField(1)
-  sitter,
-}
-
-@HiveType(typeId: 1)
-enum VaccineStatus {
-  @HiveField(0)
-  completed,
-  @HiveField(1)
-  upcoming,
-  @HiveField(2)
-  overdue,
-}
-
 @HiveType(typeId: 2)
-class Vaccination extends HiveObject {
+class Vaccination extends HiveObject implements entity.Vaccination {
   @HiveField(0)
   final String id;
 
@@ -94,7 +87,7 @@ class Vaccination extends HiveObject {
 }
 
 @HiveType(typeId: 3)
-class Dog extends HiveObject {
+class Dog extends HiveObject implements entity.Dog {
   @HiveField(0)
   final String id;
 
@@ -163,7 +156,7 @@ class Dog extends HiveObject {
     String? behaviorNote,
     String? clinicName,
     String? clinicPhone,
-    List<Vaccination>? vaccinations,
+    covariant List<Vaccination>? vaccinations,
   }) {
     return Dog(
       id: id ?? this.id,
@@ -224,7 +217,7 @@ class Dog extends HiveObject {
 }
 
 @HiveType(typeId: 4)
-class SitterListing extends HiveObject {
+class SitterListing extends HiveObject implements entity.SitterListing {
   @HiveField(0)
   final String id;
 
@@ -373,20 +366,8 @@ class SitterListing extends HiveObject {
   }
 }
 
-@HiveType(typeId: 5)
-enum BookingStatus {
-  @HiveField(0)
-  pending,
-  @HiveField(1)
-  confirmed,
-  @HiveField(2)
-  rejected,
-  @HiveField(3)
-  completed,
-}
-
 @HiveType(typeId: 6)
-class BookingRequest extends HiveObject {
+class BookingRequest extends HiveObject implements entity.BookingRequest {
   @HiveField(0)
   final String id;
 
@@ -507,7 +488,7 @@ class BookingRequest extends HiveObject {
 }
 
 @HiveType(typeId: 7)
-class ChatMessage extends HiveObject {
+class ChatMessage extends HiveObject implements entity.ChatMessage {
   @HiveField(0)
   final String id;
 
@@ -569,7 +550,7 @@ class ChatMessage extends HiveObject {
 }
 
 @HiveType(typeId: 8)
-class NotificationItem extends HiveObject {
+class NotificationItem extends HiveObject implements entity.NotificationItem {
   @HiveField(0)
   final String id;
 

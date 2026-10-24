@@ -1,20 +1,27 @@
+import '../../domain/repositories/dog_repository_interface.dart';
 import '../local/hive_boxes.dart';
 import '../models/models.dart';
 
-class DogRepository {
+class DogRepository implements DogRepositoryInterface {
   /// Birincil köpek profilini getirir (varsayılan 'dog_1' veya ilk kayıt).
+  @override
   Dog? getCurrentDog() {
     if (HiveBoxes.dogs.isEmpty) return null;
     return HiveBoxes.dogs.get('dog_1') ?? HiveBoxes.dogs.values.first;
   }
 
   /// Köpek profilini Hive veritabanına kaydeder veya günceller.
-  Future<void> saveDog(Dog dog) async {
+  @override
+  Future<void> saveDog(covariant Dog dog) async {
     await HiveBoxes.dogs.put(dog.id, dog);
   }
 
   /// Belirli bir köpeğe yeni aşı kaydı ekler.
-  Future<void> addVaccination(String dogId, Vaccination vaccination) async {
+  @override
+  Future<void> addVaccination(
+    String dogId,
+    covariant Vaccination vaccination,
+  ) async {
     final dog = HiveBoxes.dogs.get(dogId);
     if (dog != null) {
       final updatedVaccinations = List<Vaccination>.from(dog.vaccinations)
@@ -25,6 +32,7 @@ class DogRepository {
   }
 
   /// Aşının durumunu günceller.
+  @override
   Future<void> updateVaccinationStatus(
     String dogId,
     String vaccinationId,

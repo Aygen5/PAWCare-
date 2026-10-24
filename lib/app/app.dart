@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
+import '../domain/repositories/settings_repository_interface.dart';
 import '../core/theme/app_theme.dart';
 import '../core/theme/theme_cubit.dart';
 import '../data/repositories/settings_repository.dart';
@@ -13,7 +14,7 @@ import 'router/route_names.dart';
 
 /// PawCare ana uygulama kurulumu, tema, rol, kimlik ve router bağlantısı.
 class PawCareApp extends StatefulWidget {
-  final SettingsRepository? settingsRepository;
+  final SettingsRepositoryInterface? settingsRepository;
   final String initialLocation;
   final bool enableSplash;
 
@@ -33,7 +34,7 @@ class _PawCareAppState extends State<PawCareApp> {
   late final ThemeCubit _themeCubit;
   late final RoleCubit _roleCubit;
   late final AuthCubit _authCubit;
-  late final SettingsRepository _settingsRepository;
+  late final SettingsRepositoryInterface _settingsRepository;
   late final GoRouter _router;
 
   @override

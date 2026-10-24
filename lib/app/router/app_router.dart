@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../domain/repositories/settings_repository_interface.dart';
 import '../../data/models/models.dart';
 import '../../data/repositories/settings_repository.dart';
 import '../../features/splash/cubit/splash_cubit.dart';
@@ -26,7 +27,7 @@ class AppRouter {
   /// Belirtilen başlangıç konumuyla GoRouter örneği oluşturur.
   static GoRouter createRouter({
     String initialLocation = RoutePaths.splash,
-    SettingsRepository? settingsRepository,
+    SettingsRepositoryInterface? settingsRepository,
   }) {
     final settings = settingsRepository ?? SettingsRepository.inMemory();
 

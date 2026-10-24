@@ -1,8 +1,10 @@
+import '../../domain/repositories/booking_repository_interface.dart';
 import '../local/hive_boxes.dart';
 import '../models/models.dart';
 
-class BookingRepository {
+class BookingRepository implements BookingRepositoryInterface {
   /// Başlangıç tarihine göre sıralı tüm rezervasyonları getirir.
+  @override
   List<BookingRequest> getAllBookings() {
     final list = HiveBoxes.bookings.values.toList();
     list.sort((a, b) => b.startDate.compareTo(a.startDate));
@@ -10,16 +12,19 @@ class BookingRepository {
   }
 
   /// Belirli bir duruma göre filtrelenmiş rezervasyonları getirir.
+  @override
   List<BookingRequest> getBookingsByStatus(BookingStatus status) {
     return getAllBookings().where((b) => b.status == status).toList();
   }
 
   /// Yeni bir rezervasyon talebi ekler.
-  Future<void> addBooking(BookingRequest booking) async {
+  @override
+  Future<void> addBooking(covariant BookingRequest booking) async {
     await HiveBoxes.bookings.put(booking.id, booking);
   }
 
   /// Rezervasyonun durumunu (onaylandı/reddedildi/tamamlandı) günceller.
+  @override
   Future<void> updateBookingStatus(
     String bookingId,
     BookingStatus newStatus,
@@ -32,6 +37,7 @@ class BookingRepository {
   }
 
   /// Bir rezervasyon kaydını siler.
+  @override
   Future<void> deleteBooking(String bookingId) async {
     await HiveBoxes.bookings.delete(bookingId);
   }

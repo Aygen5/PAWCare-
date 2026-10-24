@@ -2,14 +2,16 @@ import 'dart:convert';
 
 import 'package:flutter/services.dart';
 
+import '../../domain/repositories/sitter_repository_interface.dart';
 import '../models/models.dart';
 
-class SitterRepository {
+class SitterRepository implements SitterRepositoryInterface {
   static const String _assetPath = 'assets/data/sitters.json';
 
   List<SitterListing>? _cachedSitters;
 
   /// Bakıcı verilerini assets/data/sitters.json dosyasından yükler.
+  @override
   Future<List<SitterListing>> getSitters({bool forceRefresh = false}) async {
     if (_cachedSitters != null && !forceRefresh) {
       return _cachedSitters!;
@@ -31,6 +33,7 @@ class SitterRepository {
   }
 
   /// Bakıcıları kategori ve arama kelimesine göre filtreler.
+  @override
   Future<List<SitterListing>> searchSitters({
     String category = 'Tümü',
     String query = '',
@@ -49,6 +52,7 @@ class SitterRepository {
   }
 
   /// ID bilgisine göre ilgili bakıcıyı bulur.
+  @override
   Future<SitterListing?> getSitterById(String id) async {
     final all = await getSitters();
     try {

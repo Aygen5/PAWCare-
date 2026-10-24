@@ -1,17 +1,17 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../../data/models/models.dart';
-import '../../../data/repositories/settings_repository.dart';
+import '../../../domain/entities/user_role.dart';
+import '../../../domain/repositories/settings_repository_interface.dart';
 
 /// Aktif kullanıcı rolünü (Köpek Sahibi / Hizmet Veren) ve kalıcılığını yöneten Cubit.
 class RoleCubit extends Cubit<UserRole> {
-  final SettingsRepository? _settingsRepository;
+  final SettingsRepositoryInterface? _settingsRepository;
 
-  RoleCubit({SettingsRepository? settingsRepository})
+  RoleCubit({SettingsRepositoryInterface? settingsRepository})
     : _settingsRepository = settingsRepository,
       super(_resolveInitialRole(settingsRepository));
 
-  static UserRole _resolveInitialRole(SettingsRepository? repo) {
+  static UserRole _resolveInitialRole(SettingsRepositoryInterface? repo) {
     if (repo == null) return UserRole.owner;
     final saved = repo.getUserRole();
     return saved == 'sitter' ? UserRole.sitter : UserRole.owner;

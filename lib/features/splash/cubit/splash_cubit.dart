@@ -1,6 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../../data/repositories/settings_repository.dart';
+import '../../../domain/repositories/settings_repository_interface.dart';
 
 /// Splash ekranının durumlarını temsil eden temel soyut sınıf.
 abstract class SplashState {
@@ -26,7 +26,7 @@ class SplashReady extends SplashState {
 
 /// Splash ekranı animasyonunu ve başlangıç verilerinin hazır olma sürecini yöneten Cubit.
 class SplashCubit extends Cubit<SplashState> {
-  final SettingsRepository settingsRepository;
+  final SettingsRepositoryInterface settingsRepository;
   final Duration minDisplayDuration;
 
   SplashCubit({

@@ -1,17 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../data/repositories/settings_repository.dart';
+import '../../domain/repositories/settings_repository_interface.dart';
 
 /// Tema modunu yöneten ve SharedPreferences üzerinde saklayan Cubit.
 class ThemeCubit extends Cubit<ThemeMode> {
-  final SettingsRepository _settingsRepository;
+  final SettingsRepositoryInterface _settingsRepository;
 
   ThemeCubit(this._settingsRepository)
     : super(_loadInitialMode(_settingsRepository));
 
   // Kayıtlı metni ThemeMode nesnesine dönüştürür.
-  static ThemeMode _loadInitialMode(SettingsRepository repo) {
+  static ThemeMode _loadInitialMode(SettingsRepositoryInterface repo) {
     final modeStr = repo.getThemeMode();
     switch (modeStr) {
       case 'light':

@@ -1,8 +1,10 @@
+import '../../domain/repositories/notification_repository_interface.dart';
 import '../local/hive_boxes.dart';
 import '../models/models.dart';
 
-class NotificationRepository {
+class NotificationRepository implements NotificationRepositoryInterface {
   /// Okunmamış ve en yeni bildirimler üstte olacak şekilde tüm bildirimleri getirir.
+  @override
   List<NotificationItem> getNotifications() {
     final list = HiveBoxes.notifications.values.toList();
     list.sort((a, b) {
@@ -15,16 +17,19 @@ class NotificationRepository {
   }
 
   /// Okunmamış bildirim sayısını döner.
+  @override
   int getUnreadCount() {
     return HiveBoxes.notifications.values.where((n) => !n.isRead).length;
   }
 
   /// Yeni bir bildirim ekler.
-  Future<void> addNotification(NotificationItem notification) async {
+  @override
+  Future<void> addNotification(covariant NotificationItem notification) async {
     await HiveBoxes.notifications.put(notification.id, notification);
   }
 
   /// Belirtilen bildirimi okundu olarak işaretler.
+  @override
   Future<void> markAsRead(String id) async {
     final notif = HiveBoxes.notifications.get(id);
     if (notif != null && !notif.isRead) {
@@ -34,6 +39,7 @@ class NotificationRepository {
   }
 
   /// Tüm bildirimleri okundu olarak işaretler.
+  @override
   Future<void> markAllAsRead() async {
     for (final notif in HiveBoxes.notifications.values) {
       if (!notif.isRead) {
@@ -44,6 +50,7 @@ class NotificationRepository {
   }
 
   /// Tüm bildirimleri siler.
+  @override
   Future<void> clearAll() async {
     await HiveBoxes.notifications.clear();
   }

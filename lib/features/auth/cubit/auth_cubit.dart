@@ -1,7 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../../data/models/models.dart';
-import '../../../data/repositories/settings_repository.dart';
+import '../../../domain/entities/user_role.dart';
+import '../../../domain/repositories/settings_repository_interface.dart';
 
 /// Kimlik doğrulama durumunu temsil eden model.
 class AuthState {
@@ -42,7 +42,7 @@ class AuthState {
 
 /// Giriş, kayıt ve oturum durumunu yöneten Cubit.
 class AuthCubit extends Cubit<AuthState> {
-  final SettingsRepository? settingsRepository;
+  final SettingsRepositoryInterface? settingsRepository;
 
   AuthCubit({this.settingsRepository}) : super(const AuthState());
 
