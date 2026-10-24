@@ -167,12 +167,14 @@ class NotificationsSheet extends StatelessWidget {
                 child: Row(
                   children: [
                     _buildFilterChip(
+                      context: context,
                       label: 'Tümü (${state.allNotifications.length})',
                       isSelected: state.activeFilter == NotificationFilter.all,
                       onTap: () => cubit.setFilter(NotificationFilter.all),
                     ),
                     const SizedBox(width: 8),
                     _buildFilterChip(
+                      context: context,
                       label: 'Okunmamış (${state.unreadCount})',
                       isSelected:
                           state.activeFilter == NotificationFilter.unread,
@@ -181,6 +183,7 @@ class NotificationsSheet extends StatelessWidget {
                     const SizedBox(width: 8),
                     if (appState.role == UserRole.owner) ...[
                       _buildFilterChip(
+                        context: context,
                         label: 'Aşılar',
                         isSelected:
                             state.activeFilter == NotificationFilter.vaccine,
@@ -189,6 +192,7 @@ class NotificationsSheet extends StatelessWidget {
                       ),
                       const SizedBox(width: 8),
                       _buildFilterChip(
+                        context: context,
                         label: 'Rezervasyonlar',
                         isSelected:
                             state.activeFilter == NotificationFilter.booking,
@@ -197,6 +201,7 @@ class NotificationsSheet extends StatelessWidget {
                       ),
                     ] else ...[
                       _buildFilterChip(
+                        context: context,
                         label: 'Gelen Talepler',
                         isSelected:
                             state.activeFilter == NotificationFilter.booking,
@@ -205,6 +210,7 @@ class NotificationsSheet extends StatelessWidget {
                       ),
                       const SizedBox(width: 8),
                       _buildFilterChip(
+                        context: context,
                         label: 'Misafirler & Sistem',
                         isSelected:
                             state.activeFilter == NotificationFilter.vaccine,
@@ -224,16 +230,20 @@ class NotificationsSheet extends StatelessWidget {
                   child: Center(
                     child: Column(
                       children: [
-                        const Icon(
+                        Icon(
                           Icons.notifications_none,
                           size: 40,
-                          color: AppColors.onSurfaceVariant,
+                          color: isDark
+                              ? AppColors.darkOnSurfaceVariant
+                              : AppColors.onSurfaceVariant,
                         ),
                         const SizedBox(height: 10),
                         Text(
                           'Bu filtrede bildirim bulunmuyor.',
                           style: AppTypography.bodyDefault.copyWith(
-                            color: AppColors.onSurfaceVariant,
+                            color: isDark
+                                ? AppColors.darkOnSurfaceVariant
+                                : AppColors.onSurfaceVariant,
                           ),
                         ),
                       ],
@@ -249,6 +259,7 @@ class NotificationsSheet extends StatelessWidget {
                     itemBuilder: (context, index) {
                       final notif = notifications[index];
                       return _buildNotificationCard(
+                        context: context,
                         notif: notif,
                         onTap: () {
                           if (!notif.isRead) {
@@ -269,15 +280,22 @@ class NotificationsSheet extends StatelessWidget {
                   vertical: 8,
                 ),
                 decoration: BoxDecoration(
-                  color: AppColors.surfaceContainerLow,
+                  color: isDark
+                      ? AppColors.darkSurfaceContainerHigh
+                      : AppColors.surfaceContainerLow,
                   borderRadius: BorderRadius.circular(16),
+                  border: Border.all(
+                    color: isDark
+                        ? AppColors.darkOutlineVariant.withValues(alpha: 0.6)
+                        : AppColors.outlineVariant.withValues(alpha: 0.3),
+                  ),
                 ),
                 child: Row(
                   children: [
-                    const Icon(
+                    Icon(
                       Icons.play_circle_outline,
                       size: 18,
-                      color: AppColors.primary,
+                      color: isDark ? AppColors.darkPrimary : AppColors.primary,
                     ),
                     const SizedBox(width: 8),
                     Expanded(
@@ -285,15 +303,18 @@ class NotificationsSheet extends StatelessWidget {
                         'Demo Olayı Simüle Et:',
                         style: AppTypography.caption.copyWith(
                           fontWeight: FontWeight.w600,
+                          color: isDark
+                              ? AppColors.darkOnSurface
+                              : AppColors.onSurface,
                         ),
                       ),
                     ),
                     PopupMenuButton<int>(
                       tooltip: 'Demo Olayı Seç',
-                      icon: const Icon(
+                      icon: Icon(
                         Icons.add_alert,
                         size: 18,
-                        color: AppColors.primary,
+                        color: isDark ? AppColors.darkPrimary : AppColors.primary,
                       ),
                       onSelected: (val) {
                         _triggerDemoEvent(val, cubit, appState);
@@ -400,23 +421,33 @@ class NotificationsSheet extends StatelessWidget {
   }
 
   Widget _buildFilterChip({
+    required BuildContext context,
     required String label,
     required bool isSelected,
     required VoidCallback onTap,
   }) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(14),
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
         decoration: BoxDecoration(
-          color: isSelected ? AppColors.primary : AppColors.surfaceContainerLow,
+          color: isSelected
+              ? (isDark ? AppColors.darkPrimary : AppColors.primary)
+              : (isDark
+                  ? AppColors.darkSurfaceContainerHigh
+                  : AppColors.surfaceContainerLow),
           borderRadius: BorderRadius.circular(14),
         ),
         child: Text(
           label,
           style: AppTypography.labelTag.copyWith(
-            color: isSelected ? Colors.white : AppColors.onSurfaceVariant,
+            color: isSelected
+                ? (isDark ? AppColors.darkOnPrimary : Colors.white)
+                : (isDark
+                    ? AppColors.darkOnSurfaceVariant
+                    : AppColors.onSurfaceVariant),
             fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
           ),
         ),
@@ -425,9 +456,11 @@ class NotificationsSheet extends StatelessWidget {
   }
 
   Widget _buildNotificationCard({
+    required BuildContext context,
     required NotificationItem notif,
     required VoidCallback onTap,
   }) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     IconData icon;
     Color iconBg;
 
@@ -435,28 +468,58 @@ class NotificationsSheet extends StatelessWidget {
       case 'booking':
         icon = Icons.calendar_month;
         iconBg = notif.isRead
-            ? AppColors.surfaceContainerHighest
-            : AppColors.secondaryContainer;
+            ? (isDark
+                ? AppColors.darkSurfaceContainerHighest
+                : AppColors.surfaceContainerHighest)
+            : (isDark
+                ? AppColors.darkSecondaryContainer
+                : AppColors.secondaryContainer);
         break;
       case 'vaccine':
         icon = Icons.vaccines;
         iconBg = notif.isRead
-            ? AppColors.surfaceContainerHighest
-            : AppColors.tertiaryFixed;
+            ? (isDark
+                ? AppColors.darkSurfaceContainerHighest
+                : AppColors.surfaceContainerHighest)
+            : (isDark
+                ? AppColors.darkTertiaryContainer
+                : AppColors.tertiaryFixed);
         break;
       case 'walk':
         icon = Icons.directions_walk;
         iconBg = notif.isRead
-            ? AppColors.surfaceContainerHighest
-            : AppColors.primaryContainer;
+            ? (isDark
+                ? AppColors.darkSurfaceContainerHighest
+                : AppColors.surfaceContainerHighest)
+            : (isDark
+                ? AppColors.darkPrimaryContainer
+                : AppColors.primaryContainer);
         break;
       default:
         icon = Icons.pets;
         iconBg = notif.isRead
-            ? AppColors.surfaceContainerHighest
-            : AppColors.primary;
+            ? (isDark
+                ? AppColors.darkSurfaceContainerHighest
+                : AppColors.surfaceContainerHighest)
+            : (isDark ? AppColors.darkPrimary : AppColors.primary);
         break;
     }
+
+    final cardBg = notif.isRead
+        ? (isDark
+            ? AppColors.darkSurfaceContainerHigh.withValues(alpha: 0.6)
+            : AppColors.surfaceContainerLow)
+        : (isDark
+            ? AppColors.darkSecondaryContainer.withValues(alpha: 0.45)
+            : AppColors.secondaryContainer.withValues(alpha: 0.35));
+
+    final cardBorder = notif.isRead
+        ? (isDark
+            ? AppColors.darkOutlineVariant.withValues(alpha: 0.5)
+            : AppColors.outlineVariant.withValues(alpha: 0.25))
+        : (isDark
+            ? AppColors.darkPrimary.withValues(alpha: 0.4)
+            : AppColors.primary.withValues(alpha: 0.3));
 
     return InkWell(
       onTap: onTap,
@@ -464,15 +527,9 @@ class NotificationsSheet extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(
-          color: notif.isRead
-              ? AppColors.surfaceContainerLow
-              : AppColors.secondaryContainer.withValues(alpha: 0.35),
+          color: cardBg,
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(
-            color: notif.isRead
-                ? AppColors.outlineVariant.withValues(alpha: 0.25)
-                : AppColors.primary.withValues(alpha: 0.3),
-          ),
+          border: Border.all(color: cardBorder),
         ),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -484,8 +541,10 @@ class NotificationsSheet extends StatelessWidget {
                 icon,
                 size: 16,
                 color: notif.isRead
-                    ? AppColors.onSurfaceVariant
-                    : AppColors.primary,
+                    ? (isDark
+                        ? AppColors.darkOnSurfaceVariant
+                        : AppColors.onSurfaceVariant)
+                    : (isDark ? AppColors.darkPrimary : AppColors.primary),
               ),
             ),
             const SizedBox(width: 12),
@@ -500,6 +559,15 @@ class NotificationsSheet extends StatelessWidget {
                         child: Text(
                           notif.title,
                           style: AppTypography.titleCard.copyWith(
+                            color: isDark
+                                ? (notif.isRead
+                                    ? AppColors.darkOnSurface.withValues(
+                                        alpha: 0.85,
+                                      )
+                                    : AppColors.darkOnSurface)
+                                : (notif.isRead
+                                    ? AppColors.onSurfaceVariant
+                                    : AppColors.onSurface),
                             fontWeight: notif.isRead
                                 ? FontWeight.w600
                                 : FontWeight.w800,
@@ -512,15 +580,24 @@ class NotificationsSheet extends StatelessWidget {
                           width: 8,
                           height: 8,
                           margin: const EdgeInsets.only(left: 6),
-                          decoration: const BoxDecoration(
-                            color: AppColors.tertiary,
+                          decoration: BoxDecoration(
+                            color: isDark
+                                ? AppColors.darkTertiary
+                                : AppColors.tertiary,
                             shape: BoxShape.circle,
                           ),
                         ),
                     ],
                   ),
                   const SizedBox(height: 2),
-                  Text(notif.body, style: AppTypography.caption),
+                  Text(
+                    notif.body,
+                    style: AppTypography.caption.copyWith(
+                      color: isDark
+                          ? AppColors.darkOnSurfaceVariant
+                          : AppColors.onSurfaceVariant,
+                    ),
+                  ),
                 ],
               ),
             ),

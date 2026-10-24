@@ -68,13 +68,14 @@ class WelcomeScreen extends StatelessWidget {
                   ClipRRect(
                     borderRadius: BorderRadius.circular(28),
                     child: Container(
-                      height: 220,
+                      height: 240,
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(28),
                         boxShadow: AppColors.cardShadow,
                         image: const DecorationImage(
                           image: AssetImage('assets/images/barley.jpg'),
                           fit: BoxFit.cover,
+                          alignment: Alignment(0, -0.65),
                         ),
                       ),
                       child: Container(
@@ -84,7 +85,7 @@ class WelcomeScreen extends StatelessWidget {
                             end: Alignment.bottomCenter,
                             colors: [
                               Colors.transparent,
-                              Colors.black.withValues(alpha: 0.45),
+                              Colors.black.withValues(alpha: 0.50),
                             ],
                           ),
                         ),
@@ -103,13 +104,19 @@ class WelcomeScreen extends StatelessWidget {
                   const SizedBox(height: 28),
                   Text(
                     'Dostunuz için en güvenilir eller.',
-                    style: AppTypography.headlineHero,
+                    style: AppTypography.headlineHero.copyWith(
+                      color: AppColors.primary,
+                      fontWeight: FontWeight.w800,
+                    ),
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 10),
                   Text(
                     'Sakin, özenli ve profesyonel köpek bakımı, otel konaklaması ve yürüyüş hizmetlerini keşfedin.',
-                    style: AppTypography.bodyDefault,
+                    style: AppTypography.bodyDefault.copyWith(
+                      color: AppColors.onSurfaceVariant,
+                      fontWeight: FontWeight.w500,
+                    ),
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 32),
@@ -117,7 +124,8 @@ class WelcomeScreen extends StatelessWidget {
                   Text(
                     'Demo Rolünü Seçin',
                     style: AppTypography.titleCard.copyWith(
-                      color: AppColors.secondary,
+                      color: AppColors.tertiary,
+                      fontWeight: FontWeight.w700,
                     ),
                     textAlign: TextAlign.center,
                   ),
@@ -165,12 +173,18 @@ class WelcomeScreen extends StatelessWidget {
                               children: [
                                 Text(
                                   'Köpek Sahibi Olarak Başla',
-                                  style: AppTypography.titleCard,
+                                  style: AppTypography.titleCard.copyWith(
+                                    color: AppColors.primary,
+                                    fontWeight: FontWeight.w700,
+                                  ),
                                 ),
                                 const SizedBox(height: 2),
                                 Text(
                                   'Köpek profili, aşı takibi ve güvenilir bakıcı rezervasyonu',
-                                  style: AppTypography.caption,
+                                  style: AppTypography.caption.copyWith(
+                                    color: AppColors.onSurfaceVariant,
+                                    fontWeight: FontWeight.w500,
+                                  ),
                                 ),
                               ],
                             ),
@@ -228,12 +242,18 @@ class WelcomeScreen extends StatelessWidget {
                               children: [
                                 Text(
                                   'Hizmet Veren Paneline Geç',
-                                  style: AppTypography.titleCard,
+                                  style: AppTypography.titleCard.copyWith(
+                                    color: AppColors.tertiary,
+                                    fontWeight: FontWeight.w700,
+                                  ),
                                 ),
                                 const SizedBox(height: 2),
                                 Text(
                                   'Gelen rezervasyon talepleri, misafir köpekler ve kazanç yönetimi',
-                                  style: AppTypography.caption,
+                                  style: AppTypography.caption.copyWith(
+                                    color: AppColors.onSurfaceVariant,
+                                    fontWeight: FontWeight.w500,
+                                  ),
                                 ),
                               ],
                             ),
