@@ -20,10 +20,19 @@ import '../widgets/booking_request_card.dart';
 
 /// Hizmet veren (sitter) kontrol ve yönetim paneli ekranı.
 class SitterDashboardScreen extends StatelessWidget {
-  const SitterDashboardScreen({super.key});
+  final ProviderCubit? cubit;
+
+  const SitterDashboardScreen({super.key, this.cubit});
 
   @override
   Widget build(BuildContext context) {
+    if (cubit != null) {
+      return BlocProvider.value(
+        value: cubit!,
+        child: const _SitterDashboardView(),
+      );
+    }
+
     // Mevcut bir ProviderCubit varsa onu kullanır (test ve üst sarmalayıcı desteği)
     try {
       final existingCubit = context.read<ProviderCubit?>();

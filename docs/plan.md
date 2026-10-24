@@ -251,7 +251,7 @@ Ekranları feature klasörlerine taşımadan önce:
 - **Etkilenecek Dosyalar:** `lib/main.dart`, `lib/state/`, `lib/screens/`
 - **Tamamlanma Kontrolü:** Projede hiçbir kırık import veya tanımsız referans kalmamalı.
 
-#### Adım 6.2: 6 Stitch Ekranının Tasarım Sadakati ve Etkileşim Denetimi 
+#### Adım 6.2: [TAMAMLANDI] 6 Stitch Ekranının Tasarım Sadakati ve Etkileşim Denetimi 
 - **Yapılacak İş:**
   - Ekran 1 (Karşılama), Ekran 2 (Keşfet), Ekran 3 (Sahip Ana Sayfa), Ekran 4 (Detay & Rezervasyon), Ekran 5 (Köpek Profili), Ekran 6 (Hizmet Veren Paneli) tasarımlarını `design-system.md` kriterleriyle tek tek karşılaştırmak.
   - Nunito Sans tipografi, köşe yuvarlaklıkları (18–22 px kartlar, oval etiketler), gölgeler ve buton etkileşimlerini doğrulamak.
