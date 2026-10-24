@@ -11,6 +11,7 @@ import '../../features/discovery/view/sitter_detail_screen.dart';
 import '../../features/home/view/owner_home_screen.dart';
 import '../../features/onboarding/view/welcome_screen.dart';
 import '../../features/pets/view/dog_profile_screen.dart';
+import '../../features/profile/view/profile_screen.dart';
 import '../../features/provider/view/sitter_dashboard_screen.dart';
 
 /// PawCare ana uygulama iskeleti; 480px mobil genişlik sınırı ve alt navigasyon barını barındırır.
@@ -114,7 +115,9 @@ class _AppShellState extends State<AppShell> {
       case 3:
         return const OwnerBookingsScreen();
       case 4:
-        return _buildOwnerProfileTab();
+        return ProfileScreen(
+          onLogout: () => setState(() => _showingWelcome = true),
+        );
       default:
         return OwnerHomeScreen(
           onSitterSelected: (sitter) {
@@ -144,9 +147,8 @@ class _AppShellState extends State<AppShell> {
           'Köpek sahiplerinin bıraktığı puanlar ve yorumlar.',
         );
       case 4:
-        return _buildPlaceholderTab(
-          'Hizmet Veren Profili',
-          'Kimlik doğrulamaları, sertifikalar ve banka hesap bilgileri.',
+        return ProfileScreen(
+          onLogout: () => setState(() => _showingWelcome = true),
         );
       default:
         return const SitterDashboardScreen();
@@ -155,128 +157,7 @@ class _AppShellState extends State<AppShell> {
 
 
 
-  Widget _buildOwnerProfileTab() {
-    final state = AppStateScope.of(context);
-    final dog = state.currentDog;
 
-    return Scaffold(
-      backgroundColor: AppColors.background,
-      body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text('Hesap & Profil', style: AppTypography.headlineScreen),
-              const SizedBox(height: 20),
-              Container(
-                padding: const EdgeInsets.all(18),
-                decoration: BoxDecoration(
-                  color: AppColors.surfaceContainerLowest,
-                  borderRadius: BorderRadius.circular(20),
-                  boxShadow: AppColors.cardShadow,
-                ),
-                child: Row(
-                  children: [
-                    const CircleAvatar(
-                      radius: 30,
-                      backgroundColor: AppColors.secondaryContainer,
-                      child: Icon(
-                        Icons.person,
-                        size: 36,
-                        color: AppColors.primary,
-                      ),
-                    ),
-                    const SizedBox(width: 14),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Aygen Y.',
-                            style: AppTypography.headlineSection,
-                          ),
-                          Text(
-                            'aygen@pawcare.com',
-                            style: AppTypography.caption,
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            'Köpek Sahibi (1 Kayıtlı Köpek: ${dog.name})',
-                            style: AppTypography.caption,
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 24),
-              Text('Ayarlar & Tercihler', style: AppTypography.headlineSection),
-              const SizedBox(height: 12),
-              _buildSettingTile(
-                Icons.notifications_outlined,
-                'Bildirim Tercihleri',
-              ),
-              const SizedBox(height: 8),
-              _buildSettingTile(Icons.credit_card_outlined, 'Ödeme Yöntemleri'),
-              const SizedBox(height: 8),
-              _buildSettingTile(Icons.security_outlined, 'Gizlilik & Güvenlik'),
-              const SizedBox(height: 8),
-              _buildSettingTile(Icons.help_outline, 'Yardım & Destek'),
-              const SizedBox(height: 24),
-              SizedBox(
-                width: double.infinity,
-                child: OutlinedButton(
-                  onPressed: () {
-                    setState(() => _showingWelcome = true);
-                  },
-                  style: OutlinedButton.styleFrom(
-                    side: const BorderSide(color: AppColors.error),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(14),
-                    ),
-                    padding: const EdgeInsets.symmetric(vertical: 14),
-                  ),
-                  child: Text(
-                    'Çıkış Yap / Rol Değiştir',
-                    style: AppTypography.bodyMedium.copyWith(
-                      color: AppColors.error,
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildSettingTile(IconData icon, String title) {
-    return Container(
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: AppColors.surfaceContainerLowest,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: AppColors.outlineVariant.withValues(alpha: 0.3),
-        ),
-      ),
-      child: Row(
-        children: [
-          Icon(icon, color: AppColors.secondary, size: 20),
-          const SizedBox(width: 12),
-          Expanded(child: Text(title, style: AppTypography.bodyMedium)),
-          const Icon(
-            Icons.chevron_right,
-            color: AppColors.onSurfaceVariant,
-            size: 18,
-          ),
-        ],
-      ),
-    );
-  }
 
   Widget _buildPlaceholderTab(String title, String description) {
     return Scaffold(

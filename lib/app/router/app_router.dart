@@ -14,6 +14,7 @@ import '../../features/discovery/view/sitter_detail_screen.dart';
 import '../../features/home/view/owner_home_screen.dart';
 import '../../features/onboarding/view/welcome_screen.dart';
 import '../../features/pets/view/dog_profile_screen.dart';
+import '../../features/profile/view/profile_screen.dart';
 import '../../features/provider/view/sitter_dashboard_screen.dart';
 import 'app_shell.dart';
 import 'route_names.dart';
@@ -140,10 +141,7 @@ class AppRouter {
               builder: (context, state) {
                 final appState = AppStateScope.of(context);
                 appState.setOwnerNavIndex(4);
-                return OwnerHomeScreen(
-                  onSitterSelected: (sitter) =>
-                      context.push(RoutePaths.sitterDetail, extra: sitter),
-                );
+                return const ProfileScreen();
               },
             ),
 

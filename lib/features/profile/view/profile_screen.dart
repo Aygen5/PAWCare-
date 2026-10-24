@@ -1,0 +1,401 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
+
+import '../../../app/router/route_names.dart';
+import '../../../core/theme/app_colors.dart';
+import '../../../core/theme/app_typography.dart';
+import '../../../core/utils/app_state.dart';
+import '../../../domain/entities/user_role.dart';
+import '../../auth/cubit/auth_cubit.dart';
+import '../../auth/cubit/role_cubit.dart';
+import '../cubit/profile_cubit.dart';
+import '../cubit/profile_state.dart';
+import '../widgets/profile_setting_tile.dart';
+import '../widgets/theme_selector_card.dart';
+import '../widgets/user_profile_card.dart';
+
+/// Faz 5 Adım 5.2 — Profil, Ayarlar ve Tema Değiştirici Ekranı.
+class ProfileScreen extends StatelessWidget {
+  final ProfileCubit? cubit;
+  final VoidCallback? onLogout;
+  final VoidCallback? onDogProfileTap;
+
+  const ProfileScreen({
+    super.key,
+    this.cubit,
+    this.onLogout,
+    this.onDogProfileTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    if (cubit != null) {
+      return BlocProvider.value(
+        value: cubit!,
+        child: _ProfileView(
+          onLogout: onLogout,
+          onDogProfileTap: onDogProfileTap,
+        ),
+      );
+    }
+
+    return BlocProvider(
+      create: (ctx) {
+        final auth = ctx.read<AuthCubit?>()?.state;
+        final role = ctx.read<RoleCubit?>()?.state;
+        return ProfileCubit()
+          ..loadProfile(
+            initialName: auth?.userName,
+            initialEmail: auth?.userEmail,
+            currentRole: role,
+          );
+      },
+      child: _ProfileView(
+        onLogout: onLogout,
+        onDogProfileTap: onDogProfileTap,
+      ),
+    );
+  }
+}
+
+class _ProfileView extends StatelessWidget {
+  final VoidCallback? onLogout;
+  final VoidCallback? onDogProfileTap;
+
+  const _ProfileView({this.onLogout, this.onDogProfileTap});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
+    final scaffoldBg =
+        isDark ? AppColors.darkBackground : AppColors.background;
+
+    return Scaffold(
+      backgroundColor: scaffoldBg,
+      body: SafeArea(
+        child: BlocBuilder<ProfileCubit, ProfileState>(
+          builder: (context, state) {
+            return SingleChildScrollView(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Sayfa Başlığı
+                  Text(
+                    'Hesap & Profil',
+                    style: AppTypography.headlineScreen.copyWith(
+                      color:
+                          isDark
+                              ? AppColors.darkOnSurface
+                              : AppColors.onSurface,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    'Kişisel bilgileriniz, evcil hayvanınız ve uygulama tercihleri',
+                    style: AppTypography.caption.copyWith(
+                      color:
+                          isDark
+                              ? AppColors.darkOnSurfaceVariant
+                              : AppColors.onSurfaceVariant,
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+
+                  // 1. Kullanıcı ve Evcil Hayvan Kartı
+                  UserProfileCard(
+                    onDogProfileTap: () {
+                      if (onDogProfileTap != null) {
+                        onDogProfileTap!();
+                      } else {
+                        // GoRouter ile köpeklerim sayfasına yönlendir
+                        final appState = AppStateScope.of(context);
+                        appState.setOwnerNavIndex(2);
+                        context.go(RoutePaths.pets);
+                      }
+                    },
+                  ),
+
+                  const SizedBox(height: 20),
+
+                  // 2. Tema Değiştirici Kartı (Segmented Control: Açık / Koyu Haki / Sistem)
+                  const ThemeSelectorCard(),
+
+                  const SizedBox(height: 24),
+
+                  // 3. Ayarlar ve Tercihler Başlığı
+                  Text(
+                    'Ayarlar & Tercihler',
+                    style: AppTypography.headlineSection.copyWith(
+                      color:
+                          isDark
+                              ? AppColors.darkOnSurface
+                              : AppColors.onSurface,
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+
+                  // Bildirimler
+                  ProfileSettingTile(
+                    icon: Icons.notifications_outlined,
+                    title: 'Bildirim Tercihleri',
+                    subtitle: 'Aşı, rezervasyon ve yürüyüş uyarıları',
+                    trailing: Switch(
+                      value: state.notificationsEnabled,
+                      activeThumbColor:
+                          isDark ? AppColors.darkPrimary : AppColors.primary,
+                      onChanged: (val) {
+                        context.read<ProfileCubit>().toggleNotifications(val);
+                      },
+                    ),
+                  ),
+
+                  // Ödeme Yöntemleri
+                  ProfileSettingTile(
+                    icon: Icons.credit_card_outlined,
+                    title: 'Ödeme Yöntemleri',
+                    subtitle: 'Mastercard •••• 4821',
+                    onTap: () => _showPaymentInfo(context),
+                  ),
+
+                  // Gizlilik & Güvenlik
+                  ProfileSettingTile(
+                    icon: Icons.security_outlined,
+                    title: 'Gizlilik & Güvenlik',
+                    subtitle: 'Şifre, biyometri ve hesap koruması',
+                    onTap: () => _showPrivacyInfo(context),
+                  ),
+
+                  // Yardım & Destek
+                  ProfileSettingTile(
+                    icon: Icons.help_outline,
+                    title: 'Yardım & Destek',
+                    subtitle: '7/24 PawCare canlı destek ve SSS',
+                    onTap: () => _showHelpInfo(context),
+                  ),
+
+                  // Uygulama Hakkında
+                  ProfileSettingTile(
+                    icon: Icons.info_outline,
+                    title: 'PawCare Hakkında',
+                    subtitle: 'Sürüm 1.0.0 (Clean Architecture)',
+                    onTap: () => _showAboutInfo(context),
+                  ),
+
+                  const SizedBox(height: 24),
+
+                  // 4. Rol Değiştirme Butonu
+                  SizedBox(
+                    width: double.infinity,
+                    child: OutlinedButton.icon(
+                      onPressed: () {
+                        final roleCubit = context.read<RoleCubit?>();
+                        final appState = AppStateScope.of(context);
+                        final nextRole =
+                            state.role == UserRole.owner
+                                ? UserRole.sitter
+                                : UserRole.owner;
+
+                        roleCubit?.setRole(nextRole);
+                        context.read<ProfileCubit>().toggleRole();
+                        appState.setRole(nextRole);
+
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(
+                              nextRole == UserRole.sitter
+                                  ? 'Hizmet Veren moduna geçildi.'
+                                  : 'Köpek Sahibi moduna geçildi.',
+                            ),
+                            duration: const Duration(seconds: 2),
+                          ),
+                        );
+                      },
+                      style: OutlinedButton.styleFrom(
+                        side: BorderSide(
+                          color:
+                              isDark
+                                  ? AppColors.darkPrimary
+                                  : AppColors.primary,
+                        ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(14),
+                        ),
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                      ),
+                      icon: Icon(
+                        Icons.swap_horiz,
+                        color:
+                            isDark
+                                ? AppColors.darkPrimary
+                                : AppColors.primary,
+                      ),
+                      label: Text(
+                        state.role == UserRole.owner
+                            ? 'Hizmet Veren Moduna Geç'
+                            : 'Köpek Sahibi Moduna Geç',
+                        style: AppTypography.bodyMedium.copyWith(
+                          fontWeight: FontWeight.w600,
+                          color:
+                              isDark
+                                  ? AppColors.darkPrimary
+                                  : AppColors.primary,
+                        ),
+                      ),
+                    ),
+                  ),
+
+                  const SizedBox(height: 12),
+
+                  // 5. Çıkış Yap Butonu
+                  SizedBox(
+                    width: double.infinity,
+                    child: OutlinedButton(
+                      onPressed: () => _handleLogout(context),
+                      style: OutlinedButton.styleFrom(
+                        side: const BorderSide(color: AppColors.error),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(14),
+                        ),
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                      ),
+                      child: Text(
+                        'Çıkış Yap',
+                        style: AppTypography.bodyMedium.copyWith(
+                          fontWeight: FontWeight.w600,
+                          color: AppColors.error,
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 40),
+                ],
+              ),
+            );
+          },
+        ),
+      ),
+    );
+  }
+
+  void _handleLogout(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (ctx) {
+        return AlertDialog(
+          title: const Text('Çıkış Yapılsın mı?'),
+          content: const Text(
+            'Mevcut oturumunuz sonlandırılacak ve karşılama ekranına yönlendirileceksiniz.',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(ctx),
+              child: const Text('Vazgeç'),
+            ),
+            FilledButton(
+              style: FilledButton.styleFrom(backgroundColor: AppColors.error),
+              onPressed: () {
+                Navigator.pop(ctx);
+                context.read<AuthCubit?>()?.logout();
+                if (onLogout != null) {
+                  onLogout!();
+                } else {
+                  context.go(RoutePaths.welcome);
+                }
+              },
+              child: const Text('Çıkış Yap'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _showPaymentInfo(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Kayıtlı Ödeme Yöntemleri'),
+        content: const Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            ListTile(
+              leading: Icon(Icons.credit_card, color: AppColors.primary),
+              title: Text('Mastercard •••• 4821'),
+              subtitle: Text('Varsayılan kart • SKT: 08/28'),
+            ),
+            ListTile(
+              leading: Icon(Icons.credit_card, color: AppColors.secondary),
+              title: Text('Visa •••• 1905'),
+              subtitle: Text('Yedek kart • SKT: 11/27'),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text('Kapat'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showPrivacyInfo(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Gizlilik ve Güvenlik'),
+        content: const Text(
+          'PawCare, evcil hayvanlarınızın ve kişisel bilgilerinizin gizliliğini en üst düzeyde korur. Yerel şifreleme ve güvenli depolama standartları geçerlidir.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text('Anladım'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showHelpInfo(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Yardım & Destek'),
+        content: const Text(
+          'Sorularınız veya rezervasyon destek talepleriniz için destek@pawcare.com adresinden veya 0850 123 45 67 numaralı hattan bize ulaşabilirsiniz.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text('Tamam'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showAboutInfo(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('PawCare Hakkında'),
+        content: const Text(
+          'PawCare, modern Flutter teknolojileri ve Clean Architecture prensipleriyle geliştirilmiş evcil hayvan yönetim ve rezervasyon platformudur.\n\nSürüm: 1.0.0 (Faz 5)',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text('Kapat'),
+          ),
+        ],
+      ),
+    );
+  }
+}

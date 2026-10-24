@@ -224,7 +224,7 @@ Ekranları feature klasörlerine taşımadan önce:
 - **Etkilenecek Dosyalar:** `lib/features/notifications/`, `lib/core/widgets/paw_header_actions.dart`
 - **Tamamlanma Kontrolü:** Bildirim ikonuna tıklandığında listenin açıldığı, bildirime tıklanınca okundu olduğu ve rozetin söndüğü doğrulanmalı.
 
-#### Adım 5.2: Profil, Ayarlar ve Tema Değiştirici Ekranı (`Profile`)
+#### Adım 5.2: [TAMAMLANDI] Profil, Ayarlar ve Tema Değiştirici Ekranı (`Profile`)
 - **Yapılacak İş:**
   - `lib/features/profile/view/profile_screen.dart` oluşturmak (mevcut profil sekmesi içeriğini feature haline getirmek).
   - Kullanıcı demo bilgileri, kayıtlı köpek bilgisi, rol değiştirme ve çıkış butonları.

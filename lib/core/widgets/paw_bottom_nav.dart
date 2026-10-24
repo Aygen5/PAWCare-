@@ -133,22 +133,33 @@ class PawBottomNav extends StatelessWidget {
 
     final items = isOwner ? ownerItems : sitterItems;
 
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Container(
       decoration: BoxDecoration(
-        color: AppColors.surfaceContainerLowest,
+        color:
+            isDark
+                ? AppColors.darkSurfaceContainerLowest
+                : AppColors.surfaceContainerLowest,
         border: Border(
           top: BorderSide(
-            color: AppColors.outlineVariant.withValues(alpha: 0.4),
+            color:
+                isDark
+                    ? AppColors.darkOutlineVariant.withValues(alpha: 0.6)
+                    : AppColors.outlineVariant.withValues(alpha: 0.4),
             width: 1,
           ),
         ),
-        boxShadow: const [
-          BoxShadow(
-            color: Color(0x0A000000),
-            blurRadius: 16,
-            offset: Offset(0, -4),
-          ),
-        ],
+        boxShadow:
+            isDark
+                ? AppColors.darkCardShadow
+                : const [
+                  BoxShadow(
+                    color: Color(0x0A000000),
+                    blurRadius: 16,
+                    offset: Offset(0, -4),
+                  ),
+                ],
       ),
       child: SafeArea(
         top: false,
@@ -159,6 +170,17 @@ class PawBottomNav extends StatelessWidget {
             children: List.generate(items.length, (index) {
               final item = items[index];
               final isSelected = index == currentIndex;
+
+              final activeItemColor =
+                  isDark ? AppColors.darkPrimary : AppColors.primary;
+              final inactiveItemColor =
+                  isDark
+                      ? AppColors.darkOnSurfaceVariant
+                      : AppColors.onSurfaceVariant;
+              final activeContainerColor =
+                  isDark
+                      ? AppColors.darkPrimaryContainer
+                      : AppColors.secondaryContainer;
 
               return Expanded(
                 child: InkWell(
@@ -174,16 +196,15 @@ class PawBottomNav extends StatelessWidget {
                           vertical: 4,
                         ),
                         decoration: BoxDecoration(
-                          color: isSelected
-                              ? AppColors.secondaryContainer
-                              : Colors.transparent,
+                          color:
+                              isSelected
+                                  ? activeContainerColor
+                                  : Colors.transparent,
                           borderRadius: BorderRadius.circular(16),
                         ),
                         child: Icon(
                           isSelected ? item.activeIcon : item.icon,
-                          color: isSelected
-                              ? AppColors.primary
-                              : AppColors.onSurfaceVariant,
+                          color: isSelected ? activeItemColor : inactiveItemColor,
                           size: 22,
                         ),
                       ),
@@ -191,12 +212,10 @@ class PawBottomNav extends StatelessWidget {
                       Text(
                         item.label,
                         style: AppTypography.labelTag.copyWith(
-                          color: isSelected
-                              ? AppColors.primary
-                              : AppColors.onSurfaceVariant,
-                          fontWeight: isSelected
-                              ? FontWeight.w700
-                              : FontWeight.w500,
+                          color:
+                              isSelected ? activeItemColor : inactiveItemColor,
+                          fontWeight:
+                              isSelected ? FontWeight.w700 : FontWeight.w500,
                         ),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
