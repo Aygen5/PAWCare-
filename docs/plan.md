@@ -75,7 +75,7 @@ Ekranları feature klasörlerine taşımadan önce:
 
 > **Amaç:** Stitch tasarım kurallarına tam uyumlu açık tema ve koyu yeşil/haki dark mode altyapısını kurmak; animasyonlu PawCare splash ekranını hazırlamak.
 
-#### Adım 2.1: Merkezi Tema Sistemi ve Koyu Yeşil/Haki Dark Mode
+#### Adım 2.1: [TAMAMLANDI] Merkezi Tema Sistemi ve Koyu Yeşil/Haki Dark Mode
 - **Yapılacak İş:**
   - `lib/core/theme/app_colors.dart` dosyasını `design-system.md`'deki açık tema tokenları ve koyu tema için belirlenen koyu zeytin/haki paletiyle (`#1E3023`, `#16241A`, `#243628`, `#344638`, `#DCE5D7`, `#EAE8E2`, `#9FB3A1`) yapılandırmak (saf siyah `#000000` kullanılmayacaktır).
   - `lib/core/theme/app_theme.dart` altında Material 3 uyumlu `lightTheme` ve `darkTheme` tanımlamak.
@@ -83,12 +83,12 @@ Ekranları feature klasörlerine taşımadan önce:
 - **Etkilenecek Dosyalar:** `lib/core/theme/app_colors.dart`, `lib/core/theme/app_theme.dart`, `lib/core/theme/app_typography.dart`
 - **Tamamlanma Kontrolü:** Açık ve koyu temada metin-arkaplan kontrast oranlarının okunabilirliği kontrol edilmeli.
 
-#### Adım 2.2: Tema Durum Yönetimi (ThemeCubit)
+#### Adım 2.2: [TAMAMLANDI] Tema Durum Yönetimi (ThemeCubit)
 - **Yapılacak İş:** Kullanıcının tema tercihini (Sistem / Açık / Koyu Yeşil) `shared_preferences` üzerinden saklayan ve anlık değiştiren `ThemeCubit`'i oluşturmak.
 - **Etkilenecek Dosyalar:** `lib/core/theme/theme_cubit.dart`
 - **Tamamlanma Kontrolü:** Tema değişim birim testi ile tercihin kalıcı olduğu doğrulanmalı.
 
-#### Adım 2.3: Animasyonlu PawCare Splash Ekranı
+#### Adım 2.3: [TAMAMLANDI] Animasyonlu PawCare Splash Ekranı
 - **Yapılacak İş:**
   - `lib/features/splash/view/splash_page.dart` ve `splash_cubit.dart` oluşturmak.
   - Ekranda PawCare pati logosu, ölçülü parıltı/büyüme animasyonu ve "PawCare" tipografisini yerleştirmek.

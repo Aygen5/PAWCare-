@@ -3,7 +3,7 @@ import 'package:paw_care/main.dart';
 
 void main() {
   testWidgets('PawCare App renders successfully', (WidgetTester tester) async {
-    await tester.pumpWidget(const PawCareApp());
+    await tester.pumpWidget(const PawCareApp(enableSplash: false));
     await tester.pump();
 
     // Verify app shell and core UI elements exist

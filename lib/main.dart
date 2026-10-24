@@ -1,19 +1,31 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
+import 'core/theme/app_theme.dart';
+import 'core/theme/theme_cubit.dart';
 import 'data/local/hive_boxes.dart';
-import 'theme/app_colors.dart';
-import 'state/app_state.dart';
+import 'data/repositories/settings_repository.dart';
+import 'features/splash/cubit/splash_cubit.dart';
+import 'features/splash/view/splash_page.dart';
 import 'screens/app_shell.dart';
+import 'state/app_state.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await HiveBoxes.init();
-  runApp(const PawCareApp());
+  final settingsRepo = await SettingsRepository.create();
+  runApp(PawCareApp(settingsRepository: settingsRepo));
 }
 
 class PawCareApp extends StatefulWidget {
-  const PawCareApp({super.key});
+  final SettingsRepository? settingsRepository;
+  final bool enableSplash;
+
+  const PawCareApp({
+    super.key,
+    this.settingsRepository,
+    this.enableSplash = true,
+  });
 
   @override
   State<PawCareApp> createState() => _PawCareAppState();
@@ -21,61 +33,59 @@ class PawCareApp extends StatefulWidget {
 
 class _PawCareAppState extends State<PawCareApp> {
   late final AppState _appState;
+  late final ThemeCubit _themeCubit;
+  late final SettingsRepository _settingsRepository;
+  bool _showSplash = true;
 
   @override
   void initState() {
     super.initState();
     _appState = AppState();
+    _settingsRepository = widget.settingsRepository ?? SettingsRepository.inMemory();
+    _themeCubit = ThemeCubit(_settingsRepository);
+    _showSplash = widget.enableSplash;
   }
 
   @override
   void dispose() {
     _appState.dispose();
+    _themeCubit.close();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return AppStateScope(
-      notifier: _appState,
-      child: MaterialApp(
-        title: 'PawCare — Evcil Hayvan Yönetimi',
-        debugShowCheckedModeBanner: false,
-        theme: ThemeData(
-          useMaterial3: true,
-          scaffoldBackgroundColor: AppColors.background,
-          colorScheme: const ColorScheme(
-            brightness: Brightness.light,
-            primary: AppColors.primary,
-            onPrimary: AppColors.onPrimary,
-            primaryContainer: AppColors.primaryContainer,
-            onPrimaryContainer: AppColors.onPrimaryContainer,
-            secondary: AppColors.secondary,
-            onSecondary: AppColors.onSecondary,
-            secondaryContainer: AppColors.secondaryContainer,
-            onSecondaryContainer: AppColors.onSecondaryContainer,
-            tertiary: AppColors.tertiary,
-            onTertiary: AppColors.onTertiary,
-            tertiaryContainer: AppColors.tertiaryContainer,
-            onTertiaryContainer: AppColors.onTertiaryContainer,
-            error: AppColors.error,
-            onError: AppColors.onError,
-            errorContainer: AppColors.errorContainer,
-            onErrorContainer: AppColors.onErrorContainer,
-            surface: AppColors.surface,
-            onSurface: AppColors.onSurface,
-            onSurfaceVariant: AppColors.onSurfaceVariant,
-            outline: AppColors.outline,
-            outlineVariant: AppColors.outlineVariant,
-          ),
-          fontFamily: GoogleFonts.nunitoSans().fontFamily,
-          appBarTheme: const AppBarTheme(
-            backgroundColor: AppColors.background,
-            foregroundColor: AppColors.onSurface,
-            elevation: 0,
-          ),
+    return BlocProvider.value(
+      value: _themeCubit,
+      child: AppStateScope(
+        notifier: _appState,
+        child: BlocBuilder<ThemeCubit, ThemeMode>(
+          builder: (context, themeMode) {
+            return MaterialApp(
+              title: 'PawCare — Evcil Hayvan Yönetimi',
+              debugShowCheckedModeBanner: false,
+              theme: AppTheme.lightTheme,
+              darkTheme: AppTheme.darkTheme,
+              themeMode: themeMode,
+              home: _showSplash
+                  ? BlocProvider(
+                      create: (_) => SplashCubit(
+                        settingsRepository: _settingsRepository,
+                      ),
+                      child: SplashPage(
+                        onReady: (_) {
+                          if (mounted) {
+                            setState(() {
+                              _showSplash = false;
+                            });
+                          }
+                        },
+                      ),
+                    )
+                  : const AppShell(),
+            );
+          },
         ),
-        home: const AppShell(),
       ),
     );
   }
