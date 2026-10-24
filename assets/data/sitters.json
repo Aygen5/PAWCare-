@@ -1,0 +1,78 @@
+[
+  {
+    "id": "sitter_1",
+    "name": "Ayşe Yılmaz",
+    "facilityTitle": "Mutlu Patiler Butik Köpek Oteli",
+    "category": "Köpek Oteli",
+    "rating": 4.9,
+    "reviewsCount": 128,
+    "pricePerUnit": 450.0,
+    "unitLabel": "gece",
+    "location": "Caddebostan, Kadıköy",
+    "distanceKm": 1.2,
+    "imagePath": "assets/images/ayse.jpg",
+    "galleryPaths": [
+      "assets/images/hotel_garden.jpg",
+      "assets/images/ayse.jpg",
+      "assets/images/barley.jpg"
+    ],
+    "bio": "7 yıldır profesyonel evcil hayvan bakım uzmanıyım. Müstakil bahçeli evimizde misafirlerimize 7/24 birebir ilgi, geniş çim oyun alanı ve sevgi dolu bir konaklama sunuyoruz.",
+    "amenities": [
+      "Geniş Çim Bahçe",
+      "7/24 Kamera Takibi",
+      "Günde 3 Kez Yürüyüş",
+      "Klimalı Süitler",
+      "Veteriner Protokolü"
+    ],
+    "isVerified": true
+  },
+  {
+    "id": "sitter_2",
+    "name": "Mert Demir",
+    "facilityTitle": "ProDog Profesyonel Gezdirici & Eğitmen",
+    "category": "Köpek Gezdirme",
+    "rating": 5.0,
+    "reviewsCount": 84,
+    "pricePerUnit": 250.0,
+    "unitLabel": "saat",
+    "location": "Moda Sahil, Kadıköy",
+    "distanceKm": 2.1,
+    "imagePath": "assets/images/mert.jpg",
+    "galleryPaths": [
+      "assets/images/mert.jpg",
+      "assets/images/hotel_garden.jpg"
+    ],
+    "bio": "Sertifikalı köpek eğitmeni ve profesyonel gezdirici. Köpeğinizin fiziksel ve mental enerjisini atabileceği güvenli, tempolu ve eğlenceli yürüyüş seansları düzenliyorum.",
+    "amenities": [
+      "Canlı GPS Takibi",
+      "Pozitif Pekiştirme",
+      "Birebir Yürüyüş",
+      "Fotoğraflı Bildirim"
+    ],
+    "isVerified": true
+  },
+  {
+    "id": "sitter_3",
+    "name": "Selin & Can Kaya",
+    "facilityTitle": "Pati Köşkü Gündüz Bakım Evi",
+    "category": "Gündüz Bakımı",
+    "rating": 4.8,
+    "reviewsCount": 62,
+    "pricePerUnit": 350.0,
+    "unitLabel": "gün",
+    "location": "Fenerbahçe, Kadıköy",
+    "distanceKm": 3.4,
+    "imagePath": "assets/images/hotel_garden.jpg",
+    "galleryPaths": [
+      "assets/images/hotel_garden.jpg",
+      "assets/images/ayse.jpg"
+    ],
+    "bio": "Siz işteyken dostunuz evde yalnız kalmasın. Sosyalleşme seansları, dinlenme odaları ve özel beslenme takibiyle güvenli gündüz bakımı sağlıyoruz.",
+    "amenities": [
+      "Sosyal Oyun Grubu",
+      "İlaç & Diyet Takibi",
+      "Ses Yalıtımlı Dinlenme"
+    ],
+    "isVerified": true
+  }
+]

@@ -37,11 +37,13 @@ Ekranları feature klasörlerine taşımadan önce:
 
 #### Adım 1.1: Bağımlılıkların ve Asset Yapılandırmasının Güncellenmesi
 - **Yapılacak İş:** `pubspec.yaml` dosyasına `go_router`, `flutter_bloc`, `hive`, `hive_flutter`, `path_provider`, `image_picker`, `shared_preferences` paketlerini eklemek; `assets/data/` yolunu varlıklara dahil etmek.
+- **Kritik Kural (Asset Yolu Tutarlılığı):** Statik veri dosyaları için standart konum `assets/data/` dizinidir. `pubspec.yaml` içinde `assets/data/` tanımlanacak ve koddaki tüm yüklemeler doğrudan `assets/data/sitters.json` yolunu kullanacaktır; kök `assets/sitters.json` gibi mükerrer veya farklı dosya yolları kesinlikle tanımlanmayacaktır.
 - **Etkilenecek Dosyalar:** `pubspec.yaml`
 - **Tamamlanma Kontrolü:** `flutter pub get` hatasız tamamlanmalı.
 
 #### Adım 1.2: Başlangıç Verisinin JSON Varlığına Çıkarılması
 - **Yapılacak İş:** `AppState` içindeki statik `_sitters` verisini `assets/data/sitters.json` dosyasına aktarmak.
+- **Konum Standardı:** Dosya doğrudan `assets/data/sitters.json` konumunda oluşturulacaktır. `SitterRepository` veya veri kaynağı bu dosyayı `'assets/data/sitters.json'` yoluyla yükleyecektir.
 - **Etkilenecek Dosyalar:** `assets/data/sitters.json`, `pubspec.yaml`
 - **Tamamlanma Kontrolü:** JSON dosyasının geçerli yapıda olduğu ve asset olarak yüklenebildiği doğrulanmalı.
 

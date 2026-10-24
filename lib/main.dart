@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import 'data/local/hive_boxes.dart';
 import 'theme/app_colors.dart';
 import 'state/app_state.dart';
 import 'screens/app_shell.dart';
 
-void main() {
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await HiveBoxes.init();
   runApp(const PawCareApp());
 }
 
