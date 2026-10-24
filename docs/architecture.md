@@ -53,6 +53,11 @@ lib/
     widgets/
       paw_bottom_nav.dart
       paw_header_actions.dart
+      modals/
+        call_modal.dart
+        chat_modal.dart
+        live_tracking_modal.dart
+        modals.dart
   domain/
     domain.dart
     entities/
@@ -123,13 +128,13 @@ lib/
       cubit/
       widgets/health_card_modal.dart
     bookings/
-      view/
-      cubit/
-      widgets/
+      view/owner_bookings_screen.dart
+      cubit/bookings_cubit.dart, bookings_state.dart
+      widgets/booking_card.dart
     provider/
       view/sitter_dashboard_screen.dart
-      cubit/
-      widgets/
+      cubit/provider_cubit.dart, provider_state.dart
+      widgets/booking_request_card.dart
     profile/
       view/
       cubit/

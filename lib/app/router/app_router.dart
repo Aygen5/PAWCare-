@@ -8,6 +8,7 @@ import '../../data/repositories/settings_repository.dart';
 import '../../features/splash/cubit/splash_cubit.dart';
 import '../../features/splash/view/splash_page.dart';
 import '../../core/utils/app_state.dart';
+import '../../features/bookings/view/owner_bookings_screen.dart';
 import '../../features/discovery/view/explore_screen.dart';
 import '../../features/discovery/view/sitter_detail_screen.dart';
 import '../../features/home/view/owner_home_screen.dart';
@@ -128,10 +129,7 @@ class AppRouter {
               builder: (context, state) {
                 final appState = AppStateScope.of(context);
                 appState.setOwnerNavIndex(3);
-                return OwnerHomeScreen(
-                  onSitterSelected: (sitter) =>
-                      context.push(RoutePaths.sitterDetail, extra: sitter),
-                );
+                return const OwnerBookingsScreen();
               },
             ),
 

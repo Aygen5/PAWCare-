@@ -5,6 +5,7 @@ import '../../core/theme/app_typography.dart';
 import '../../core/widgets/paw_bottom_nav.dart';
 import '../../data/models/models.dart';
 import '../../core/utils/app_state.dart';
+import '../../features/bookings/view/owner_bookings_screen.dart';
 import '../../features/discovery/view/explore_screen.dart';
 import '../../features/discovery/view/sitter_detail_screen.dart';
 import '../../features/home/view/owner_home_screen.dart';
@@ -111,7 +112,7 @@ class _AppShellState extends State<AppShell> {
       case 2:
         return const DogProfileScreen();
       case 3:
-        return _buildOwnerBookingsTab();
+        return const OwnerBookingsScreen();
       case 4:
         return _buildOwnerProfileTab();
       default:
@@ -152,164 +153,7 @@ class _AppShellState extends State<AppShell> {
     }
   }
 
-  Widget _buildOwnerBookingsTab() {
-    final state = AppStateScope.of(context);
-    final bookings = state.bookings;
 
-    return Scaffold(
-      backgroundColor: AppColors.background,
-      body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'Rezervasyon Taleplerim',
-                style: AppTypography.headlineScreen,
-              ),
-              const SizedBox(height: 6),
-              Text(
-                'Gönderdiğiniz tüm bakım ve otel talepleri',
-                style: AppTypography.bodyDefault,
-              ),
-              const SizedBox(height: 20),
-              if (bookings.isEmpty)
-                Container(
-                  padding: const EdgeInsets.all(24),
-                  decoration: BoxDecoration(
-                    color: AppColors.surfaceContainerLowest,
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: const Center(
-                    child: Text('Henüz rezervasyon bulunmuyor.'),
-                  ),
-                )
-              else
-                ListView.separated(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  itemCount: bookings.length,
-                  separatorBuilder: (_, _) => const SizedBox(height: 14),
-                  itemBuilder: (context, index) {
-                    final b = bookings[index];
-                    Color statusBg;
-                    Color statusColor;
-                    String statusText;
-
-                    switch (b.status) {
-                      case BookingStatus.confirmed:
-                        statusBg = AppColors.successContainer;
-                        statusColor = AppColors.success;
-                        statusText = 'Onaylandı';
-                        break;
-                      case BookingStatus.pending:
-                        statusBg = AppColors.secondaryContainer;
-                        statusColor = AppColors.primary;
-                        statusText = 'Beklemede';
-                        break;
-                      case BookingStatus.rejected:
-                        statusBg = AppColors.errorContainer;
-                        statusColor = AppColors.error;
-                        statusText = 'Reddedildi';
-                        break;
-                      case BookingStatus.completed:
-                        statusBg = AppColors.surfaceContainerLow;
-                        statusColor = AppColors.onSurfaceVariant;
-                        statusText = 'Tamamlandı';
-                        break;
-                    }
-
-                    return Container(
-                      padding: const EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        color: AppColors.surfaceContainerLowest,
-                        borderRadius: BorderRadius.circular(20),
-                        boxShadow: AppColors.cardShadow,
-                        border: Border.all(
-                          color: AppColors.outlineVariant.withValues(
-                            alpha: 0.3,
-                          ),
-                        ),
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            children: [
-                              CircleAvatar(
-                                radius: 20,
-                                backgroundImage: AssetImage(b.sitterPhoto),
-                              ),
-                              const SizedBox(width: 12),
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      b.sitterName,
-                                      style: AppTypography.titleCard,
-                                    ),
-                                    Text(
-                                      b.serviceTitle,
-                                      style: AppTypography.caption,
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              Container(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 10,
-                                  vertical: 4,
-                                ),
-                                decoration: BoxDecoration(
-                                  color: statusBg,
-                                  borderRadius: BorderRadius.circular(10),
-                                ),
-                                child: Text(
-                                  statusText,
-                                  style: AppTypography.labelTag.copyWith(
-                                    color: statusColor,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 12),
-                          Container(
-                            padding: const EdgeInsets.all(10),
-                            decoration: BoxDecoration(
-                              color: AppColors.surfaceContainerLow,
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(
-                                  'Toplam Ücret',
-                                  style: AppTypography.caption,
-                                ),
-                                Text(
-                                  '₺${b.totalPrice.toInt()}',
-                                  style: AppTypography.bodyMedium.copyWith(
-                                    color: AppColors.primary,
-                                    fontWeight: FontWeight.w800,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                    );
-                  },
-                ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
 
   Widget _buildOwnerProfileTab() {
     final state = AppStateScope.of(context);

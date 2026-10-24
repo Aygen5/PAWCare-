@@ -192,7 +192,7 @@ Ekranları feature klasörlerine taşımadan önce:
 - **Etkilenecek Dosyalar:** `lib/features/provider/`
 - **Tamamlanma Kontrolü:** Sahip tarafından oluşturulan rezervasyon anında bu panelde Beklemede olarak görünmeli; Onayla/Reddet aksiyonları çalışmalı.
 
-#### Adım 4.6: Rezervasyonlarım ve Ortak Modallar (`Bookings` & `Modals`)
+#### Adım 4.6: [TAMAMLANDI] Rezervasyonlarım ve Ortak Modallar (`Bookings` & `Modals`)
 - **Yapılacak İş:**
   - `app_shell.dart` içindeki `_buildOwnerBookingsTab` kodunu `lib/features/bookings/view/owner_bookings_screen.dart` dosyasına dönüştürmek; `BookingsCubit`'e bağlamak.
   - Ortak modalları (`chat_modal.dart`, `live_tracking_modal.dart`, `call_modal.dart`) `lib/core/widgets/modals/` altına taşımak.
