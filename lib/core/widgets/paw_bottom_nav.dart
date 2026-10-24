@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../app/router/route_names.dart';
 import '../../data/models/models.dart';
+import '../../features/auth/cubit/role_cubit.dart';
 import '../../state/app_state.dart';
 import '../theme/app_colors.dart';
 import '../theme/app_typography.dart';
@@ -69,7 +71,8 @@ class PawBottomNav extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final state = AppStateScope.of(context);
-    final isOwner = state.role == UserRole.owner;
+    final activeRole = context.watch<RoleCubit?>()?.state ?? state.role;
+    final isOwner = activeRole == UserRole.owner;
     final currentIndex = _calculateCurrentIndex(context, state, isOwner);
 
     final ownerItems = const [

@@ -5,11 +5,12 @@ import 'package:go_router/go_router.dart';
 import '../core/theme/app_theme.dart';
 import '../core/theme/theme_cubit.dart';
 import '../data/repositories/settings_repository.dart';
+import '../features/auth/cubit/role_cubit.dart';
 import '../state/app_state.dart';
 import 'router/app_router.dart';
 import 'router/route_names.dart';
 
-/// PawCare ana uygulama kurulumu ve tema/router bağlantısı.
+/// PawCare ana uygulama kurulumu, tema, rol ve router bağlantısı.
 class PawCareApp extends StatefulWidget {
   final SettingsRepository? settingsRepository;
   final String initialLocation;
@@ -29,6 +30,7 @@ class PawCareApp extends StatefulWidget {
 class _PawCareAppState extends State<PawCareApp> {
   late final AppState _appState;
   late final ThemeCubit _themeCubit;
+  late final RoleCubit _roleCubit;
   late final SettingsRepository _settingsRepository;
   late final GoRouter _router;
 
@@ -39,6 +41,16 @@ class _PawCareAppState extends State<PawCareApp> {
     _settingsRepository =
         widget.settingsRepository ?? SettingsRepository.inMemory();
     _themeCubit = ThemeCubit(_settingsRepository);
+    _roleCubit = RoleCubit(settingsRepository: _settingsRepository);
+
+    // RoleCubit ile AppState senkronizasyonu
+    _appState.setRole(_roleCubit.state);
+    _roleCubit.stream.listen((role) {
+      if (_appState.role != role) {
+        _appState.setRole(role);
+      }
+    });
+
     final effectiveLocation = widget.enableSplash
         ? widget.initialLocation
         : RoutePaths.welcome;
@@ -52,13 +64,17 @@ class _PawCareAppState extends State<PawCareApp> {
   void dispose() {
     _appState.dispose();
     _themeCubit.close();
+    _roleCubit.close();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider.value(
-      value: _themeCubit,
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider.value(value: _themeCubit),
+        BlocProvider.value(value: _roleCubit),
+      ],
       child: AppStateScope(
         notifier: _appState,
         child: BlocBuilder<ThemeCubit, ThemeMode>(

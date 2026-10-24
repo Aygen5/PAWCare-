@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 
-import '../theme/app_colors.dart';
-import '../theme/app_typography.dart';
+import '../app/router/route_names.dart';
+import '../features/auth/cubit/role_cubit.dart';
 import '../models/models.dart';
 import '../state/app_state.dart';
-import '../widgets/modals/chat_modal.dart';
+import '../theme/app_colors.dart';
+import '../theme/app_typography.dart';
 import '../widgets/modals/call_modal.dart';
+import '../widgets/modals/chat_modal.dart';
 
 class SitterDashboardScreen extends StatelessWidget {
   const SitterDashboardScreen({super.key});
@@ -75,7 +79,12 @@ class SitterDashboardScreen extends StatelessWidget {
                   ),
                   const SizedBox(width: 8),
                   OutlinedButton.icon(
-                    onPressed: () => state.setRole(UserRole.owner),
+                    onPressed: () {
+                      context.read<RoleCubit?>()?.switchToOwner();
+                      state.setRole(UserRole.owner);
+                      state.setOwnerNavIndex(0);
+                      context.go(RoutePaths.home);
+                    },
                     icon: const Icon(
                       Icons.swap_horiz,
                       size: 16,

@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 
+import '../app/router/route_names.dart';
 import '../core/widgets/paw_header_actions.dart';
+import '../features/auth/cubit/role_cubit.dart';
 import '../models/models.dart';
 import '../state/app_state.dart';
 import '../theme/app_colors.dart';
@@ -76,7 +80,12 @@ class _OwnerHomeScreenState extends State<OwnerHomeScreen>
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       InkWell(
-                        onTap: () => state.setRole(UserRole.sitter),
+                        onTap: () {
+                          context.read<RoleCubit?>()?.switchToSitter();
+                          state.setRole(UserRole.sitter);
+                          state.setSitterNavIndex(0);
+                          context.go(RoutePaths.sitterDashboard);
+                        },
                         borderRadius: BorderRadius.circular(20),
                         child: Container(
                           padding: const EdgeInsets.symmetric(
