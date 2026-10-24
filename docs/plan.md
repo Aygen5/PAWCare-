@@ -265,7 +265,7 @@ Ekranları feature klasörlerine taşımadan önce:
 - **Etkilenecek Dosyalar:** `lib/core/theme/`
 - **Tamamlanma Kontrolü:** İki temada da bileşenlerin uyumlu ve okunabilir olduğu doğrulanmalı.
 
-#### Adım 6.4: Format, Statik Analiz ve Nihai Test Paketi
+#### Adım 6.4: [TAMAMLANDI] Format, Statik Analiz ve Nihai Test Paketi
 - **Yapılacak İş:**
   - `dart format .` çalıştırmak.
   - `flutter analyze` çalıştırmak (0 hata, 0 lint uyarısı).

@@ -16,11 +16,10 @@ class FakeNotificationRepository implements NotificationRepositoryInterface {
   List<NotificationItem> notifications;
 
   FakeNotificationRepository({List<NotificationItem>? initial})
-      : notifications = initial != null ? List.from(initial) : [];
+    : notifications = initial != null ? List.from(initial) : [];
 
   @override
-  List<NotificationItem> getNotifications() =>
-      List.unmodifiable(notifications);
+  List<NotificationItem> getNotifications() => List.unmodifiable(notifications);
 
   @override
   int getUnreadCount() => notifications.where((n) => !n.isRead).length;
@@ -80,9 +79,7 @@ void main() {
         value: cubit,
         child: MaterialApp(
           home: Scaffold(
-            appBar: AppBar(
-              actions: const [PawHeaderActions()],
-            ),
+            appBar: AppBar(actions: const [PawHeaderActions()]),
             body: Center(
               child: Builder(
                 builder: (ctx) => ElevatedButton(
@@ -157,8 +154,10 @@ void main() {
 
       expect(cubit.state.unreadCount, 0);
       expect(cubit.state.hasUnread, isFalse);
-      expect(fakeRepo.notifications.firstWhere((n) => n.id == 'n_1').isRead,
-          isTrue);
+      expect(
+        fakeRepo.notifications.firstWhere((n) => n.id == 'n_1').isRead,
+        isTrue,
+      );
     });
 
     test('markAllAsRead tüm bildirimleri okundu yapar', () async {
@@ -187,8 +186,10 @@ void main() {
 
       expect(cubit.state.allNotifications.length, 3);
       expect(cubit.state.unreadCount, 2);
-      expect(cubit.state.allNotifications.first.title,
-          'Demo Yürüyüş Durumu 🦮');
+      expect(
+        cubit.state.allNotifications.first.title,
+        'Demo Yürüyüş Durumu 🦮',
+      );
     });
   });
 
@@ -206,30 +207,33 @@ void main() {
       );
     });
 
-    testWidgets('PawHeaderActions bildirim ikonunda rozeti gösterir ve tıklandığında sheet açılır',
-        (tester) async {
-      await tester.binding.setSurfaceSize(const Size(450, 950));
-      addTearDown(() => tester.binding.setSurfaceSize(null));
+    testWidgets(
+      'PawHeaderActions bildirim ikonunda rozeti gösterir ve tıklandığında sheet açılır',
+      (tester) async {
+        await tester.binding.setSurfaceSize(const Size(450, 950));
+        addTearDown(() => tester.binding.setSurfaceSize(null));
 
-      await tester.pumpWidget(createTestWidget(cubit: cubit));
-      await tester.pumpAndSettle();
+        await tester.pumpWidget(createTestWidget(cubit: cubit));
+        await tester.pumpAndSettle();
 
-      // Bildirim ikonuna tıkla
-      final notifIcon = find.byIcon(Icons.notifications_outlined);
-      expect(notifIcon, findsOneWidget);
+        // Bildirim ikonuna tıkla
+        final notifIcon = find.byIcon(Icons.notifications_outlined);
+        expect(notifIcon, findsOneWidget);
 
-      await tester.tap(notifIcon);
-      await tester.pumpAndSettle();
+        await tester.tap(notifIcon);
+        await tester.pumpAndSettle();
 
-      // NotificationsSheet açıldı
-      expect(find.byType(NotificationsSheet), findsOneWidget);
-      expect(find.text('Bildirimler'), findsOneWidget);
-      expect(find.text('Aşı Hatırlatması 💉'), findsOneWidget);
-      expect(find.text('Rezervasyon Onaylandı! 🐾'), findsOneWidget);
-    });
+        // NotificationsSheet açıldı
+        expect(find.byType(NotificationsSheet), findsOneWidget);
+        expect(find.text('Bildirimler'), findsOneWidget);
+        expect(find.text('Aşı Hatırlatması 💉'), findsOneWidget);
+        expect(find.text('Rezervasyon Onaylandı! 🐾'), findsOneWidget);
+      },
+    );
 
-    testWidgets('Okunmamış bildirime tıklandığında okundu olarak işaretlenir',
-        (tester) async {
+    testWidgets('Okunmamış bildirime tıklandığında okundu olarak işaretlenir', (
+      tester,
+    ) async {
       await tester.binding.setSurfaceSize(const Size(450, 950));
       addTearDown(() => tester.binding.setSurfaceSize(null));
 
@@ -250,30 +254,31 @@ void main() {
       expect(cubit.state.unreadCount, 0);
     });
 
-    testWidgets('Tümünü Oku butonuna basıldığında tüm bildirimler okundu olur',
-        (tester) async {
-      await tester.binding.setSurfaceSize(const Size(450, 950));
-      addTearDown(() => tester.binding.setSurfaceSize(null));
+    testWidgets(
+      'Tümünü Oku butonuna basıldığında tüm bildirimler okundu olur',
+      (tester) async {
+        await tester.binding.setSurfaceSize(const Size(450, 950));
+        addTearDown(() => tester.binding.setSurfaceSize(null));
 
-      await tester.pumpWidget(createTestWidget(cubit: cubit));
-      await tester.pumpAndSettle();
+        await tester.pumpWidget(createTestWidget(cubit: cubit));
+        await tester.pumpAndSettle();
 
-      // Sheeti aç
-      await tester.tap(find.text('Bildirimleri Aç'));
-      await tester.pumpAndSettle();
+        // Sheeti aç
+        await tester.tap(find.text('Bildirimleri Aç'));
+        await tester.pumpAndSettle();
 
-      final markAllBtn = find.text('Tümünü Oku');
-      expect(markAllBtn, findsOneWidget);
+        final markAllBtn = find.text('Tümünü Oku');
+        expect(markAllBtn, findsOneWidget);
 
-      await tester.tap(markAllBtn);
-      await tester.pumpAndSettle();
+        await tester.tap(markAllBtn);
+        await tester.pumpAndSettle();
 
-      expect(cubit.state.unreadCount, 0);
-      expect(find.text('Tümünü Oku'), findsNothing);
-    });
+        expect(cubit.state.unreadCount, 0);
+        expect(find.text('Tümünü Oku'), findsNothing);
+      },
+    );
 
-    testWidgets('Filtre çipleri bildirim listesini filtreler',
-        (tester) async {
+    testWidgets('Filtre çipleri bildirim listesini filtreler', (tester) async {
       await tester.binding.setSurfaceSize(const Size(450, 950));
       addTearDown(() => tester.binding.setSurfaceSize(null));
 

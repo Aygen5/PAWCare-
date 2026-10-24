@@ -17,13 +17,13 @@ class ProviderCubit extends Cubit<ProviderState> {
     ManageBookingStatusUseCase? manageBookingStatusUseCase,
     BookingRepositoryInterface? bookingRepository,
     List<BookingRequest>? initialBookings,
-  })  : _getBookingsUseCase = getBookingsUseCase ??
-            GetBookingsUseCase(bookingRepository ?? BookingRepository()),
-        _manageBookingStatusUseCase = manageBookingStatusUseCase ??
-            ManageBookingStatusUseCase(
-              bookingRepository ?? BookingRepository(),
-            ),
-        super(const ProviderState()) {
+  }) : _getBookingsUseCase =
+           getBookingsUseCase ??
+           GetBookingsUseCase(bookingRepository ?? BookingRepository()),
+       _manageBookingStatusUseCase =
+           manageBookingStatusUseCase ??
+           ManageBookingStatusUseCase(bookingRepository ?? BookingRepository()),
+       super(const ProviderState()) {
     if (initialBookings != null && initialBookings.isNotEmpty) {
       _emitBookings(initialBookings);
     } else {
@@ -46,10 +46,12 @@ class ProviderCubit extends Cubit<ProviderState> {
       if (fallbackBookings != null && fallbackBookings.isNotEmpty) {
         _emitBookings(fallbackBookings);
       } else {
-        emit(state.copyWith(
-          status: ProviderStatus.error,
-          errorMessage: 'Talepler yüklenirken bir hata oluştu: $e',
-        ));
+        emit(
+          state.copyWith(
+            status: ProviderStatus.error,
+            errorMessage: 'Talepler yüklenirken bir hata oluştu: $e',
+          ),
+        );
       }
     }
   }
@@ -69,15 +71,17 @@ class ProviderCubit extends Cubit<ProviderState> {
       (sum, item) => sum + item.totalPrice,
     );
 
-    emit(state.copyWith(
-      status: ProviderStatus.loaded,
-      bookings: allBookings,
-      pendingBookings: pending,
-      confirmedBookings: confirmed,
-      totalEarnings: earnings > 0 ? earnings : 4250.0,
-      errorMessage: null,
-      updatingBookingId: null,
-    ));
+    emit(
+      state.copyWith(
+        status: ProviderStatus.loaded,
+        bookings: allBookings,
+        pendingBookings: pending,
+        confirmedBookings: confirmed,
+        totalEarnings: earnings > 0 ? earnings : 4250.0,
+        errorMessage: null,
+        updatingBookingId: null,
+      ),
+    );
   }
 
   /// Bekleyen bir rezervasyonu onaylar ve durumu günceller.
@@ -91,10 +95,12 @@ class ProviderCubit extends Cubit<ProviderState> {
       loadDashboard();
       return true;
     } catch (e) {
-      emit(state.copyWith(
-        updatingBookingId: null,
-        errorMessage: 'Rezervasyon onaylanırken hata oluştu: $e',
-      ));
+      emit(
+        state.copyWith(
+          updatingBookingId: null,
+          errorMessage: 'Rezervasyon onaylanırken hata oluştu: $e',
+        ),
+      );
       return false;
     }
   }
@@ -110,10 +116,12 @@ class ProviderCubit extends Cubit<ProviderState> {
       loadDashboard();
       return true;
     } catch (e) {
-      emit(state.copyWith(
-        updatingBookingId: null,
-        errorMessage: 'Rezervasyon reddedilirken hata oluştu: $e',
-      ));
+      emit(
+        state.copyWith(
+          updatingBookingId: null,
+          errorMessage: 'Rezervasyon reddedilirken hata oluştu: $e',
+        ),
+      );
       return false;
     }
   }

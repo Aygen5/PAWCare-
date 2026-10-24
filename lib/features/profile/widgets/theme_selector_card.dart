@@ -19,14 +19,12 @@ class ThemeSelectorCard extends StatelessWidget {
     final currentThemeMode =
         context.watch<ThemeCubit?>()?.state ?? ThemeMode.system;
 
-    final cardBg =
-        isDark
-            ? AppColors.darkSurfaceContainerLow
-            : AppColors.surfaceContainerLowest;
-    final borderColor =
-        isDark
-            ? AppColors.darkOutlineVariant
-            : AppColors.outlineVariant.withValues(alpha: 0.35);
+    final cardBg = isDark
+        ? AppColors.darkSurfaceContainerLow
+        : AppColors.surfaceContainerLowest;
+    final borderColor = isDark
+        ? AppColors.darkOutlineVariant
+        : AppColors.outlineVariant.withValues(alpha: 0.35);
 
     return Container(
       padding: const EdgeInsets.all(18),
@@ -44,10 +42,9 @@ class ThemeSelectorCard extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color:
-                      isDark
-                          ? AppColors.darkPrimaryContainer
-                          : AppColors.secondaryContainer,
+                  color: isDark
+                      ? AppColors.darkPrimaryContainer
+                      : AppColors.secondaryContainer,
                   shape: BoxShape.circle,
                 ),
                 child: Icon(
@@ -64,20 +61,18 @@ class ThemeSelectorCard extends StatelessWidget {
                     Text(
                       'Görünüm ve Tema',
                       style: AppTypography.headlineSection.copyWith(
-                        color:
-                            isDark
-                                ? AppColors.darkOnSurface
-                                : AppColors.onSurface,
+                        color: isDark
+                            ? AppColors.darkOnSurface
+                            : AppColors.onSurface,
                       ),
                     ),
                     const SizedBox(height: 2),
                     Text(
                       'Açık veya göz yormayan özel haki koyu tema',
                       style: AppTypography.caption.copyWith(
-                        color:
-                            isDark
-                                ? AppColors.darkOnSurfaceVariant
-                                : AppColors.onSurfaceVariant,
+                        color: isDark
+                            ? AppColors.darkOnSurfaceVariant
+                            : AppColors.onSurfaceVariant,
                       ),
                     ),
                   ],
@@ -91,10 +86,9 @@ class ThemeSelectorCard extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(4),
             decoration: BoxDecoration(
-              color:
-                  isDark
-                      ? AppColors.darkSurfaceContainerLowest
-                      : AppColors.surfaceContainer,
+              color: isDark
+                  ? AppColors.darkSurfaceContainerLowest
+                  : AppColors.surfaceContainer,
               borderRadius: BorderRadius.circular(14),
             ),
             child: Row(
@@ -137,10 +131,9 @@ class ThemeSelectorCard extends StatelessWidget {
               Icon(
                 Icons.nature_people_outlined,
                 size: 14,
-                color:
-                    isDark
-                        ? AppColors.darkPrimary
-                        : AppColors.onSurfaceVariant,
+                color: isDark
+                    ? AppColors.darkPrimary
+                    : AppColors.onSurfaceVariant,
               ),
               const SizedBox(width: 6),
               Expanded(
@@ -148,10 +141,9 @@ class ThemeSelectorCard extends StatelessWidget {
                   'PawCare koyu modu saf siyah (#000000) değil, sakinleştirici zeytin ve haki tonlarındadır.',
                   style: AppTypography.caption.copyWith(
                     fontSize: 11,
-                    color:
-                        isDark
-                            ? AppColors.darkOnSurfaceVariant
-                            : AppColors.onSurfaceVariant,
+                    color: isDark
+                        ? AppColors.darkOnSurfaceVariant
+                        : AppColors.onSurfaceVariant,
                   ),
                 ),
               ),
@@ -171,14 +163,15 @@ class ThemeSelectorCard extends StatelessWidget {
     required bool isSelected,
     required bool isDark,
   }) {
-    final activeBg =
-        isDark
-            ? AppColors.darkPrimaryContainer
-            : AppColors.surfaceContainerLowest;
-    final activeTextColor =
-        isDark ? AppColors.darkOnPrimaryContainer : AppColors.primary;
-    final inactiveTextColor =
-        isDark ? AppColors.darkOnSurfaceVariant : AppColors.onSurfaceVariant;
+    final activeBg = isDark
+        ? AppColors.darkPrimaryContainer
+        : AppColors.surfaceContainerLowest;
+    final activeTextColor = isDark
+        ? AppColors.darkOnPrimaryContainer
+        : AppColors.primary;
+    final inactiveTextColor = isDark
+        ? AppColors.darkOnSurfaceVariant
+        : AppColors.onSurfaceVariant;
 
     return Expanded(
       child: GestureDetector(
@@ -193,16 +186,15 @@ class ThemeSelectorCard extends StatelessWidget {
           decoration: BoxDecoration(
             color: isSelected ? activeBg : Colors.transparent,
             borderRadius: BorderRadius.circular(10),
-            boxShadow:
-                isSelected
-                    ? [
-                      BoxShadow(
-                        color: Colors.black.withValues(alpha: 0.06),
-                        blurRadius: 6,
-                        offset: const Offset(0, 2),
-                      ),
-                    ]
-                    : null,
+            boxShadow: isSelected
+                ? [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.06),
+                      blurRadius: 6,
+                      offset: const Offset(0, 2),
+                    ),
+                  ]
+                : null,
           ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,

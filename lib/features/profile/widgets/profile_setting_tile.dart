@@ -25,14 +25,12 @@ class ProfileSettingTile extends StatelessWidget {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
 
-    final cardBg =
-        isDark
-            ? AppColors.darkSurfaceContainerLow
-            : AppColors.surfaceContainerLowest;
-    final borderColor =
-        isDark
-            ? AppColors.darkOutlineVariant.withValues(alpha: 0.5)
-            : AppColors.outlineVariant.withValues(alpha: 0.3);
+    final cardBg = isDark
+        ? AppColors.darkSurfaceContainerLow
+        : AppColors.surfaceContainerLowest;
+    final borderColor = isDark
+        ? AppColors.darkOutlineVariant.withValues(alpha: 0.5)
+        : AppColors.outlineVariant.withValues(alpha: 0.3);
 
     return Container(
       margin: const EdgeInsets.only(bottom: 8),
@@ -54,17 +52,15 @@ class ProfileSettingTile extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
-                    color:
-                        isDark
-                            ? AppColors.darkSurfaceContainerHighest
-                            : AppColors.surfaceContainerLow,
+                    color: isDark
+                        ? AppColors.darkSurfaceContainerHighest
+                        : AppColors.surfaceContainerLow,
                     borderRadius: BorderRadius.circular(10),
                   ),
                   child: Icon(
                     icon,
                     size: 20,
-                    color:
-                        isDark ? AppColors.darkPrimary : AppColors.primary,
+                    color: isDark ? AppColors.darkPrimary : AppColors.primary,
                   ),
                 ),
                 const SizedBox(width: 14),
@@ -76,10 +72,9 @@ class ProfileSettingTile extends StatelessWidget {
                         title,
                         style: AppTypography.bodyMedium.copyWith(
                           fontWeight: FontWeight.w600,
-                          color:
-                              isDark
-                                  ? AppColors.darkOnSurface
-                                  : AppColors.onSurface,
+                          color: isDark
+                              ? AppColors.darkOnSurface
+                              : AppColors.onSurface,
                         ),
                       ),
                       if (subtitle != null) ...[
@@ -87,10 +82,9 @@ class ProfileSettingTile extends StatelessWidget {
                         Text(
                           subtitle!,
                           style: AppTypography.caption.copyWith(
-                            color:
-                                isDark
-                                    ? AppColors.darkOnSurfaceVariant
-                                    : AppColors.onSurfaceVariant,
+                            color: isDark
+                                ? AppColors.darkOnSurfaceVariant
+                                : AppColors.onSurfaceVariant,
                           ),
                         ),
                       ],
@@ -103,10 +97,9 @@ class ProfileSettingTile extends StatelessWidget {
                   Icon(
                     Icons.chevron_right,
                     size: 20,
-                    color:
-                        isDark
-                            ? AppColors.darkOnSurfaceVariant
-                            : AppColors.onSurfaceVariant,
+                    color: isDark
+                        ? AppColors.darkOnSurfaceVariant
+                        : AppColors.onSurfaceVariant,
                   ),
               ],
             ),

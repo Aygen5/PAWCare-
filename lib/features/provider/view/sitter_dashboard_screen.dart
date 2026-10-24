@@ -270,7 +270,9 @@ class _SitterDashboardView extends StatelessWidget {
                         color: AppColors.surfaceContainerLowest,
                         borderRadius: BorderRadius.circular(20),
                         border: Border.all(
-                          color: AppColors.outlineVariant.withValues(alpha: 0.3),
+                          color: AppColors.outlineVariant.withValues(
+                            alpha: 0.3,
+                          ),
                         ),
                       ),
                       child: Column(
@@ -308,8 +310,9 @@ class _SitterDashboardView extends StatelessWidget {
                           booking: booking,
                           isUpdating: isUpdating,
                           onConfirm: () async {
-                            final success =
-                                await cubit.confirmBooking(booking.id);
+                            final success = await cubit.confirmBooking(
+                              booking.id,
+                            );
                             if (success) {
                               appState.updateBookingStatus(
                                 booking.id,
@@ -331,8 +334,9 @@ class _SitterDashboardView extends StatelessWidget {
                             }
                           },
                           onReject: () async {
-                            final success =
-                                await cubit.rejectBooking(booking.id);
+                            final success = await cubit.rejectBooking(
+                              booking.id,
+                            );
                             if (success) {
                               appState.updateBookingStatus(
                                 booking.id,
@@ -468,10 +472,7 @@ class _SitterDashboardView extends StatelessWidget {
       ),
       child: Row(
         children: [
-          CircleAvatar(
-            radius: 24,
-            backgroundImage: AssetImage(avatarPath),
-          ),
+          CircleAvatar(radius: 24, backgroundImage: AssetImage(avatarPath)),
           const SizedBox(width: 14),
           Expanded(
             child: Column(
@@ -511,10 +512,7 @@ class _SitterDashboardView extends StatelessWidget {
             ),
           ),
           IconButton(
-            icon: const Icon(
-              Icons.phone_outlined,
-              color: AppColors.primary,
-            ),
+            icon: const Icon(Icons.phone_outlined, color: AppColors.primary),
             onPressed: () => CallModal.show(
               context,
               contactName: 'Aygen ($petName Sahibi)',
@@ -579,10 +577,7 @@ class _SitterDashboardView extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 2),
-            Text(
-              subtitle,
-              style: AppTypography.caption.copyWith(fontSize: 10),
-            ),
+            Text(subtitle, style: AppTypography.caption.copyWith(fontSize: 10)),
           ],
         ),
       ),

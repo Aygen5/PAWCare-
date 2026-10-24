@@ -18,17 +18,19 @@ class NotificationsCubit extends Cubit<NotificationsState> {
     MarkNotificationReadUseCase? markNotificationReadUseCase,
     NotificationRepositoryInterface? notificationRepository,
     List<NotificationItem>? initialNotifications,
-  })  : _notificationRepository =
-            notificationRepository ?? NotificationRepository(),
-        _getNotificationsUseCase = getNotificationsUseCase ??
-            GetNotificationsUseCase(
-              notificationRepository ?? NotificationRepository(),
-            ),
-        _markNotificationReadUseCase = markNotificationReadUseCase ??
-            MarkNotificationReadUseCase(
-              notificationRepository ?? NotificationRepository(),
-            ),
-        super(const NotificationsState()) {
+  }) : _notificationRepository =
+           notificationRepository ?? NotificationRepository(),
+       _getNotificationsUseCase =
+           getNotificationsUseCase ??
+           GetNotificationsUseCase(
+             notificationRepository ?? NotificationRepository(),
+           ),
+       _markNotificationReadUseCase =
+           markNotificationReadUseCase ??
+           MarkNotificationReadUseCase(
+             notificationRepository ?? NotificationRepository(),
+           ),
+       super(const NotificationsState()) {
     if (initialNotifications != null && initialNotifications.isNotEmpty) {
       _applyNotifications(initialNotifications, state.activeFilter);
     } else {
@@ -51,10 +53,12 @@ class NotificationsCubit extends Cubit<NotificationsState> {
       if (fallbackNotifications != null && fallbackNotifications.isNotEmpty) {
         _applyNotifications(fallbackNotifications, state.activeFilter);
       } else {
-        emit(state.copyWith(
-          status: NotificationsStatus.error,
-          errorMessage: 'Bildirimler yüklenirken hata oluştu: $e',
-        ));
+        emit(
+          state.copyWith(
+            status: NotificationsStatus.error,
+            errorMessage: 'Bildirimler yüklenirken hata oluştu: $e',
+          ),
+        );
       }
     }
   }
@@ -87,15 +91,17 @@ class NotificationsCubit extends Cubit<NotificationsState> {
 
     final unread = all.where((n) => !n.isRead).length;
 
-    emit(state.copyWith(
-      status: NotificationsStatus.loaded,
-      allNotifications: all,
-      filteredNotifications: filtered,
-      activeFilter: filter,
-      unreadCount: unread,
-      errorMessage: null,
-      markingId: null,
-    ));
+    emit(
+      state.copyWith(
+        status: NotificationsStatus.loaded,
+        allNotifications: all,
+        filteredNotifications: filtered,
+        activeFilter: filter,
+        unreadCount: unread,
+        errorMessage: null,
+        markingId: null,
+      ),
+    );
   }
 
   /// Tek bir bildirimi okundu olarak işaretler.

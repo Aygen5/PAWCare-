@@ -44,17 +44,13 @@ class ProfileScreen extends StatelessWidget {
       create: (ctx) {
         final auth = ctx.read<AuthCubit?>()?.state;
         final role = ctx.read<RoleCubit?>()?.state;
-        return ProfileCubit()
-          ..loadProfile(
-            initialName: auth?.userName,
-            initialEmail: auth?.userEmail,
-            currentRole: role,
-          );
+        return ProfileCubit()..loadProfile(
+          initialName: auth?.userName,
+          initialEmail: auth?.userEmail,
+          currentRole: role,
+        );
       },
-      child: _ProfileView(
-        onLogout: onLogout,
-        onDogProfileTap: onDogProfileTap,
-      ),
+      child: _ProfileView(onLogout: onLogout, onDogProfileTap: onDogProfileTap),
     );
   }
 }
@@ -70,8 +66,7 @@ class _ProfileView extends StatelessWidget {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
 
-    final scaffoldBg =
-        isDark ? AppColors.darkBackground : AppColors.background;
+    final scaffoldBg = isDark ? AppColors.darkBackground : AppColors.background;
 
     return Scaffold(
       backgroundColor: scaffoldBg,
@@ -87,20 +82,18 @@ class _ProfileView extends StatelessWidget {
                   Text(
                     'Hesap & Profil',
                     style: AppTypography.headlineScreen.copyWith(
-                      color:
-                          isDark
-                              ? AppColors.darkOnSurface
-                              : AppColors.onSurface,
+                      color: isDark
+                          ? AppColors.darkOnSurface
+                          : AppColors.onSurface,
                     ),
                   ),
                   const SizedBox(height: 4),
                   Text(
                     'Kişisel bilgileriniz, evcil hayvanınız ve uygulama tercihleri',
                     style: AppTypography.caption.copyWith(
-                      color:
-                          isDark
-                              ? AppColors.darkOnSurfaceVariant
-                              : AppColors.onSurfaceVariant,
+                      color: isDark
+                          ? AppColors.darkOnSurfaceVariant
+                          : AppColors.onSurfaceVariant,
                     ),
                   ),
                   const SizedBox(height: 20),
@@ -130,10 +123,9 @@ class _ProfileView extends StatelessWidget {
                   Text(
                     'Ayarlar & Tercihler',
                     style: AppTypography.headlineSection.copyWith(
-                      color:
-                          isDark
-                              ? AppColors.darkOnSurface
-                              : AppColors.onSurface,
+                      color: isDark
+                          ? AppColors.darkOnSurface
+                          : AppColors.onSurface,
                     ),
                   ),
                   const SizedBox(height: 12),
@@ -145,8 +137,9 @@ class _ProfileView extends StatelessWidget {
                     subtitle: 'Aşı, rezervasyon ve yürüyüş uyarıları',
                     trailing: Switch(
                       value: state.notificationsEnabled,
-                      activeThumbColor:
-                          isDark ? AppColors.darkPrimary : AppColors.primary,
+                      activeThumbColor: isDark
+                          ? AppColors.darkPrimary
+                          : AppColors.primary,
                       onChanged: (val) {
                         context.read<ProfileCubit>().toggleNotifications(val);
                       },
@@ -194,10 +187,9 @@ class _ProfileView extends StatelessWidget {
                       onPressed: () {
                         final roleCubit = context.read<RoleCubit?>();
                         final appState = AppStateScope.of(context);
-                        final nextRole =
-                            state.role == UserRole.owner
-                                ? UserRole.sitter
-                                : UserRole.owner;
+                        final nextRole = state.role == UserRole.owner
+                            ? UserRole.sitter
+                            : UserRole.owner;
 
                         roleCubit?.setRole(nextRole);
                         context.read<ProfileCubit>().toggleRole();
@@ -216,10 +208,9 @@ class _ProfileView extends StatelessWidget {
                       },
                       style: OutlinedButton.styleFrom(
                         side: BorderSide(
-                          color:
-                              isDark
-                                  ? AppColors.darkPrimary
-                                  : AppColors.primary,
+                          color: isDark
+                              ? AppColors.darkPrimary
+                              : AppColors.primary,
                         ),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(14),
@@ -228,10 +219,9 @@ class _ProfileView extends StatelessWidget {
                       ),
                       icon: Icon(
                         Icons.swap_horiz,
-                        color:
-                            isDark
-                                ? AppColors.darkPrimary
-                                : AppColors.primary,
+                        color: isDark
+                            ? AppColors.darkPrimary
+                            : AppColors.primary,
                       ),
                       label: Text(
                         state.role == UserRole.owner
@@ -239,10 +229,9 @@ class _ProfileView extends StatelessWidget {
                             : 'Köpek Sahibi Moduna Geç',
                         style: AppTypography.bodyMedium.copyWith(
                           fontWeight: FontWeight.w600,
-                          color:
-                              isDark
-                                  ? AppColors.darkPrimary
-                                  : AppColors.primary,
+                          color: isDark
+                              ? AppColors.darkPrimary
+                              : AppColors.primary,
                         ),
                       ),
                     ),

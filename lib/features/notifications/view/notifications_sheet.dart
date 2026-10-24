@@ -315,8 +315,7 @@ class NotificationsSheet extends StatelessWidget {
     switch (typeIndex) {
       case 1:
         title = 'Rezervasyon Oluşturuldu 📋';
-        body =
-            'Rezervasyon talebiniz iletildi: Köpek Oteli — 2 Gece Konaklama - Beklemede';
+        body = 'Rezervasyon talebiniz iletildi: Köpek Oteli — 2 Gece Konaklama - Beklemede';
         type = 'booking';
         break;
       case 2:
@@ -361,9 +360,7 @@ class NotificationsSheet extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
         decoration: BoxDecoration(
-          color: isSelected
-              ? AppColors.primary
-              : AppColors.surfaceContainerLow,
+          color: isSelected ? AppColors.primary : AppColors.surfaceContainerLow,
           borderRadius: BorderRadius.circular(14),
         ),
         child: Text(
@@ -432,10 +429,7 @@ class NotificationsSheet extends StatelessWidget {
           children: [
             Container(
               padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                color: iconBg,
-                shape: BoxShape.circle,
-              ),
+              decoration: BoxDecoration(color: iconBg, shape: BoxShape.circle),
               child: Icon(
                 icon,
                 size: 16,

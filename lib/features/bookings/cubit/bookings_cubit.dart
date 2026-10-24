@@ -17,13 +17,13 @@ class BookingsCubit extends Cubit<BookingsState> {
     ManageBookingStatusUseCase? manageBookingStatusUseCase,
     BookingRepositoryInterface? bookingRepository,
     List<BookingRequest>? initialBookings,
-  })  : _getBookingsUseCase = getBookingsUseCase ??
-            GetBookingsUseCase(bookingRepository ?? BookingRepository()),
-        _manageBookingStatusUseCase = manageBookingStatusUseCase ??
-            ManageBookingStatusUseCase(
-              bookingRepository ?? BookingRepository(),
-            ),
-        super(const BookingsState()) {
+  }) : _getBookingsUseCase =
+           getBookingsUseCase ??
+           GetBookingsUseCase(bookingRepository ?? BookingRepository()),
+       _manageBookingStatusUseCase =
+           manageBookingStatusUseCase ??
+           ManageBookingStatusUseCase(bookingRepository ?? BookingRepository()),
+       super(const BookingsState()) {
     if (initialBookings != null && initialBookings.isNotEmpty) {
       _applyBookings(initialBookings, state.activeFilter);
     } else {
@@ -46,10 +46,12 @@ class BookingsCubit extends Cubit<BookingsState> {
       if (fallbackBookings != null && fallbackBookings.isNotEmpty) {
         _applyBookings(fallbackBookings, state.activeFilter);
       } else {
-        emit(state.copyWith(
-          status: BookingsStatus.error,
-          errorMessage: 'Rezervasyonlar yüklenirken hata oluştu: $e',
-        ));
+        emit(
+          state.copyWith(
+            status: BookingsStatus.error,
+            errorMessage: 'Rezervasyonlar yüklenirken hata oluştu: $e',
+          ),
+        );
       }
     }
   }
@@ -60,10 +62,7 @@ class BookingsCubit extends Cubit<BookingsState> {
   }
 
   /// Filtre mantığını uygulayarak durumu günceller.
-  void _applyBookings(
-    List<BookingRequest> allBookings,
-    BookingFilter filter,
-  ) {
+  void _applyBookings(List<BookingRequest> allBookings, BookingFilter filter) {
     List<BookingRequest> filtered;
     switch (filter) {
       case BookingFilter.all:
@@ -81,21 +80,25 @@ class BookingsCubit extends Cubit<BookingsState> {
         break;
       case BookingFilter.past:
         filtered = allBookings
-            .where((b) =>
-                b.status == BookingStatus.completed ||
-                b.status == BookingStatus.rejected)
+            .where(
+              (b) =>
+                  b.status == BookingStatus.completed ||
+                  b.status == BookingStatus.rejected,
+            )
             .toList();
         break;
     }
 
-    emit(state.copyWith(
-      status: BookingsStatus.loaded,
-      allBookings: allBookings,
-      filteredBookings: filtered,
-      activeFilter: filter,
-      errorMessage: null,
-      cancellingBookingId: null,
-    ));
+    emit(
+      state.copyWith(
+        status: BookingsStatus.loaded,
+        allBookings: allBookings,
+        filteredBookings: filtered,
+        activeFilter: filter,
+        errorMessage: null,
+        cancellingBookingId: null,
+      ),
+    );
   }
 
   /// Bekleyen bir rezervasyon talebini iptal eder (reddedildi durumuna çeker).
@@ -109,10 +112,12 @@ class BookingsCubit extends Cubit<BookingsState> {
       loadBookings();
       return true;
     } catch (e) {
-      emit(state.copyWith(
-        cancellingBookingId: null,
-        errorMessage: 'Rezervasyon iptal edilirken hata oluştu: $e',
-      ));
+      emit(
+        state.copyWith(
+          cancellingBookingId: null,
+          errorMessage: 'Rezervasyon iptal edilirken hata oluştu: $e',
+        ),
+      );
       return false;
     }
   }

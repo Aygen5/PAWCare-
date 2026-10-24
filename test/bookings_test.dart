@@ -19,7 +19,7 @@ class FakeBookingRepository implements BookingRepositoryInterface {
   List<BookingRequest> bookings;
 
   FakeBookingRepository({List<BookingRequest>? initial})
-      : bookings = initial != null ? List.from(initial) : [];
+    : bookings = initial != null ? List.from(initial) : [];
 
   @override
   List<BookingRequest> getAllBookings() => List.unmodifiable(bookings);
@@ -99,10 +99,7 @@ void main() {
     status: BookingStatus.completed,
   );
 
-  Widget createTestWidget({
-    required BookingsCubit cubit,
-    AppState? appState,
-  }) {
+  Widget createTestWidget({required BookingsCubit cubit, AppState? appState}) {
     return AppStateScope(
       notifier: appState ?? AppState(),
       child: MultiBlocProvider(
@@ -110,9 +107,7 @@ void main() {
           BlocProvider<BookingsCubit>.value(value: cubit),
           BlocProvider<RoleCubit>(create: (_) => RoleCubit()),
         ],
-        child: const MaterialApp(
-          home: OwnerBookingsScreen(),
-        ),
+        child: const MaterialApp(home: OwnerBookingsScreen()),
       ),
     );
   }
@@ -168,20 +163,22 @@ void main() {
       expect(cubit.state.filteredBookings.first.id, 'b_past');
     });
 
-    test('cancelBooking bekleyen talebi iptal eder ve durumu günceller',
-        () async {
-      final cubit = BookingsCubit(
-        getBookingsUseCase: getBookingsUseCase,
-        manageBookingStatusUseCase: manageBookingStatusUseCase,
-      );
+    test(
+      'cancelBooking bekleyen talebi iptal eder ve durumu günceller',
+      () async {
+        final cubit = BookingsCubit(
+          getBookingsUseCase: getBookingsUseCase,
+          manageBookingStatusUseCase: manageBookingStatusUseCase,
+        );
 
-      final success = await cubit.cancelBooking('b_pending');
-      expect(success, isTrue);
+        final success = await cubit.cancelBooking('b_pending');
+        expect(success, isTrue);
 
-      final inRepo = fakeRepo.bookings.firstWhere((b) => b.id == 'b_pending');
-      expect(inRepo.status, BookingStatus.rejected);
-      expect(cubit.state.pendingCount, 0);
-    });
+        final inRepo = fakeRepo.bookings.firstWhere((b) => b.id == 'b_pending');
+        expect(inRepo.status, BookingStatus.rejected);
+        expect(cubit.state.pendingCount, 0);
+      },
+    );
   });
 
   group('Adım 4.6: OwnerBookingsScreen Widget Testleri', () {
@@ -199,31 +196,33 @@ void main() {
     });
 
     testWidgets(
-        'OwnerBookingsScreen başlık, PawHeaderActions ve filtre çiplerini gösterir',
-        (tester) async {
-      await tester.binding.setSurfaceSize(const Size(450, 950));
-      addTearDown(() => tester.binding.setSurfaceSize(null));
+      'OwnerBookingsScreen başlık, PawHeaderActions ve filtre çiplerini gösterir',
+      (tester) async {
+        await tester.binding.setSurfaceSize(const Size(450, 950));
+        addTearDown(() => tester.binding.setSurfaceSize(null));
 
-      await tester.pumpWidget(createTestWidget(cubit: cubit));
-      await tester.pumpAndSettle();
+        await tester.pumpWidget(createTestWidget(cubit: cubit));
+        await tester.pumpAndSettle();
 
-      expect(find.text('Rezervasyon Taleplerim'), findsOneWidget);
-      expect(find.byType(PawHeaderActions), findsOneWidget);
+        expect(find.text('Rezervasyon Taleplerim'), findsOneWidget);
+        expect(find.byType(PawHeaderActions), findsOneWidget);
 
-      // Filtre çipleri
-      expect(find.textContaining('Tümü (2)'), findsOneWidget);
-      expect(find.textContaining('Bekleyen (1)'), findsOneWidget);
-      expect(find.textContaining('Onaylı (1)'), findsOneWidget);
-      expect(find.text('Geçmiş / Diğer'), findsOneWidget);
+        // Filtre çipleri
+        expect(find.textContaining('Tümü (2)'), findsOneWidget);
+        expect(find.textContaining('Bekleyen (1)'), findsOneWidget);
+        expect(find.textContaining('Onaylı (1)'), findsOneWidget);
+        expect(find.text('Geçmiş / Diğer'), findsOneWidget);
 
-      // Kartlar
-      expect(find.byType(BookingCard), findsNWidgets(2));
-      expect(find.text('Ayşe Yılmaz'), findsOneWidget);
-      expect(find.text('Mert Demir'), findsOneWidget);
-    });
+        // Kartlar
+        expect(find.byType(BookingCard), findsNWidgets(2));
+        expect(find.text('Ayşe Yılmaz'), findsOneWidget);
+        expect(find.text('Mert Demir'), findsOneWidget);
+      },
+    );
 
-    testWidgets('Onaylı rezervasyonda Canlı Takip butonu modalı açar',
-        (tester) async {
+    testWidgets('Onaylı rezervasyonda Canlı Takip butonu modalı açar', (
+      tester,
+    ) async {
       await tester.binding.setSurfaceSize(const Size(450, 950));
       addTearDown(() => tester.binding.setSurfaceSize(null));
 
@@ -240,8 +239,9 @@ void main() {
       expect(find.text('Canlı Yürüyüş Takibi'), findsOneWidget);
     });
 
-    testWidgets('Filtre çipine tıklandığında liste filtrelenir',
-        (tester) async {
+    testWidgets('Filtre çipine tıklandığında liste filtrelenir', (
+      tester,
+    ) async {
       await tester.binding.setSurfaceSize(const Size(450, 950));
       addTearDown(() => tester.binding.setSurfaceSize(null));
 
@@ -262,14 +262,10 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.byType(BookingCard), findsNothing);
-      expect(
-        find.text('Bu filtrede rezervasyon bulunmuyor'),
-        findsOneWidget,
-      );
+      expect(find.text('Bu filtrede rezervasyon bulunmuyor'), findsOneWidget);
     });
 
-    testWidgets('Talebi İptal Et butonu onay dialogunu açar',
-        (tester) async {
+    testWidgets('Talebi İptal Et butonu onay dialogunu açar', (tester) async {
       await tester.binding.setSurfaceSize(const Size(450, 950));
       addTearDown(() => tester.binding.setSurfaceSize(null));
 
@@ -282,16 +278,16 @@ void main() {
       await tester.tap(cancelBtn);
       await tester.pumpAndSettle();
 
-      expect(find.text('Talebi İptal Et'), findsNWidgets(2)); // başlık ve dialog
+      expect(
+        find.text('Talebi İptal Et'),
+        findsNWidgets(2),
+      ); // başlık ve dialog
       expect(find.text('Evet, İptal Et'), findsOneWidget);
 
       await tester.tap(find.text('Evet, İptal Et'));
       await tester.pumpAndSettle();
 
-      expect(
-        find.text('Rezervasyon talebiniz iptal edildi.'),
-        findsOneWidget,
-      );
+      expect(find.text('Rezervasyon talebiniz iptal edildi.'), findsOneWidget);
     });
   });
 }

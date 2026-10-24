@@ -66,9 +66,9 @@ class _ExploreViewState extends State<_ExploreView> {
       if (appState.selectedCategory != 'Tümü' ||
           appState.searchQuery.isNotEmpty) {
         context.read<DiscoveryCubit>().loadSitters(
-              initialCategory: appState.selectedCategory,
-              initialQuery: appState.searchQuery,
-            );
+          initialCategory: appState.selectedCategory,
+          initialQuery: appState.searchQuery,
+        );
       }
     }
   }

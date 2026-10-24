@@ -155,10 +155,6 @@ class _AppShellState extends State<AppShell> {
     }
   }
 
-
-
-
-
   Widget _buildPlaceholderTab(String title, String description) {
     return Scaffold(
       backgroundColor: AppColors.background,

@@ -147,7 +147,9 @@ class _OwnerBookingsView extends StatelessWidget {
                         color: AppColors.surfaceContainerLowest,
                         borderRadius: BorderRadius.circular(22),
                         border: Border.all(
-                          color: AppColors.outlineVariant.withValues(alpha: 0.3),
+                          color: AppColors.outlineVariant.withValues(
+                            alpha: 0.3,
+                          ),
                         ),
                       ),
                       child: Column(
@@ -209,8 +211,7 @@ class _OwnerBookingsView extends StatelessWidget {
                       separatorBuilder: (_, _) => const SizedBox(height: 14),
                       itemBuilder: (context, index) {
                         final b = bookings[index];
-                        final isCancelling =
-                            state.cancellingBookingId == b.id;
+                        final isCancelling = state.cancellingBookingId == b.id;
 
                         return BookingCard(
                           booking: b,

@@ -99,8 +99,9 @@ class ProfileCubit extends Cubit<ProfileState> {
 
   /// Rolü Köpek Sahibi ve Hizmet Veren arasında değiştirir.
   Future<void> toggleRole() async {
-    final newRole =
-        state.role == UserRole.owner ? UserRole.sitter : UserRole.owner;
+    final newRole = state.role == UserRole.owner
+        ? UserRole.sitter
+        : UserRole.owner;
     await _updateAppSettingsUseCase.setUserRole(
       newRole == UserRole.sitter ? 'sitter' : 'owner',
     );

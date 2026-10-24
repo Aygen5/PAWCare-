@@ -27,19 +27,18 @@ class UserProfileCard extends StatelessWidget {
     final userName = profileCubit?.state.userName ?? 'Aygen Y.';
     final userEmail = profileCubit?.state.userEmail ?? 'aygen@pawcare.com';
     final userPhone = profileCubit?.state.userPhone ?? '+90 532 123 45 67';
-    final activeRole = roleCubit?.state ?? profileCubit?.state.role ?? state.role;
+    final activeRole =
+        roleCubit?.state ?? profileCubit?.state.role ?? state.role;
     final isOwner = activeRole == UserRole.owner;
 
     final Dog dog = profileCubit?.state.dog ?? state.currentDog;
 
-    final cardBg =
-        isDark
-            ? AppColors.darkSurfaceContainerLow
-            : AppColors.surfaceContainerLowest;
-    final borderColor =
-        isDark
-            ? AppColors.darkOutlineVariant
-            : AppColors.outlineVariant.withValues(alpha: 0.35);
+    final cardBg = isDark
+        ? AppColors.darkSurfaceContainerLow
+        : AppColors.surfaceContainerLowest;
+    final borderColor = isDark
+        ? AppColors.darkOutlineVariant
+        : AppColors.outlineVariant.withValues(alpha: 0.35);
 
     return Container(
       padding: const EdgeInsets.all(20),
@@ -60,13 +59,11 @@ class UserProfileCard extends StatelessWidget {
                 height: 64,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color:
-                      isDark
-                          ? AppColors.darkSecondaryContainer
-                          : AppColors.secondaryContainer,
+                  color: isDark
+                      ? AppColors.darkSecondaryContainer
+                      : AppColors.secondaryContainer,
                   border: Border.all(
-                    color:
-                        isDark ? AppColors.darkPrimary : AppColors.primary,
+                    color: isDark ? AppColors.darkPrimary : AppColors.primary,
                     width: 2,
                   ),
                 ),
@@ -74,10 +71,9 @@ class UserProfileCard extends StatelessWidget {
                   child: Text(
                     userName.isNotEmpty ? userName[0].toUpperCase() : 'A',
                     style: AppTypography.headlineScreen.copyWith(
-                      color:
-                          isDark
-                              ? AppColors.darkOnSecondaryContainer
-                              : AppColors.primary,
+                      color: isDark
+                          ? AppColors.darkOnSecondaryContainer
+                          : AppColors.primary,
                       fontSize: 26,
                     ),
                   ),
@@ -94,24 +90,23 @@ class UserProfileCard extends StatelessWidget {
                           child: Text(
                             userName,
                             style: AppTypography.headlineSection.copyWith(
-                              color:
-                                  isDark
-                                      ? AppColors.darkOnSurface
-                                      : AppColors.onSurface,
+                              color: isDark
+                                  ? AppColors.darkOnSurface
+                                  : AppColors.onSurface,
                             ),
                             overflow: TextOverflow.ellipsis,
                           ),
                         ),
                         const SizedBox(width: 6),
                         GestureDetector(
-                          onTap: () => _showEditDialog(context, userName, userPhone),
+                          onTap: () =>
+                              _showEditDialog(context, userName, userPhone),
                           child: Icon(
                             Icons.edit_outlined,
                             size: 16,
-                            color:
-                                isDark
-                                    ? AppColors.darkPrimary
-                                    : AppColors.primary,
+                            color: isDark
+                                ? AppColors.darkPrimary
+                                : AppColors.primary,
                           ),
                         ),
                       ],
@@ -120,10 +115,9 @@ class UserProfileCard extends StatelessWidget {
                     Text(
                       userEmail,
                       style: AppTypography.caption.copyWith(
-                        color:
-                            isDark
-                                ? AppColors.darkOnSurfaceVariant
-                                : AppColors.onSurfaceVariant,
+                        color: isDark
+                            ? AppColors.darkOnSurfaceVariant
+                            : AppColors.onSurfaceVariant,
                       ),
                       overflow: TextOverflow.ellipsis,
                     ),
@@ -131,10 +125,9 @@ class UserProfileCard extends StatelessWidget {
                     Text(
                       userPhone,
                       style: AppTypography.caption.copyWith(
-                        color:
-                            isDark
-                                ? AppColors.darkOnSurfaceVariant
-                                : AppColors.onSurfaceVariant,
+                        color: isDark
+                            ? AppColors.darkOnSurfaceVariant
+                            : AppColors.onSurfaceVariant,
                       ),
                     ),
                   ],
@@ -159,14 +152,13 @@ class UserProfileCard extends StatelessWidget {
                       vertical: 5,
                     ),
                     decoration: BoxDecoration(
-                      color:
-                          isOwner
-                              ? (isDark
-                                  ? AppColors.darkPrimaryContainer
-                                  : AppColors.primary.withValues(alpha: 0.1))
-                              : (isDark
-                                  ? AppColors.darkSecondaryContainer
-                                  : AppColors.secondaryContainer),
+                      color: isOwner
+                          ? (isDark
+                                ? AppColors.darkPrimaryContainer
+                                : AppColors.primary.withValues(alpha: 0.1))
+                          : (isDark
+                                ? AppColors.darkSecondaryContainer
+                                : AppColors.secondaryContainer),
                       borderRadius: BorderRadius.circular(10),
                     ),
                     child: Row(
@@ -174,10 +166,9 @@ class UserProfileCard extends StatelessWidget {
                         Icon(
                           isOwner ? Icons.pets : Icons.badge_outlined,
                           size: 14,
-                          color:
-                              isDark
-                                  ? AppColors.darkPrimary
-                                  : AppColors.primary,
+                          color: isDark
+                              ? AppColors.darkPrimary
+                              : AppColors.primary,
                         ),
                         const SizedBox(width: 6),
                         Text(
@@ -185,10 +176,9 @@ class UserProfileCard extends StatelessWidget {
                           style: AppTypography.bodyMedium.copyWith(
                             fontSize: 13,
                             fontWeight: FontWeight.w700,
-                            color:
-                                isDark
-                                    ? AppColors.darkOnSurface
-                                    : AppColors.primary,
+                            color: isDark
+                                ? AppColors.darkOnSurface
+                                : AppColors.primary,
                           ),
                         ),
                       ],
@@ -199,8 +189,7 @@ class UserProfileCard extends StatelessWidget {
               InkWell(
                 onTap: () {
                   // Rolü tersine çevir
-                  final newRole =
-                      isOwner ? UserRole.sitter : UserRole.owner;
+                  final newRole = isOwner ? UserRole.sitter : UserRole.owner;
                   roleCubit?.setRole(newRole);
                   profileCubit?.toggleRole();
                   state.setRole(newRole);
@@ -216,20 +205,18 @@ class UserProfileCard extends StatelessWidget {
                       Icon(
                         Icons.swap_horiz,
                         size: 16,
-                        color:
-                            isDark
-                                ? AppColors.darkPrimary
-                                : AppColors.primary,
+                        color: isDark
+                            ? AppColors.darkPrimary
+                            : AppColors.primary,
                       ),
                       const SizedBox(width: 4),
                       Text(
                         'Rolü Değiştir',
                         style: AppTypography.caption.copyWith(
                           fontWeight: FontWeight.w700,
-                          color:
-                              isDark
-                                  ? AppColors.darkPrimary
-                                  : AppColors.primary,
+                          color: isDark
+                              ? AppColors.darkPrimary
+                              : AppColors.primary,
                         ),
                       ),
                     ],
@@ -245,16 +232,14 @@ class UserProfileCard extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color:
-                    isDark
-                        ? AppColors.darkSurfaceContainerLowest
-                        : AppColors.surfaceContainerLow,
+                color: isDark
+                    ? AppColors.darkSurfaceContainerLowest
+                    : AppColors.surfaceContainerLow,
                 borderRadius: BorderRadius.circular(14),
                 border: Border.all(
-                  color:
-                      isDark
-                          ? AppColors.darkOutlineVariant.withValues(alpha: 0.5)
-                          : AppColors.outlineVariant.withValues(alpha: 0.4),
+                  color: isDark
+                      ? AppColors.darkOutlineVariant.withValues(alpha: 0.5)
+                      : AppColors.outlineVariant.withValues(alpha: 0.4),
                 ),
               ),
               child: Row(
@@ -264,20 +249,19 @@ class UserProfileCard extends StatelessWidget {
                     child: Container(
                       width: 44,
                       height: 44,
-                      color:
-                          isDark
-                              ? AppColors.darkPrimaryContainer
-                              : AppColors.secondaryContainer,
+                      color: isDark
+                          ? AppColors.darkPrimaryContainer
+                          : AppColors.secondaryContainer,
                       child: dog.photoPath.isNotEmpty
                           ? Image.asset(
-                            dog.photoPath,
-                            fit: BoxFit.cover,
-                            errorBuilder:
-                                (context, error, stackTrace) => const Icon(
-                                  Icons.pets,
-                                  color: AppColors.primary,
-                                ),
-                          )
+                              dog.photoPath,
+                              fit: BoxFit.cover,
+                              errorBuilder: (context, error, stackTrace) =>
+                                  const Icon(
+                                    Icons.pets,
+                                    color: AppColors.primary,
+                                  ),
+                            )
                           : const Icon(Icons.pets, color: AppColors.primary),
                     ),
                   ),
@@ -290,19 +274,17 @@ class UserProfileCard extends StatelessWidget {
                           dog.name,
                           style: AppTypography.bodyMedium.copyWith(
                             fontWeight: FontWeight.w700,
-                            color:
-                                isDark
-                                    ? AppColors.darkOnSurface
-                                    : AppColors.onSurface,
+                            color: isDark
+                                ? AppColors.darkOnSurface
+                                : AppColors.onSurface,
                           ),
                         ),
                         Text(
                           '${dog.breed} • ${dog.ageYears} Yaşında (${dog.weightKg.toInt()} kg)',
                           style: AppTypography.caption.copyWith(
-                            color:
-                                isDark
-                                    ? AppColors.darkOnSurfaceVariant
-                                    : AppColors.onSurfaceVariant,
+                            color: isDark
+                                ? AppColors.darkOnSurfaceVariant
+                                : AppColors.onSurfaceVariant,
                           ),
                         ),
                       ],
@@ -313,10 +295,9 @@ class UserProfileCard extends StatelessWidget {
                       icon: Icon(
                         Icons.arrow_forward_ios,
                         size: 14,
-                        color:
-                            isDark
-                                ? AppColors.darkOnSurfaceVariant
-                                : AppColors.onSurfaceVariant,
+                        color: isDark
+                            ? AppColors.darkOnSurfaceVariant
+                            : AppColors.onSurfaceVariant,
                       ),
                       onPressed: onDogProfileTap,
                       tooltip: 'Köpek Profiline Git',
@@ -330,7 +311,11 @@ class UserProfileCard extends StatelessWidget {
     );
   }
 
-  void _showEditDialog(BuildContext context, String currentName, String currentPhone) {
+  void _showEditDialog(
+    BuildContext context,
+    String currentName,
+    String currentPhone,
+  ) {
     final nameCtrl = TextEditingController(text: currentName);
     final phoneCtrl = TextEditingController(text: currentPhone);
 

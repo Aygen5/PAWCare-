@@ -91,13 +91,16 @@ void main() {
       expect(cubit.state.notificationsEnabled, isTrue);
     });
 
-    test('loadProfile domain usecase üzerinden köpeği ve ayarları getirir', () async {
-      await cubit.loadProfile();
+    test(
+      'loadProfile domain usecase üzerinden köpeği ve ayarları getirir',
+      () async {
+        await cubit.loadProfile();
 
-      expect(cubit.state.status, equals(ProfileStatus.loaded));
-      expect(cubit.state.dog, isNotNull);
-      expect(cubit.state.dog?.name, equals('Barley'));
-    });
+        expect(cubit.state.status, equals(ProfileStatus.loaded));
+        expect(cubit.state.dog, isNotNull);
+        expect(cubit.state.dog?.name, equals('Barley'));
+      },
+    );
 
     test('updateUserInfo isim, e-posta ve telefonu günceller', () {
       cubit.updateUserInfo(
@@ -121,17 +124,20 @@ void main() {
       expect(mockSettingsRepo.getThemeMode(), equals('light'));
     });
 
-    test('toggleRole rolü köpek sahibi ve hizmet veren arasında değiştirir', () async {
-      expect(cubit.state.role, equals(UserRole.owner));
+    test(
+      'toggleRole rolü köpek sahibi ve hizmet veren arasında değiştirir',
+      () async {
+        expect(cubit.state.role, equals(UserRole.owner));
 
-      await cubit.toggleRole();
-      expect(cubit.state.role, equals(UserRole.sitter));
-      expect(mockSettingsRepo.getUserRole(), equals('sitter'));
+        await cubit.toggleRole();
+        expect(cubit.state.role, equals(UserRole.sitter));
+        expect(mockSettingsRepo.getUserRole(), equals('sitter'));
 
-      await cubit.toggleRole();
-      expect(cubit.state.role, equals(UserRole.owner));
-      expect(mockSettingsRepo.getUserRole(), equals('owner'));
-    });
+        await cubit.toggleRole();
+        expect(cubit.state.role, equals(UserRole.owner));
+        expect(mockSettingsRepo.getUserRole(), equals('owner'));
+      },
+    );
 
     test('toggleNotifications bildirim ayarını değiştirir', () {
       expect(cubit.state.notificationsEnabled, isTrue);
@@ -179,66 +185,77 @@ void main() {
       );
     }
 
-    testWidgets('ProfileScreen temel bileşenleri ve kullanıcı bilgilerini gösterir', (tester) async {
-      await profileCubit.loadProfile();
+    testWidgets(
+      'ProfileScreen temel bileşenleri ve kullanıcı bilgilerini gösterir',
+      (tester) async {
+        await profileCubit.loadProfile();
 
-      await tester.pumpWidget(
-        createTestWidget(child: ProfileScreen(cubit: profileCubit)),
-      );
-      await tester.pumpAndSettle();
+        await tester.pumpWidget(
+          createTestWidget(child: ProfileScreen(cubit: profileCubit)),
+        );
+        await tester.pumpAndSettle();
 
-      expect(find.text('Hesap & Profil'), findsOneWidget);
-      expect(find.text('Aygen Y.'), findsOneWidget);
-      expect(find.text('aygen@pawcare.com'), findsOneWidget);
-      expect(find.text('Köpek Sahibi'), findsOneWidget);
-      expect(find.text('Görünüm ve Tema'), findsOneWidget);
-      expect(find.text('Ayarlar & Tercihler'), findsOneWidget);
-      expect(find.text('Bildirim Tercihleri'), findsOneWidget);
-      expect(find.text('Çıkış Yap'), findsOneWidget);
-    });
+        expect(find.text('Hesap & Profil'), findsOneWidget);
+        expect(find.text('Aygen Y.'), findsOneWidget);
+        expect(find.text('aygen@pawcare.com'), findsOneWidget);
+        expect(find.text('Köpek Sahibi'), findsOneWidget);
+        expect(find.text('Görünüm ve Tema'), findsOneWidget);
+        expect(find.text('Ayarlar & Tercihler'), findsOneWidget);
+        expect(find.text('Bildirim Tercihleri'), findsOneWidget);
+        expect(find.text('Çıkış Yap'), findsOneWidget);
+      },
+    );
 
-    testWidgets('ThemeSelectorCard üzerinde Koyu Haki seçildiğinde ThemeCubit dark mod olur', (tester) async {
-      await tester.pumpWidget(
-        createTestWidget(child: const Scaffold(body: ThemeSelectorCard())),
-      );
-      await tester.pumpAndSettle();
+    testWidgets(
+      'ThemeSelectorCard üzerinde Koyu Haki seçildiğinde ThemeCubit dark mod olur',
+      (tester) async {
+        await tester.pumpWidget(
+          createTestWidget(child: const Scaffold(body: ThemeSelectorCard())),
+        );
+        await tester.pumpAndSettle();
 
-      expect(find.text('Koyu Haki'), findsOneWidget);
-      expect(find.text('Açık'), findsOneWidget);
+        expect(find.text('Koyu Haki'), findsOneWidget);
+        expect(find.text('Açık'), findsOneWidget);
 
-      // "Koyu Haki" seçeneğine tıkla
-      await tester.tap(find.text('Koyu Haki'));
-      await tester.pumpAndSettle();
+        // "Koyu Haki" seçeneğine tıkla
+        await tester.tap(find.text('Koyu Haki'));
+        await tester.pumpAndSettle();
 
-      expect(themeCubit.state, equals(ThemeMode.dark));
+        expect(themeCubit.state, equals(ThemeMode.dark));
 
-      // "Açık" seçeneğine tıkla
-      await tester.tap(find.text('Açık'));
-      await tester.pumpAndSettle();
+        // "Açık" seçeneğine tıkla
+        await tester.tap(find.text('Açık'));
+        await tester.pumpAndSettle();
 
-      expect(themeCubit.state, equals(ThemeMode.light));
-    });
+        expect(themeCubit.state, equals(ThemeMode.light));
+      },
+    );
 
-    testWidgets('Rolü Değiştir butonuna basıldığında rol hizmet veren moduna geçer', (tester) async {
-      await profileCubit.loadProfile();
+    testWidgets(
+      'Rolü Değiştir butonuna basıldığında rol hizmet veren moduna geçer',
+      (tester) async {
+        await profileCubit.loadProfile();
 
-      await tester.pumpWidget(
-        createTestWidget(child: ProfileScreen(cubit: profileCubit)),
-      );
-      await tester.pumpAndSettle();
+        await tester.pumpWidget(
+          createTestWidget(child: ProfileScreen(cubit: profileCubit)),
+        );
+        await tester.pumpAndSettle();
 
-      // "Hizmet Veren Moduna Geç" butonuna tıkla
-      final switchBtn = find.text('Hizmet Veren Moduna Geç');
-      expect(switchBtn, findsOneWidget);
-      await tester.ensureVisible(switchBtn);
-      await tester.tap(switchBtn);
-      await tester.pumpAndSettle();
+        // "Hizmet Veren Moduna Geç" butonuna tıkla
+        final switchBtn = find.text('Hizmet Veren Moduna Geç');
+        expect(switchBtn, findsOneWidget);
+        await tester.ensureVisible(switchBtn);
+        await tester.tap(switchBtn);
+        await tester.pumpAndSettle();
 
-      expect(profileCubit.state.role, equals(UserRole.sitter));
-      expect(roleCubit.state, equals(UserRole.sitter));
-    });
+        expect(profileCubit.state.role, equals(UserRole.sitter));
+        expect(roleCubit.state, equals(UserRole.sitter));
+      },
+    );
 
-    testWidgets('Çıkış Yap butonuna basıldığında onay diyaloğu açılır', (tester) async {
+    testWidgets('Çıkış Yap butonuna basıldığında onay diyaloğu açılır', (
+      tester,
+    ) async {
       await profileCubit.loadProfile();
       bool loggedOut = false;
 

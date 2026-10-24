@@ -58,11 +58,20 @@ void main() {
       expect(AppColors.darkBackground, isNot(const Color(0xFF000000)));
       expect(AppColors.darkSurface, isNot(const Color(0xFF000000)));
       expect(AppColors.darkSurfaceDim, isNot(const Color(0xFF000000)));
-      expect(AppColors.darkSurfaceContainerLowest, isNot(const Color(0xFF000000)));
+      expect(
+        AppColors.darkSurfaceContainerLowest,
+        isNot(const Color(0xFF000000)),
+      );
       expect(AppColors.darkSurfaceContainerLow, isNot(const Color(0xFF000000)));
       expect(AppColors.darkSurfaceContainer, isNot(const Color(0xFF000000)));
-      expect(AppColors.darkSurfaceContainerHigh, isNot(const Color(0xFF000000)));
-      expect(AppColors.darkSurfaceContainerHighest, isNot(const Color(0xFF000000)));
+      expect(
+        AppColors.darkSurfaceContainerHigh,
+        isNot(const Color(0xFF000000)),
+      );
+      expect(
+        AppColors.darkSurfaceContainerHighest,
+        isNot(const Color(0xFF000000)),
+      );
 
       // Koyu yeşil / haki tonları doğrulaması
       expect(AppColors.darkBackground, const Color(0xFF16241A));

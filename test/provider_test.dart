@@ -19,7 +19,7 @@ class FakeBookingRepository implements BookingRepositoryInterface {
   List<BookingRequest> bookings;
 
   FakeBookingRepository({List<BookingRequest>? initial})
-      : bookings = initial != null ? List.from(initial) : [];
+    : bookings = initial != null ? List.from(initial) : [];
 
   @override
   List<BookingRequest> getAllBookings() => List.unmodifiable(bookings);
@@ -84,10 +84,7 @@ void main() {
     status: BookingStatus.confirmed,
   );
 
-  Widget createTestWidget({
-    required ProviderCubit cubit,
-    AppState? appState,
-  }) {
+  Widget createTestWidget({required ProviderCubit cubit, AppState? appState}) {
     return AppStateScope(
       notifier: appState ?? AppState(),
       child: MultiBlocProvider(
@@ -95,9 +92,7 @@ void main() {
           BlocProvider<ProviderCubit>.value(value: cubit),
           BlocProvider<RoleCubit>(create: (_) => RoleCubit()),
         ],
-        child: const MaterialApp(
-          home: SitterDashboardScreen(),
-        ),
+        child: const MaterialApp(home: SitterDashboardScreen()),
       ),
     );
   }
@@ -130,39 +125,43 @@ void main() {
       expect(cubit.state.totalEarnings, 350.0);
     });
 
-    test('confirmBooking talebi onaylar, listeleri ve kazancı günceller',
-        () async {
-      final cubit = ProviderCubit(
-        getBookingsUseCase: getBookingsUseCase,
-        manageBookingStatusUseCase: manageBookingStatusUseCase,
-      );
+    test(
+      'confirmBooking talebi onaylar, listeleri ve kazancı günceller',
+      () async {
+        final cubit = ProviderCubit(
+          getBookingsUseCase: getBookingsUseCase,
+          manageBookingStatusUseCase: manageBookingStatusUseCase,
+        );
 
-      final success = await cubit.confirmBooking('req_1');
-      expect(success, isTrue);
+        final success = await cubit.confirmBooking('req_1');
+        expect(success, isTrue);
 
-      expect(cubit.state.pendingBookings.length, 0);
-      expect(cubit.state.confirmedBookings.length, 2);
-      expect(cubit.state.totalEarnings, 1250.0);
+        expect(cubit.state.pendingBookings.length, 0);
+        expect(cubit.state.confirmedBookings.length, 2);
+        expect(cubit.state.totalEarnings, 1250.0);
 
-      // Repository seviyesinde doğrula
-      final inRepo = fakeRepo.bookings.firstWhere((b) => b.id == 'req_1');
-      expect(inRepo.status, BookingStatus.confirmed);
-    });
+        // Repository seviyesinde doğrula
+        final inRepo = fakeRepo.bookings.firstWhere((b) => b.id == 'req_1');
+        expect(inRepo.status, BookingStatus.confirmed);
+      },
+    );
 
-    test('rejectBooking talebi reddeder ve bekleyen listesinden kaldırır',
-        () async {
-      final cubit = ProviderCubit(
-        getBookingsUseCase: getBookingsUseCase,
-        manageBookingStatusUseCase: manageBookingStatusUseCase,
-      );
+    test(
+      'rejectBooking talebi reddeder ve bekleyen listesinden kaldırır',
+      () async {
+        final cubit = ProviderCubit(
+          getBookingsUseCase: getBookingsUseCase,
+          manageBookingStatusUseCase: manageBookingStatusUseCase,
+        );
 
-      final success = await cubit.rejectBooking('req_1');
-      expect(success, isTrue);
+        final success = await cubit.rejectBooking('req_1');
+        expect(success, isTrue);
 
-      expect(cubit.state.pendingBookings.length, 0);
-      final inRepo = fakeRepo.bookings.firstWhere((b) => b.id == 'req_1');
-      expect(inRepo.status, BookingStatus.rejected);
-    });
+        expect(cubit.state.pendingBookings.length, 0);
+        final inRepo = fakeRepo.bookings.firstWhere((b) => b.id == 'req_1');
+        expect(inRepo.status, BookingStatus.rejected);
+      },
+    );
   });
 
   group('Adım 4.5: SitterDashboardScreen Widget Testleri', () {
@@ -180,27 +179,29 @@ void main() {
     });
 
     testWidgets(
-        'SitterDashboardScreen başlık, PawHeaderActions ve KPI kartlarını gösterir',
-        (tester) async {
-      await tester.binding.setSurfaceSize(const Size(450, 950));
-      addTearDown(() => tester.binding.setSurfaceSize(null));
+      'SitterDashboardScreen başlık, PawHeaderActions ve KPI kartlarını gösterir',
+      (tester) async {
+        await tester.binding.setSurfaceSize(const Size(450, 950));
+        addTearDown(() => tester.binding.setSurfaceSize(null));
 
-      await tester.pumpWidget(createTestWidget(cubit: cubit));
-      await tester.pumpAndSettle();
+        await tester.pumpWidget(createTestWidget(cubit: cubit));
+        await tester.pumpAndSettle();
 
-      expect(find.text('Hizmet Veren Paneli'), findsOneWidget);
-      expect(find.text('Ayşe Yılmaz'), findsOneWidget);
-      expect(find.text('Mutlu Patiler Köpek Oteli'), findsOneWidget);
-      expect(find.byType(PawHeaderActions), findsOneWidget);
+        expect(find.text('Hizmet Veren Paneli'), findsOneWidget);
+        expect(find.text('Ayşe Yılmaz'), findsOneWidget);
+        expect(find.text('Mutlu Patiler Köpek Oteli'), findsOneWidget);
+        expect(find.byType(PawHeaderActions), findsOneWidget);
 
-      // KPI Metrik Kartları
-      expect(find.text('Bekleyen'), findsOneWidget);
-      expect(find.text('Onaylı'), findsOneWidget);
-      expect(find.text('Kazanç'), findsOneWidget);
-    });
+        // KPI Metrik Kartları
+        expect(find.text('Bekleyen'), findsOneWidget);
+        expect(find.text('Onaylı'), findsOneWidget);
+        expect(find.text('Kazanç'), findsOneWidget);
+      },
+    );
 
-    testWidgets('Yeni gelen talep kartı (BookingRequestCard) render edilir',
-        (tester) async {
+    testWidgets('Yeni gelen talep kartı (BookingRequestCard) render edilir', (
+      tester,
+    ) async {
       await tester.binding.setSurfaceSize(const Size(450, 950));
       addTearDown(() => tester.binding.setSurfaceSize(null));
 
@@ -214,8 +215,9 @@ void main() {
       expect(find.text('Reddet'), findsOneWidget);
     });
 
-    testWidgets('Onayla butonuna basıldığında onay SnackBarı görüntülenir',
-        (tester) async {
+    testWidgets('Onayla butonuna basıldığında onay SnackBarı görüntülenir', (
+      tester,
+    ) async {
       await tester.binding.setSurfaceSize(const Size(450, 950));
       addTearDown(() => tester.binding.setSurfaceSize(null));
 
@@ -236,8 +238,9 @@ void main() {
       expect(find.text('Tüm talepler yanıtlandı!'), findsOneWidget);
     });
 
-    testWidgets('Reddet butonuna basıldığında ret SnackBarı görüntülenir',
-        (tester) async {
+    testWidgets('Reddet butonuna basıldığında ret SnackBarı görüntülenir', (
+      tester,
+    ) async {
       await tester.binding.setSurfaceSize(const Size(450, 950));
       addTearDown(() => tester.binding.setSurfaceSize(null));
 
@@ -254,8 +257,9 @@ void main() {
       expect(find.text('Tüm talepler yanıtlandı!'), findsOneWidget);
     });
 
-    testWidgets('Sahip Modu butonuna basıldığında RoleCubit tetiklenir',
-        (tester) async {
+    testWidgets('Sahip Modu butonuna basıldığında RoleCubit tetiklenir', (
+      tester,
+    ) async {
       await tester.binding.setSurfaceSize(const Size(450, 950));
       addTearDown(() => tester.binding.setSurfaceSize(null));
 

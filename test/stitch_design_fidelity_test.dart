@@ -55,111 +55,135 @@ void main() {
     );
   }
 
-  group('Adım 6.2: 6 Stitch Ekranının Tasarım Sadakati ve Etkileşim Denetimi', () {
-    testWidgets('Ekran 1: Karşılama Ekranı (WelcomeScreen) görsel hiyerarşi ve demo rolleri', (tester) async {
-      await tester.pumpWidget(
-        wrapWithProviders(WelcomeScreen(onContinue: () {})),
-      );
-      await tester.pump();
+  group(
+    'Adım 6.2: 6 Stitch Ekranının Tasarım Sadakati ve Etkileşim Denetimi',
+    () {
+      testWidgets(
+        'Ekran 1: Karşılama Ekranı (WelcomeScreen) görsel hiyerarşi ve demo rolleri',
+        (tester) async {
+          await tester.pumpWidget(
+            wrapWithProviders(WelcomeScreen(onContinue: () {})),
+          );
+          await tester.pump();
 
-      expect(find.text('PawCare'), findsWidgets);
-      expect(find.text('Dostunuz için en güvenilir eller.'), findsOneWidget);
-      expect(find.text('Köpek Sahibi Olarak Başla'), findsOneWidget);
-      expect(find.text('Hizmet Veren Paneline Geç'), findsOneWidget);
-      expect(find.text('Giriş Yap'), findsOneWidget);
-      expect(find.text('Hesap Oluştur'), findsOneWidget);
-    });
-
-    testWidgets('Ekran 2: Keşfet Ekranı (ExploreScreen) başlık, arama ve filtreler', (tester) async {
-      await tester.pumpWidget(
-        wrapWithProviders(ExploreScreen(onSitterSelected: (_) {})),
-      );
-      await tester.pump();
-
-      expect(find.text('Hizmet Keşfet'), findsOneWidget);
-      expect(find.byType(TextField), findsOneWidget);
-      expect(find.text('Tümü'), findsOneWidget);
-      expect(find.text('Köpek Oteli'), findsWidgets);
-      expect(find.text('Köpek Gezdirme'), findsWidgets);
-    });
-
-    testWidgets('Ekran 3: Köpek Sahibi Ana Sayfa (OwnerHomeScreen) karşılama ve köpek kartı', (tester) async {
-      final homeCubit = HomeCubit();
-      await tester.pumpWidget(
-        wrapWithProviders(OwnerHomeScreen(cubit: homeCubit, onSitterSelected: (_) {})),
-      );
-      // Animasyon sonsuz döngüde olduğu için pumpAndSettle yerine pump kullanılır
-      await tester.pump();
-
-      expect(find.text('Merhaba, Aygen 👋'), findsOneWidget);
-      expect(find.text('Barley'), findsWidgets);
-      expect(find.text('Popüler Hizmetler'), findsOneWidget);
-
-      homeCubit.close();
-    });
-
-    testWidgets('Ekran 4: Bakıcı Detay ve Rezervasyon Ekranı (SitterDetailScreen) detaylar ve rezervasyon', (tester) async {
-      final sampleSitter = SitterListing(
-        id: 'sitter_1',
-        name: 'Mert Demir',
-        facilityTitle: 'Pati Köpek Oteli',
-        category: 'Yatılı Bakım',
-        rating: 4.9,
-        reviewsCount: 38,
-        pricePerUnit: 350.0,
-        unitLabel: 'gece',
-        location: 'Kadıköy, Moda',
-        distanceKm: 1.2,
-        imagePath: 'assets/images/sitters/mert_demir.jpg',
-        galleryPaths: const ['assets/images/sitters/mert_demir.jpg'],
-        bio: 'Hayvansever deneyimli bakıcı.',
-        amenities: const ['Geniş Bahçe', 'Kamera Takibi'],
-        isVerified: true,
+          expect(find.text('PawCare'), findsWidgets);
+          expect(
+            find.text('Dostunuz için en güvenilir eller.'),
+            findsOneWidget,
+          );
+          expect(find.text('Köpek Sahibi Olarak Başla'), findsOneWidget);
+          expect(find.text('Hizmet Veren Paneline Geç'), findsOneWidget);
+          expect(find.text('Giriş Yap'), findsOneWidget);
+          expect(find.text('Hesap Oluştur'), findsOneWidget);
+        },
       );
 
-      await tester.pumpWidget(
-        wrapWithProviders(
-          SitterDetailScreen(
-            sitter: sampleSitter,
-            onBack: () {},
-            onBookingCompleted: () {},
-          ),
-        ),
+      testWidgets(
+        'Ekran 2: Keşfet Ekranı (ExploreScreen) başlık, arama ve filtreler',
+        (tester) async {
+          await tester.pumpWidget(
+            wrapWithProviders(ExploreScreen(onSitterSelected: (_) {})),
+          );
+          await tester.pump();
+
+          expect(find.text('Hizmet Keşfet'), findsOneWidget);
+          expect(find.byType(TextField), findsOneWidget);
+          expect(find.text('Tümü'), findsOneWidget);
+          expect(find.text('Köpek Oteli'), findsWidgets);
+          expect(find.text('Köpek Gezdirme'), findsWidgets);
+        },
       );
-      await tester.pump();
 
-      expect(find.text('Pati Köpek Oteli'), findsWidgets);
-      expect(find.textContaining('Mert Demir'), findsWidgets);
-      expect(find.text('Rezervasyon Talebi Gönder'), findsOneWidget);
-    });
+      testWidgets(
+        'Ekran 3: Köpek Sahibi Ana Sayfa (OwnerHomeScreen) karşılama ve köpek kartı',
+        (tester) async {
+          final homeCubit = HomeCubit();
+          await tester.pumpWidget(
+            wrapWithProviders(
+              OwnerHomeScreen(cubit: homeCubit, onSitterSelected: (_) {}),
+            ),
+          );
+          // Animasyon sonsuz döngüde olduğu için pumpAndSettle yerine pump kullanılır
+          await tester.pump();
 
-    testWidgets('Ekran 5: Köpek Profili Ekranı (DogProfileScreen) sağlık kartı ve profil düzenleme', (tester) async {
-      await tester.pumpWidget(
-        wrapWithProviders(const DogProfileScreen()),
+          expect(find.text('Merhaba, Aygen 👋'), findsOneWidget);
+          expect(find.text('Barley'), findsWidgets);
+          expect(find.text('Popüler Hizmetler'), findsOneWidget);
+
+          homeCubit.close();
+        },
       );
-      await tester.pump();
 
-      expect(find.text('Köpek Profili & Sağlık'), findsOneWidget);
-      expect(find.text('Barley'), findsWidgets);
-      expect(find.text('Yaş'), findsOneWidget);
-      expect(find.text('Ağırlık'), findsOneWidget);
-      expect(find.text('Cinsiyet'), findsOneWidget);
-      expect(find.text('Profili Düzenle'), findsOneWidget);
-    });
+      testWidgets(
+        'Ekran 4: Bakıcı Detay ve Rezervasyon Ekranı (SitterDetailScreen) detaylar ve rezervasyon',
+        (tester) async {
+          final sampleSitter = SitterListing(
+            id: 'sitter_1',
+            name: 'Mert Demir',
+            facilityTitle: 'Pati Köpek Oteli',
+            category: 'Yatılı Bakım',
+            rating: 4.9,
+            reviewsCount: 38,
+            pricePerUnit: 350.0,
+            unitLabel: 'gece',
+            location: 'Kadıköy, Moda',
+            distanceKm: 1.2,
+            imagePath: 'assets/images/sitters/mert_demir.jpg',
+            galleryPaths: const ['assets/images/sitters/mert_demir.jpg'],
+            bio: 'Hayvansever deneyimli bakıcı.',
+            amenities: const ['Geniş Bahçe', 'Kamera Takibi'],
+            isVerified: true,
+          );
 
-    testWidgets('Ekran 6: Hizmet Veren Paneli (SitterDashboardScreen) metrikler ve gelen talepler', (tester) async {
-      appState.setRole(UserRole.sitter);
+          await tester.pumpWidget(
+            wrapWithProviders(
+              SitterDetailScreen(
+                sitter: sampleSitter,
+                onBack: () {},
+                onBookingCompleted: () {},
+              ),
+            ),
+          );
+          await tester.pump();
 
-      await tester.pumpWidget(
-        wrapWithProviders(const SitterDashboardScreen()),
+          expect(find.text('Pati Köpek Oteli'), findsWidgets);
+          expect(find.textContaining('Mert Demir'), findsWidgets);
+          expect(find.text('Rezervasyon Talebi Gönder'), findsOneWidget);
+        },
       );
-      await tester.pump();
 
-      expect(find.text('Hizmet Veren Paneli'), findsOneWidget);
-      expect(find.text('Bekleyen'), findsOneWidget);
-      expect(find.text('Onaylı'), findsOneWidget);
-      expect(find.text('Kazanç'), findsOneWidget);
-      expect(find.text('Yeni Gelen Talepler'), findsOneWidget);
-    });
-  });
+      testWidgets(
+        'Ekran 5: Köpek Profili Ekranı (DogProfileScreen) sağlık kartı ve profil düzenleme',
+        (tester) async {
+          await tester.pumpWidget(wrapWithProviders(const DogProfileScreen()));
+          await tester.pump();
+
+          expect(find.text('Köpek Profili & Sağlık'), findsOneWidget);
+          expect(find.text('Barley'), findsWidgets);
+          expect(find.text('Yaş'), findsOneWidget);
+          expect(find.text('Ağırlık'), findsOneWidget);
+          expect(find.text('Cinsiyet'), findsOneWidget);
+          expect(find.text('Profili Düzenle'), findsOneWidget);
+        },
+      );
+
+      testWidgets(
+        'Ekran 6: Hizmet Veren Paneli (SitterDashboardScreen) metrikler ve gelen talepler',
+        (tester) async {
+          appState.setRole(UserRole.sitter);
+
+          await tester.pumpWidget(
+            wrapWithProviders(const SitterDashboardScreen()),
+          );
+          await tester.pump();
+
+          expect(find.text('Hizmet Veren Paneli'), findsOneWidget);
+          expect(find.text('Bekleyen'), findsOneWidget);
+          expect(find.text('Onaylı'), findsOneWidget);
+          expect(find.text('Kazanç'), findsOneWidget);
+          expect(find.text('Yeni Gelen Talepler'), findsOneWidget);
+        },
+      );
+    },
+  );
 }

@@ -25,13 +25,16 @@ class HomeCubit extends Cubit<HomeState> {
     DogRepositoryInterface? dogRepository,
     BookingRepositoryInterface? bookingRepository,
     SitterRepositoryInterface? sitterRepository,
-  })  : _getDogProfileUseCase = getDogProfileUseCase ??
-            GetDogProfileUseCase(dogRepository ?? DogRepository()),
-        _getBookingsUseCase = getBookingsUseCase ??
-            GetBookingsUseCase(bookingRepository ?? BookingRepository()),
-        _getSittersUseCase = getSittersUseCase ??
-            GetSittersUseCase(sitterRepository ?? SitterRepository()),
-        super(const HomeState());
+  }) : _getDogProfileUseCase =
+           getDogProfileUseCase ??
+           GetDogProfileUseCase(dogRepository ?? DogRepository()),
+       _getBookingsUseCase =
+           getBookingsUseCase ??
+           GetBookingsUseCase(bookingRepository ?? BookingRepository()),
+       _getSittersUseCase =
+           getSittersUseCase ??
+           GetSittersUseCase(sitterRepository ?? SitterRepository()),
+       super(const HomeState());
 
   /// Varsayılan yedek köpek profili (Hive kutusu boşsa arayüzün boş kalmaması için).
   static final Dog fallbackDog = Dog(
@@ -44,7 +47,8 @@ class HomeCubit extends Cubit<HomeState> {
     microchip: '900215002941842',
     photoPath: 'assets/images/barley.jpg',
     allergyNote: 'Tavuk proteini alerjisi — Yalnızca kuzu etli mama veriniz.',
-    behaviorNote: 'İnsanlara ve diğer köpeklere karşı uysal ve son derece enerjik.',
+    behaviorNote:
+        'İnsanlara ve diğer köpeklere karşı uysal ve son derece enerjik.',
     clinicName: 'Kadıköy Veteriner Polikliniği',
     clinicPhone: '+90 216 345 67 89',
     vaccinations: [
@@ -89,11 +93,14 @@ class HomeCubit extends Cubit<HomeState> {
           break;
         }
       }
-      upcomingVaccine ??=
-          loadedDog.vaccinations.isNotEmpty ? loadedDog.vaccinations.first : null;
+      upcomingVaccine ??= loadedDog.vaccinations.isNotEmpty
+          ? loadedDog.vaccinations.first
+          : null;
 
       // 4. Öne çıkan bakıcıları UseCase üzerinden getir
-      final rawSitters = await _getSittersUseCase.call(forceRefresh: forceRefresh);
+      final rawSitters = await _getSittersUseCase.call(
+        forceRefresh: forceRefresh,
+      );
       final sitters = rawSitters.whereType<SitterListing>().toList();
 
       emit(
