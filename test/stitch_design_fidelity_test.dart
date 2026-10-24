@@ -6,7 +6,6 @@ import 'package:paw_care/core/theme/theme_cubit.dart';
 import 'package:paw_care/core/utils/app_state.dart';
 import 'package:paw_care/data/models/models.dart';
 import 'package:paw_care/data/repositories/settings_repository.dart';
-import 'package:paw_care/domain/entities/user_role.dart';
 import 'package:paw_care/domain/repositories/settings_repository_interface.dart';
 import 'package:paw_care/features/auth/cubit/auth_cubit.dart';
 import 'package:paw_care/features/auth/cubit/role_cubit.dart';

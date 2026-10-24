@@ -52,6 +52,29 @@ void main() {
       expect(theme.colorScheme.onSurface.computeLuminance(), greaterThan(0.7));
       expect(theme.scaffoldBackgroundColor.computeLuminance(), lessThan(0.05));
     });
+
+    test('Adım 6.3: Koyu Tema (Haki/Koyu Yeşil) paletinde saf siyah bulunmamalı ve yüzey hiyerarşisi korunmalıdır', () {
+      // Saf siyah (#000000) kesinlikle bulunmamalı
+      expect(AppColors.darkBackground, isNot(const Color(0xFF000000)));
+      expect(AppColors.darkSurface, isNot(const Color(0xFF000000)));
+      expect(AppColors.darkSurfaceDim, isNot(const Color(0xFF000000)));
+      expect(AppColors.darkSurfaceContainerLowest, isNot(const Color(0xFF000000)));
+      expect(AppColors.darkSurfaceContainerLow, isNot(const Color(0xFF000000)));
+      expect(AppColors.darkSurfaceContainer, isNot(const Color(0xFF000000)));
+      expect(AppColors.darkSurfaceContainerHigh, isNot(const Color(0xFF000000)));
+      expect(AppColors.darkSurfaceContainerHighest, isNot(const Color(0xFF000000)));
+
+      // Koyu yeşil / haki tonları doğrulaması
+      expect(AppColors.darkBackground, const Color(0xFF16241A));
+      expect(AppColors.darkSurface, const Color(0xFF1E3023));
+      expect(AppColors.darkPrimary, const Color(0xFF9FB3A1));
+      expect(AppColors.darkOnSurface, const Color(0xFFEAE8E2));
+
+      // Kontrast oranı (Luminance farkı okunabilir olmalı: metin > 0.7, zemin < 0.05)
+      final textLuminance = AppColors.darkOnSurface.computeLuminance();
+      final bgLuminance = AppColors.darkBackground.computeLuminance();
+      expect(textLuminance - bgLuminance, greaterThan(0.65));
+    });
   });
 
   group('Adım 2.2: ThemeCubit ve Kalıcı Tema Durumu Testleri', () {

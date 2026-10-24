@@ -258,7 +258,7 @@ Ekranları feature klasörlerine taşımadan önce:
 - **Etkilenecek Dosyalar:** Tüm `features/` ekranları.
 - **Tamamlanma Kontrolü:** Tasarım kontrol listesi üzerinden görsel bütünlük teyit edilmeli.
 
-#### Adım 6.3: Koyu Tema (Haki/Koyu Yeşil) ve Açık Tema Kontrast Denetimi
+#### Adım 6.3: [TAMAMLANDI] Koyu Tema (Haki/Koyu Yeşil) ve Açık Tema Kontrast Denetimi
 - **Yapılacak İş:**
   - Tüm ekranların hem açık hem koyu yeşil modda okunabilirliğini denetlemek.
   - Koyu temada hiçbir alanda saf siyah (`#000000`) veya aşırı neon parlama olmadığını teyit etmek.
