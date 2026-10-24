@@ -414,6 +414,304 @@ class AppState extends ChangeNotifier {
     }
     notifyListeners();
   }
+
+  // ==========================================
+  // Hizmet Veren — İlan & Fiyatlandırma Durumu
+  // ==========================================
+  String _sitterFacilityTitle = 'Mutlu Patiler Butik Köpek Oteli';
+  String _sitterLocation = 'Kadıköy, İstanbul';
+  String _sitterBio =
+      '600 m² geniş çim bahçe, klimalı süit odalar, 7/24 kamera takibi ve veteriner anlaşmalı güvenli butik köpek oteli.';
+
+  String get sitterFacilityTitle => _sitterFacilityTitle;
+  String get sitterLocation => _sitterLocation;
+  String get sitterBio => _sitterBio;
+
+  final List<SitterServiceItem> _sitterServices = [
+    const SitterServiceItem(
+      id: 'srv_1',
+      title: 'Butik Köpek Oteli Konaklama',
+      price: 450,
+      unit: '/ gece',
+      description: 'Özel süit oda, günde 3 yürüyüş, 7/24 kamera takibi',
+      icon: Icons.hotel_outlined,
+    ),
+    const SitterServiceItem(
+      id: 'srv_2',
+      title: 'Gündüz Kreşi & Sosyalleşme',
+      price: 300,
+      unit: '/ gün',
+      description: 'Sabah 08:30 - Akşam 19:00 arası bahçe oyunları',
+      icon: Icons.wb_sunny_outlined,
+    ),
+    const SitterServiceItem(
+      id: 'srv_3',
+      title: 'Bireysel Yürüyüş & Egzersiz',
+      price: 180,
+      unit: '/ saat',
+      description: 'Sahil parkı tempolu yürüyüş ve su molası',
+      icon: Icons.directions_walk_outlined,
+    ),
+  ];
+
+  List<SitterServiceItem> get sitterServices =>
+      List.unmodifiable(_sitterServices);
+
+  final List<String> _sitterAmenities = [
+    '600 m² Çitli Bahçe',
+    '7/24 Kamera İzleme',
+    'Acil Veteriner Protokolü',
+    'Klimalı Süit Odalar',
+    'Özel Diyet & Alerji Yönetimi',
+    'Günlük Foto & Video Paylaşımı',
+  ];
+
+  List<String> get sitterAmenities => List.unmodifiable(_sitterAmenities);
+
+  void updateSitterFacilityInfo({
+    String? facilityTitle,
+    String? bio,
+    String? location,
+  }) {
+    if (facilityTitle != null && facilityTitle.trim().isNotEmpty) {
+      _sitterFacilityTitle = facilityTitle.trim();
+    }
+    if (bio != null && bio.trim().isNotEmpty) {
+      _sitterBio = bio.trim();
+    }
+    if (location != null && location.trim().isNotEmpty) {
+      _sitterLocation = location.trim();
+    }
+    final idx = _sitters.indexWhere((s) => s.id == 'sitter_1');
+    if (idx != -1) {
+      _sitters[idx] = _sitters[idx].copyWith(
+        facilityTitle: facilityTitle ?? _sitters[idx].facilityTitle,
+        bio: bio ?? _sitters[idx].bio,
+        location: location ?? _sitters[idx].location,
+      );
+    }
+    notifyListeners();
+  }
+
+  void addSitterService(SitterServiceItem service) {
+    _sitterServices.add(service);
+    notifyListeners();
+  }
+
+  void updateSitterService(
+    String serviceId, {
+    String? title,
+    int? price,
+    String? unit,
+    String? description,
+    IconData? icon,
+  }) {
+    final idx = _sitterServices.indexWhere((s) => s.id == serviceId);
+    if (idx != -1) {
+      _sitterServices[idx] = _sitterServices[idx].copyWith(
+        title: title,
+        price: price,
+        unit: unit,
+        description: description,
+        icon: icon,
+      );
+      if (idx == 0 && price != null) {
+        final sitterIdx = _sitters.indexWhere((s) => s.id == 'sitter_1');
+        if (sitterIdx != -1) {
+          _sitters[sitterIdx] =
+              _sitters[sitterIdx].copyWith(pricePerUnit: price.toDouble());
+        }
+      }
+      notifyListeners();
+    }
+  }
+
+  void removeSitterService(String serviceId) {
+    if (_sitterServices.length > 1) {
+      _sitterServices.removeWhere((s) => s.id == serviceId);
+      notifyListeners();
+    }
+  }
+
+  void addSitterAmenity(String amenity) {
+    final trimmed = amenity.trim();
+    if (trimmed.isNotEmpty && !_sitterAmenities.contains(trimmed)) {
+      _sitterAmenities.add(trimmed);
+      notifyListeners();
+    }
+  }
+
+  void removeSitterAmenity(String amenity) {
+    _sitterAmenities.remove(amenity);
+    notifyListeners();
+  }
+
+  // ==========================================
+  // Hizmet Veren — Müsaitlik Takvimi Durumu
+  // ==========================================
+  int _totalSuites = 6;
+  int _occupiedSuites = 5;
+  int _availableSuites = 1;
+
+  int get totalSuites => _totalSuites;
+  int get occupiedSuites => _occupiedSuites;
+  int get availableSuites => _availableSuites;
+
+  final List<SitterCalendarDay> _sitterCalendarDays = [
+    const SitterCalendarDay(
+      id: 'cal_24',
+      day: '24',
+      month: 'Eki',
+      weekday: 'Bugün',
+      status: 'Dolu (3 Misafir)',
+      statusType: CalendarDayStatusType.full,
+      details: 'Barley (Süit 3) • Luna (Süit 1) • Çakıl (Süit 2)',
+    ),
+    const SitterCalendarDay(
+      id: 'cal_25',
+      day: '25',
+      month: 'Eki',
+      weekday: 'Pazar',
+      status: '1 Oda Müsait',
+      statusType: CalendarDayStatusType.limited,
+      details: 'Barley (Konaklama devam) • Luna (Süit 1)',
+    ),
+    const SitterCalendarDay(
+      id: 'cal_26',
+      day: '26',
+      month: 'Eki',
+      weekday: 'Pazartesi',
+      status: '3 Oda Müsait',
+      statusType: CalendarDayStatusType.available,
+      details: 'Luna öğleden sonra çıkış yapacak',
+    ),
+    const SitterCalendarDay(
+      id: 'cal_27',
+      day: '27',
+      month: 'Eki',
+      weekday: 'Salı',
+      status: 'Tamamen Müsait',
+      statusType: CalendarDayStatusType.available,
+      details: 'Tüm süitler için rezervasyon kabul ediliyor',
+    ),
+  ];
+
+  List<SitterCalendarDay> get sitterCalendarDays =>
+      List.unmodifiable(_sitterCalendarDays);
+
+  void updateCalendarDay(
+    String id, {
+    String? status,
+    CalendarDayStatusType? statusType,
+    String? details,
+  }) {
+    final idx = _sitterCalendarDays.indexWhere((d) => d.id == id);
+    if (idx != -1) {
+      _sitterCalendarDays[idx] = _sitterCalendarDays[idx].copyWith(
+        status: status,
+        statusType: statusType,
+        details: details,
+      );
+      notifyListeners();
+    }
+  }
+
+  void addCalendarDay(SitterCalendarDay day) {
+    _sitterCalendarDays.add(day);
+    notifyListeners();
+  }
+
+  void updateSuitesCapacity({int? total, int? occupied, int? available}) {
+    if (total != null) _totalSuites = total;
+    if (occupied != null) _occupiedSuites = occupied;
+    if (available != null) _availableSuites = available;
+    notifyListeners();
+  }
+}
+
+/// Hizmet Veren — Sunulan Hizmet Kalemi
+class SitterServiceItem {
+  final String id;
+  final String title;
+  final int price;
+  final String unit; // '/ gece', '/ gün', '/ saat'
+  final String description;
+  final IconData icon;
+
+  const SitterServiceItem({
+    required this.id,
+    required this.title,
+    required this.price,
+    required this.unit,
+    required this.description,
+    required this.icon,
+  });
+
+  SitterServiceItem copyWith({
+    String? id,
+    String? title,
+    int? price,
+    String? unit,
+    String? description,
+    IconData? icon,
+  }) {
+    return SitterServiceItem(
+      id: id ?? this.id,
+      title: title ?? this.title,
+      price: price ?? this.price,
+      unit: unit ?? this.unit,
+      description: description ?? this.description,
+      icon: icon ?? this.icon,
+    );
+  }
+}
+
+/// Müsaitlik Takvimi Durum Türü
+enum CalendarDayStatusType {
+  full, // Dolu
+  limited, // 1-2 Oda Müsait
+  available, // Tamamen Müsait
+}
+
+/// Müsaitlik Takvim Günü Modeli
+class SitterCalendarDay {
+  final String id;
+  final String day;
+  final String month;
+  final String weekday;
+  final String status;
+  final CalendarDayStatusType statusType;
+  final String details;
+
+  const SitterCalendarDay({
+    required this.id,
+    required this.day,
+    required this.month,
+    required this.weekday,
+    required this.status,
+    required this.statusType,
+    required this.details,
+  });
+
+  SitterCalendarDay copyWith({
+    String? id,
+    String? day,
+    String? month,
+    String? weekday,
+    String? status,
+    CalendarDayStatusType? statusType,
+    String? details,
+  }) {
+    return SitterCalendarDay(
+      id: id ?? this.id,
+      day: day ?? this.day,
+      month: month ?? this.month,
+      weekday: weekday ?? this.weekday,
+      status: status ?? this.status,
+      statusType: statusType ?? this.statusType,
+      details: details ?? this.details,
+    );
+  }
 }
 
 /// AppState erişimi için InheritedNotifier sağlayıcı sınıfı.

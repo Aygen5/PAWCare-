@@ -19,6 +19,19 @@ class LiveTrackingModal extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final cardBg =
+        isDark ? AppColors.darkSurface : AppColors.surfaceContainerLowest;
+    final outlineColor = isDark
+        ? AppColors.darkOutlineVariant
+        : AppColors.outlineVariant.withValues(alpha: 0.5);
+    final closeBtnBg = isDark
+        ? AppColors.darkSurfaceContainerLow
+        : AppColors.surfaceContainerLow;
+    final closeBtnColor =
+        isDark ? AppColors.darkOnSurfaceVariant : AppColors.onSurfaceVariant;
+    final textColor = isDark ? AppColors.darkOnSurface : AppColors.onSurface;
+
     return BackdropFilter(
       filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
       child: Dialog(
@@ -27,11 +40,11 @@ class LiveTrackingModal extends StatelessWidget {
         child: Container(
           constraints: const BoxConstraints(maxWidth: 480),
           decoration: BoxDecoration(
-            color: AppColors.surfaceContainerLowest,
+            color: cardBg,
             borderRadius: BorderRadius.circular(28),
             boxShadow: AppColors.floatingShadow,
             border: Border.all(
-              color: AppColors.outlineVariant.withValues(alpha: 0.5),
+              color: outlineColor,
             ),
           ),
           child: SingleChildScrollView(
@@ -58,7 +71,10 @@ class LiveTrackingModal extends StatelessWidget {
                           Expanded(
                             child: Text(
                               'Canlı Yürüyüş Takibi',
-                              style: AppTypography.titleCard,
+                              style: AppTypography.titleCard.copyWith(
+                                color: textColor,
+                                fontWeight: FontWeight.w700,
+                              ),
                               overflow: TextOverflow.ellipsis,
                             ),
                           ),
@@ -66,13 +82,13 @@ class LiveTrackingModal extends StatelessWidget {
                       ),
                     ),
                     IconButton(
-                      icon: const Icon(
+                      icon: Icon(
                         Icons.close,
-                        color: AppColors.onSurfaceVariant,
+                        color: closeBtnColor,
                       ),
                       onPressed: () => Navigator.of(context).pop(),
                       style: IconButton.styleFrom(
-                        backgroundColor: AppColors.surfaceContainerLow,
+                        backgroundColor: closeBtnBg,
                         shape: const CircleBorder(),
                       ),
                     ),
@@ -203,17 +219,32 @@ class LiveTrackingModal extends StatelessWidget {
                       child: Container(
                         padding: const EdgeInsets.all(14),
                         decoration: BoxDecoration(
-                          color: AppColors.surfaceContainerLow,
+                          color: isDark
+                              ? AppColors.darkSurfaceContainer
+                              : AppColors.surfaceContainerLow,
                           borderRadius: BorderRadius.circular(16),
+                          border: Border.all(
+                            color: outlineColor.withValues(alpha: 0.3),
+                          ),
                         ),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text('Geçen Süre', style: AppTypography.caption),
+                            Text(
+                              'Geçen Süre',
+                              style: AppTypography.caption.copyWith(
+                                color: isDark
+                                    ? AppColors.darkOnSurfaceVariant
+                                    : AppColors.onSurfaceVariant,
+                              ),
+                            ),
                             const SizedBox(height: 4),
                             Text(
                               '24 dakika',
-                              style: AppTypography.headlineSection,
+                              style: AppTypography.headlineSection.copyWith(
+                                color: textColor,
+                                fontWeight: FontWeight.w800,
+                              ),
                             ),
                           ],
                         ),
@@ -224,20 +255,32 @@ class LiveTrackingModal extends StatelessWidget {
                       child: Container(
                         padding: const EdgeInsets.all(14),
                         decoration: BoxDecoration(
-                          color: AppColors.surfaceContainerLow,
+                          color: isDark
+                              ? AppColors.darkSurfaceContainer
+                              : AppColors.surfaceContainerLow,
                           borderRadius: BorderRadius.circular(16),
+                          border: Border.all(
+                            color: outlineColor.withValues(alpha: 0.3),
+                          ),
                         ),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
                               'Yürüyüş Mesafesi',
-                              style: AppTypography.caption,
+                              style: AppTypography.caption.copyWith(
+                                color: isDark
+                                    ? AppColors.darkOnSurfaceVariant
+                                    : AppColors.onSurfaceVariant,
+                              ),
                             ),
                             const SizedBox(height: 4),
                             Text(
                               '1.4 km',
-                              style: AppTypography.headlineSection,
+                              style: AppTypography.headlineSection.copyWith(
+                                color: textColor,
+                                fontWeight: FontWeight.w800,
+                              ),
                             ),
                           ],
                         ),
@@ -249,22 +292,30 @@ class LiveTrackingModal extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    color: AppColors.secondaryContainer.withValues(alpha: 0.6),
+                    color: isDark
+                        ? AppColors.darkSurfaceContainer
+                        : AppColors.secondaryContainer.withValues(alpha: 0.6),
                     borderRadius: BorderRadius.circular(14),
+                    border: Border.all(
+                      color: outlineColor.withValues(alpha: 0.3),
+                    ),
                   ),
                   child: Row(
                     children: [
-                      const Icon(
+                      Icon(
                         Icons.info_outline,
                         size: 18,
-                        color: AppColors.secondary,
+                        color:
+                            isDark ? AppColors.darkPrimary : AppColors.secondary,
                       ),
                       const SizedBox(width: 10),
                       Expanded(
                         child: Text(
                           'Demo modu simüle edilmiş yürüyüş rotasıdır. Canlı GPS bağlantısı gerektirmez.',
                           style: AppTypography.caption.copyWith(
-                            color: AppColors.textMain,
+                            color: isDark
+                                ? AppColors.darkOnSurfaceVariant
+                                : AppColors.textMain,
                           ),
                         ),
                       ),

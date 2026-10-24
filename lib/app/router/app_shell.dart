@@ -152,6 +152,7 @@ class _AppShellState extends State<AppShell> {
   /// Bakıcı — İlanım & Fiyatlarım Sekmesi
   Widget _buildSitterListingTab(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final appState = AppStateScope.of(context);
 
     return Scaffold(
       backgroundColor: isDark ? AppColors.darkBackground : AppColors.background,
@@ -175,8 +176,9 @@ class _AppShellState extends State<AppShell> {
                         ),
                         const SizedBox(height: 2),
                         Text(
-                          'Mutlu Patiler Butik Köpek Oteli • Kadıköy',
+                          '${appState.sitterFacilityTitle} • ${appState.sitterLocation}',
                           style: AppTypography.caption,
+                          overflow: TextOverflow.ellipsis,
                         ),
                       ],
                     ),
@@ -226,7 +228,7 @@ class _AppShellState extends State<AppShell> {
               ),
               const SizedBox(height: 16),
 
-              // Tesis Tanıtım Kartı
+              // Tesis Tanıtım Kartı & Düzenleme
               Container(
                 padding: const EdgeInsets.all(18),
                 decoration: BoxDecoration(
@@ -263,8 +265,10 @@ class _AppShellState extends State<AppShell> {
                               Text(
                                 'Doğrulanmış Profesyonel Bakıcı 🐾',
                                 style: AppTypography.caption.copyWith(
-                                  color: AppColors.primary,
-                                  fontWeight: FontWeight.w600,
+                                  color: isDark
+                                      ? AppColors.darkPrimary
+                                      : AppColors.primary,
+                                  fontWeight: FontWeight.w700,
                                 ),
                               ),
                             ],
@@ -301,13 +305,49 @@ class _AppShellState extends State<AppShell> {
                       ],
                     ),
                     const SizedBox(height: 14),
-                    Text(
-                      'Tesis Bilgisi',
-                      style: AppTypography.titleCard.copyWith(fontSize: 14),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'Tesis Bilgisi',
+                          style: AppTypography.titleCard.copyWith(fontSize: 14),
+                        ),
+                        TextButton.icon(
+                          onPressed: () => _showEditFacilityDialog(
+                            context,
+                            appState,
+                            isDark,
+                          ),
+                          icon: Icon(
+                            Icons.edit_outlined,
+                            size: 14,
+                            color: isDark
+                                ? AppColors.darkPrimary
+                                : AppColors.primary,
+                          ),
+                          label: Text(
+                            'Düzenle',
+                            style: AppTypography.caption.copyWith(
+                              color: isDark
+                                  ? AppColors.darkPrimary
+                                  : AppColors.primary,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                          style: TextButton.styleFrom(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 8,
+                              vertical: 4,
+                            ),
+                            minimumSize: Size.zero,
+                            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                          ),
+                        ),
+                      ],
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      '600 m² geniş çim bahçe, klimalı süit odalar, 7/24 kamera takibi ve veteriner anlaşmalı güvenli butik köpek oteli.',
+                      appState.sitterBio,
                       style: AppTypography.caption,
                     ),
                   ],
@@ -315,55 +355,115 @@ class _AppShellState extends State<AppShell> {
               ),
               const SizedBox(height: 20),
 
-              // Fiyatlandırma Tablosu
-              Text(
-                'Hizmet Fiyatlandırması',
-                style: AppTypography.headlineSection,
+              // Fiyatlandırma & Hizmet Yönetimi
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'Hizmet Fiyatlandırması',
+                    style: AppTypography.headlineSection,
+                  ),
+                  TextButton.icon(
+                    onPressed: () => _showAddServiceDialog(
+                      context,
+                      appState,
+                      isDark,
+                    ),
+                    icon: Icon(
+                      Icons.add_circle_outline,
+                      size: 16,
+                      color: isDark ? AppColors.darkPrimary : AppColors.primary,
+                    ),
+                    label: Text(
+                      'Hizmet Ekle',
+                      style: AppTypography.caption.copyWith(
+                        color:
+                            isDark ? AppColors.darkPrimary : AppColors.primary,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ),
+                ],
               ),
               const SizedBox(height: 12),
-              _buildPriceCard(
-                title: 'Butik Köpek Oteli Konaklama',
-                price: '₺450',
-                unit: '/ gece',
-                description:
-                    'Özel süit oda, günde 3 yürüyüş, 7/24 kamera takibi',
-                icon: Icons.hotel_outlined,
-                isDark: isDark,
+              ...appState.sitterServices.map(
+                (srv) => Padding(
+                  padding: const EdgeInsets.only(bottom: 10),
+                  child: _buildPriceCard(
+                    service: srv,
+                    isDark: isDark,
+                    canDelete: appState.sitterServices.length > 1,
+                    onEdit: () => _showEditServiceDialog(
+                      context,
+                      appState,
+                      srv,
+                      isDark,
+                    ),
+                    onDelete: () {
+                      appState.removeSitterService(srv.id);
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text('${srv.title} hizmeti kaldırıldı.'),
+                          backgroundColor: AppColors.error,
+                        ),
+                      );
+                    },
+                  ),
+                ),
               ),
-              const SizedBox(height: 10),
-              _buildPriceCard(
-                title: 'Gündüz Kreşi & Sosyalleşme',
-                price: '₺300',
-                unit: '/ gün',
-                description: 'Sabah 08:30 - Akşam 19:00 arası bahçe oyunları',
-                icon: Icons.wb_sunny_outlined,
-                isDark: isDark,
-              ),
-              const SizedBox(height: 10),
-              _buildPriceCard(
-                title: 'Bireysel Yürüyüş & Egzersiz',
-                price: '₺180',
-                unit: '/ saat',
-                description: 'Sahil parkı tempolu yürüyüş ve su molası',
-                icon: Icons.directions_walk_outlined,
-                isDark: isDark,
-              ),
-              const SizedBox(height: 20),
+              const SizedBox(height: 16),
 
-              // Olanaklar Listesi
-              Text('Tesis Olanakları', style: AppTypography.headlineSection),
+              // Olanaklar Listesi & Yönetimi
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'Tesis Olanakları',
+                    style: AppTypography.headlineSection,
+                  ),
+                  TextButton.icon(
+                    onPressed: () => _showAddAmenityDialog(
+                      context,
+                      appState,
+                      isDark,
+                    ),
+                    icon: Icon(
+                      Icons.add,
+                      size: 16,
+                      color: isDark ? AppColors.darkPrimary : AppColors.primary,
+                    ),
+                    label: Text(
+                      'Olanak Ekle',
+                      style: AppTypography.caption.copyWith(
+                        color:
+                            isDark ? AppColors.darkPrimary : AppColors.primary,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
               const SizedBox(height: 12),
               Wrap(
                 spacing: 8,
                 runSpacing: 8,
-                children: [
-                  _buildAmenityChip('600 m² Çitli Bahçe', isDark),
-                  _buildAmenityChip('7/24 Kamera İzleme', isDark),
-                  _buildAmenityChip('Acil Veteriner Protokolü', isDark),
-                  _buildAmenityChip('Klimalı Süit Odalar', isDark),
-                  _buildAmenityChip('Özel Diyet & Alerji Yönetimi', isDark),
-                  _buildAmenityChip('Günlük Foto & Video Paylaşımı', isDark),
-                ],
+                children: appState.sitterAmenities
+                    .map(
+                      (amenity) => _buildAmenityChip(
+                        amenity,
+                        isDark,
+                        onRemove: () {
+                          appState.removeSitterAmenity(amenity);
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text('$amenity olanağı kaldırıldı.'),
+                              duration: const Duration(seconds: 2),
+                            ),
+                          );
+                        },
+                      ),
+                    )
+                    .toList(),
               ),
               const SizedBox(height: 24),
             ],
@@ -374,12 +474,11 @@ class _AppShellState extends State<AppShell> {
   }
 
   Widget _buildPriceCard({
-    required String title,
-    required String price,
-    required String unit,
-    required String description,
-    required IconData icon,
+    required SitterServiceItem service,
     required bool isDark,
+    required VoidCallback onEdit,
+    required VoidCallback onDelete,
+    required bool canDelete,
   }) {
     return Container(
       padding: const EdgeInsets.all(16),
@@ -406,7 +505,7 @@ class _AppShellState extends State<AppShell> {
               shape: BoxShape.circle,
             ),
             child: Icon(
-              icon,
+              service.icon,
               color: isDark ? AppColors.darkPrimary : AppColors.primary,
               size: 22,
             ),
@@ -416,9 +515,9 @@ class _AppShellState extends State<AppShell> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(title, style: AppTypography.titleCard),
+                Text(service.title, style: AppTypography.titleCard),
                 const SizedBox(height: 2),
-                Text(description, style: AppTypography.caption),
+                Text(service.description, style: AppTypography.caption),
               ],
             ),
           ),
@@ -427,14 +526,76 @@ class _AppShellState extends State<AppShell> {
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               Text(
-                price,
+                '₺${service.price}',
                 style: AppTypography.titleCard.copyWith(
                   color: isDark ? AppColors.darkPrimary : AppColors.primary,
                   fontWeight: FontWeight.w800,
                   fontSize: 16,
                 ),
               ),
-              Text(unit, style: AppTypography.caption.copyWith(fontSize: 11)),
+              Text(
+                service.unit,
+                style: AppTypography.caption.copyWith(fontSize: 11),
+              ),
+            ],
+          ),
+          const SizedBox(width: 4),
+          PopupMenuButton<String>(
+            icon: Icon(
+              Icons.more_vert,
+              size: 18,
+              color: isDark
+                  ? AppColors.darkOnSurfaceVariant
+                  : AppColors.onSurfaceVariant,
+            ),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(14),
+            ),
+            color: isDark
+                ? AppColors.darkSurfaceContainerHigh
+                : AppColors.surfaceContainerLowest,
+            onSelected: (val) {
+              if (val == 'edit') {
+                onEdit();
+              } else if (val == 'delete') {
+                onDelete();
+              }
+            },
+            itemBuilder: (ctx) => [
+              PopupMenuItem(
+                value: 'edit',
+                child: Row(
+                  children: [
+                    Icon(
+                      Icons.edit_outlined,
+                      size: 16,
+                      color: isDark
+                          ? AppColors.darkPrimary
+                          : AppColors.primary,
+                    ),
+                    const SizedBox(width: 8),
+                    const Text('Fiyatı / Hizmeti Düzenle'),
+                  ],
+                ),
+              ),
+              if (canDelete)
+                const PopupMenuItem(
+                  value: 'delete',
+                  child: Row(
+                    children: [
+                      Icon(
+                        Icons.delete_outline,
+                        size: 16,
+                        color: AppColors.error,
+                      ),
+                      SizedBox(width: 8),
+                      Text(
+                        'Hizmeti Kaldır',
+                        style: TextStyle(color: AppColors.error),
+                      ),
+                    ],
+                  ),
+                ),
             ],
           ),
         ],
@@ -442,7 +603,11 @@ class _AppShellState extends State<AppShell> {
     );
   }
 
-  Widget _buildAmenityChip(String label, bool isDark) {
+  Widget _buildAmenityChip(
+    String label,
+    bool isDark, {
+    VoidCallback? onRemove,
+  }) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       decoration: BoxDecoration(
@@ -459,12 +624,36 @@ class _AppShellState extends State<AppShell> {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const Icon(Icons.check_circle, color: AppColors.primary, size: 14),
+          Icon(
+            Icons.check_circle,
+            color: isDark ? AppColors.darkPrimary : AppColors.primary,
+            size: 14,
+          ),
           const SizedBox(width: 6),
           Text(
             label,
-            style: AppTypography.caption.copyWith(fontWeight: FontWeight.w600),
+            style: AppTypography.caption.copyWith(
+              fontWeight: FontWeight.w600,
+              color: isDark ? AppColors.darkOnSurface : AppColors.onSurface,
+            ),
           ),
+          if (onRemove != null) ...[
+            const SizedBox(width: 6),
+            InkWell(
+              onTap: onRemove,
+              borderRadius: BorderRadius.circular(10),
+              child: Padding(
+                padding: const EdgeInsets.all(2),
+                child: Icon(
+                  Icons.close,
+                  size: 12,
+                  color: isDark
+                      ? AppColors.darkOnSurfaceVariant
+                      : AppColors.onSurfaceVariant,
+                ),
+              ),
+            ),
+          ],
         ],
       ),
     );
@@ -473,6 +662,7 @@ class _AppShellState extends State<AppShell> {
   /// Bakıcı — Müsaitlik Takvimi Sekmesi
   Widget _buildSitterCalendarTab(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final appState = AppStateScope.of(context);
 
     return Scaffold(
       backgroundColor: isDark ? AppColors.darkBackground : AppColors.background,
@@ -508,84 +698,120 @@ class _AppShellState extends State<AppShell> {
               ),
               const SizedBox(height: 16),
 
-              // İstatistik Kartları
+              // İstatistik Kartları (Kontenjan Güncelleme Tıklanabilir)
               Row(
                 children: [
                   Expanded(
                     child: _buildMetricCard(
                       title: 'Toplam Kapasite',
-                      value: '6 Süit',
+                      value: '${appState.totalSuites} Süit',
                       icon: Icons.domain,
                       isDark: isDark,
+                      onTap: () => _showEditCapacityDialog(
+                        context,
+                        appState,
+                        isDark,
+                      ),
                     ),
                   ),
                   const SizedBox(width: 10),
                   Expanded(
                     child: _buildMetricCard(
                       title: 'Dolu Oda',
-                      value: '5 Süit',
+                      value: '${appState.occupiedSuites} Süit',
                       icon: Icons.pets,
                       isDark: isDark,
+                      onTap: () => _showEditCapacityDialog(
+                        context,
+                        appState,
+                        isDark,
+                      ),
                     ),
                   ),
                   const SizedBox(width: 10),
                   Expanded(
                     child: _buildMetricCard(
                       title: 'Müsait',
-                      value: '1 Süit',
+                      value: '${appState.availableSuites} Süit',
                       icon: Icons.check_circle_outline,
                       isDark: isDark,
+                      onTap: () => _showEditCapacityDialog(
+                        context,
+                        appState,
+                        isDark,
+                      ),
                     ),
                   ),
                 ],
               ),
               const SizedBox(height: 20),
 
-              Text(
-                'Günlük Doluluk Durumu',
-                style: AppTypography.headlineSection,
+              // Günlük Doluluk Durumu & Gün Ekleme
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'Günlük Doluluk Durumu',
+                    style: AppTypography.headlineSection,
+                  ),
+                  TextButton.icon(
+                    onPressed: () => _showAddCalendarDayDialog(
+                      context,
+                      appState,
+                      isDark,
+                    ),
+                    icon: Icon(
+                      Icons.add_circle_outline,
+                      size: 16,
+                      color: isDark ? AppColors.darkPrimary : AppColors.primary,
+                    ),
+                    label: Text(
+                      'Gün Ekle',
+                      style: AppTypography.caption.copyWith(
+                        color:
+                            isDark ? AppColors.darkPrimary : AppColors.primary,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ),
+                ],
               ),
               const SizedBox(height: 12),
 
-              _buildCalendarDayTile(
-                day: '24',
-                month: 'Eki',
-                weekday: 'Bugün',
-                status: 'Dolu (3 Misafir)',
-                badgeColor: AppColors.error,
-                details: 'Barley (Süit 3) • Luna (Süit 1) • Çakıl (Süit 2)',
-                isDark: isDark,
-              ),
-              const SizedBox(height: 10),
-              _buildCalendarDayTile(
-                day: '25',
-                month: 'Eki',
-                weekday: 'Pazar',
-                status: '1 Oda Müsait',
-                badgeColor: const Color(0xFFF9A825),
-                details: 'Barley (Konaklama devam) • Luna (Süit 1)',
-                isDark: isDark,
-              ),
-              const SizedBox(height: 10),
-              _buildCalendarDayTile(
-                day: '26',
-                month: 'Eki',
-                weekday: 'Pazartesi',
-                status: '3 Oda Müsait',
-                badgeColor: AppColors.primary,
-                details: 'Luna öğleden sonra çıkış yapacak',
-                isDark: isDark,
-              ),
-              const SizedBox(height: 10),
-              _buildCalendarDayTile(
-                day: '27',
-                month: 'Eki',
-                weekday: 'Salı',
-                status: 'Tamamen Müsait',
-                badgeColor: AppColors.primary,
-                details: 'Tüm süitler için rezervasyon kabul ediliyor',
-                isDark: isDark,
-              ),
+              ...appState.sitterCalendarDays.map((day) {
+                Color badgeColor;
+                switch (day.statusType) {
+                  case CalendarDayStatusType.full:
+                    badgeColor = AppColors.error;
+                    break;
+                  case CalendarDayStatusType.limited:
+                    badgeColor = const Color(0xFFF9A825);
+                    break;
+                  case CalendarDayStatusType.available:
+                    badgeColor =
+                        isDark ? AppColors.darkPrimary : AppColors.primary;
+                    break;
+                }
+
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 10),
+                  child: _buildCalendarDayTile(
+                    day: day.day,
+                    month: day.month,
+                    weekday: day.weekday,
+                    status: day.status,
+                    badgeColor: badgeColor,
+                    details: day.details,
+                    isDark: isDark,
+                    onTap: () => _showEditDayDialog(
+                      context,
+                      appState,
+                      day,
+                      isDark,
+                    ),
+                  ),
+                );
+              }),
               const SizedBox(height: 24),
             ],
           ),
@@ -599,30 +825,52 @@ class _AppShellState extends State<AppShell> {
     required String value,
     required IconData icon,
     required bool isDark,
+    VoidCallback? onTap,
   }) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
-      decoration: BoxDecoration(
-        color: isDark
-            ? AppColors.darkSurfaceContainer
-            : AppColors.surfaceContainerLowest,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: AppColors.cardShadow,
-        border: Border.all(
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(16),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
+        decoration: BoxDecoration(
           color: isDark
-              ? AppColors.darkOutlineVariant
-              : AppColors.outlineVariant.withValues(alpha: 0.3),
+              ? AppColors.darkSurfaceContainer
+              : AppColors.surfaceContainerLowest,
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: AppColors.cardShadow,
+          border: Border.all(
+            color: isDark
+                ? AppColors.darkOutlineVariant
+                : AppColors.outlineVariant.withValues(alpha: 0.3),
+          ),
         ),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Icon(icon, color: AppColors.primary, size: 20),
-          const SizedBox(height: 8),
-          Text(value, style: AppTypography.titleCard.copyWith(fontSize: 16)),
-          const SizedBox(height: 2),
-          Text(title, style: AppTypography.caption.copyWith(fontSize: 11)),
-        ],
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Icon(
+                  icon,
+                  color: isDark ? AppColors.darkPrimary : AppColors.primary,
+                  size: 20,
+                ),
+                if (onTap != null)
+                  Icon(
+                    Icons.edit_outlined,
+                    size: 13,
+                    color: isDark
+                        ? AppColors.darkOnSurfaceVariant
+                        : AppColors.onSurfaceVariant,
+                  ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            Text(value, style: AppTypography.titleCard.copyWith(fontSize: 16)),
+            const SizedBox(height: 2),
+            Text(title, style: AppTypography.caption.copyWith(fontSize: 11)),
+          ],
+        ),
       ),
     );
   }
@@ -635,89 +883,1170 @@ class _AppShellState extends State<AppShell> {
     required Color badgeColor,
     required String details,
     required bool isDark,
+    VoidCallback? onTap,
   }) {
-    return Container(
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: isDark
-            ? AppColors.darkSurfaceContainer
-            : AppColors.surfaceContainerLowest,
-        borderRadius: BorderRadius.circular(18),
-        boxShadow: AppColors.cardShadow,
-        border: Border.all(
+    final effectiveBadgeColor = (isDark && badgeColor == AppColors.primary)
+        ? AppColors.darkPrimary
+        : badgeColor;
+
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(18),
+      child: Container(
+        padding: const EdgeInsets.all(14),
+        decoration: BoxDecoration(
           color: isDark
-              ? AppColors.darkOutlineVariant
-              : AppColors.outlineVariant.withValues(alpha: 0.3),
+              ? AppColors.darkSurfaceContainer
+              : AppColors.surfaceContainerLowest,
+          borderRadius: BorderRadius.circular(18),
+          boxShadow: AppColors.cardShadow,
+          border: Border.all(
+            color: isDark
+                ? AppColors.darkOutlineVariant
+                : AppColors.outlineVariant.withValues(alpha: 0.3),
+          ),
+        ),
+        child: Row(
+          children: [
+            Container(
+              width: 48,
+              height: 48,
+              decoration: BoxDecoration(
+                color: isDark
+                    ? AppColors.darkPrimaryContainer
+                    : AppColors.secondaryContainer,
+                borderRadius: BorderRadius.circular(14),
+              ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    day,
+                    style: TextStyle(
+                      fontWeight: FontWeight.w800,
+                      fontSize: 16,
+                      color: isDark ? AppColors.darkPrimary : AppColors.primary,
+                    ),
+                  ),
+                  Text(
+                    month,
+                    style: TextStyle(
+                      fontSize: 10,
+                      fontWeight: FontWeight.w600,
+                      color: isDark ? AppColors.darkPrimary : AppColors.primary,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(width: 14),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(weekday, style: AppTypography.titleCard),
+                      Row(
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 8,
+                              vertical: 2,
+                            ),
+                            decoration: BoxDecoration(
+                              color: effectiveBadgeColor.withValues(
+                                alpha: isDark ? 0.25 : 0.15,
+                              ),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Text(
+                              status,
+                              style: TextStyle(
+                                color: effectiveBadgeColor,
+                                fontSize: 11,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                          ),
+                          if (onTap != null) ...[
+                            const SizedBox(width: 6),
+                            Icon(
+                              Icons.edit_outlined,
+                              size: 14,
+                              color: isDark
+                                  ? AppColors.darkOnSurfaceVariant
+                                  : AppColors.onSurfaceVariant,
+                            ),
+                          ],
+                        ],
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 4),
+                  Text(details, style: AppTypography.caption),
+                ],
+              ),
+            ),
+          ],
         ),
       ),
-      child: Row(
-        children: [
-          Container(
-            width: 48,
-            height: 48,
-            decoration: BoxDecoration(
-              color: isDark
-                  ? AppColors.darkPrimaryContainer
-                  : AppColors.secondaryContainer,
-              borderRadius: BorderRadius.circular(14),
-            ),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  day,
-                  style: TextStyle(
-                    fontWeight: FontWeight.w800,
-                    fontSize: 16,
-                    color: isDark ? AppColors.darkPrimary : AppColors.primary,
+    );
+  }
+
+  // ==========================================
+  // Hizmet Veren — Yönetim Modal ve Diyalogları
+  // ==========================================
+
+  void _showEditFacilityDialog(
+    BuildContext context,
+    AppState appState,
+    bool isDark,
+  ) {
+    final titleCtrl = TextEditingController(text: appState.sitterFacilityTitle);
+    final bioCtrl = TextEditingController(text: appState.sitterBio);
+    final locCtrl = TextEditingController(text: appState.sitterLocation);
+
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor:
+            isDark ? AppColors.darkSurface : AppColors.surfaceContainerLowest,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+        title: Text(
+          'Tesis Bilgisini Düzenle',
+          style: AppTypography.titleCard.copyWith(
+            fontWeight: FontWeight.w700,
+            fontSize: 18,
+          ),
+        ),
+        content: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text('Tesis Adı', style: AppTypography.caption),
+              const SizedBox(height: 6),
+              TextField(
+                controller: titleCtrl,
+                style: AppTypography.bodyDefault,
+                decoration: InputDecoration(
+                  hintText: 'Tesis adını girin',
+                  filled: true,
+                  fillColor: isDark
+                      ? AppColors.darkSurfaceContainer
+                      : AppColors.surfaceContainerLow,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(14),
+                    borderSide: BorderSide.none,
                   ),
                 ),
-                Text(
-                  month,
-                  style: TextStyle(
-                    fontSize: 10,
-                    fontWeight: FontWeight.w600,
-                    color: isDark ? AppColors.darkPrimary : AppColors.primary,
+              ),
+              const SizedBox(height: 14),
+              Text('Konum', style: AppTypography.caption),
+              const SizedBox(height: 6),
+              TextField(
+                controller: locCtrl,
+                style: AppTypography.bodyDefault,
+                decoration: InputDecoration(
+                  hintText: 'Örn: Kadıköy, İstanbul',
+                  filled: true,
+                  fillColor: isDark
+                      ? AppColors.darkSurfaceContainer
+                      : AppColors.surfaceContainerLow,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(14),
+                    borderSide: BorderSide.none,
                   ),
                 ),
-              ],
+              ),
+              const SizedBox(height: 14),
+              Text('Tesis Tanıtımı & Bio', style: AppTypography.caption),
+              const SizedBox(height: 6),
+              TextField(
+                controller: bioCtrl,
+                maxLines: 3,
+                style: AppTypography.bodyDefault,
+                decoration: InputDecoration(
+                  hintText: 'Tesis olanakları ve vizyonunuzu anlatın',
+                  filled: true,
+                  fillColor: isDark
+                      ? AppColors.darkSurfaceContainer
+                      : AppColors.surfaceContainerLow,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(14),
+                    borderSide: BorderSide.none,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(),
+            child: Text(
+              'İptal',
+              style: TextStyle(
+                color: isDark
+                    ? AppColors.darkOnSurfaceVariant
+                    : AppColors.onSurfaceVariant,
+              ),
             ),
           ),
-          const SizedBox(width: 14),
-          Expanded(
+          ElevatedButton(
+            onPressed: () {
+              appState.updateSitterFacilityInfo(
+                facilityTitle: titleCtrl.text,
+                bio: bioCtrl.text,
+                location: locCtrl.text,
+              );
+              Navigator.of(ctx).pop();
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: const Text('Tesis bilgileri başarıyla güncellendi!'),
+                  backgroundColor:
+                      isDark ? AppColors.darkPrimary : AppColors.primary,
+                ),
+              );
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor:
+                  isDark ? AppColors.darkPrimary : AppColors.primary,
+              foregroundColor:
+                  isDark ? AppColors.darkOnPrimary : AppColors.onPrimary,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+            ),
+            child: const Text('Kaydet'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showEditServiceDialog(
+    BuildContext context,
+    AppState appState,
+    SitterServiceItem service,
+    bool isDark,
+  ) {
+    final titleCtrl = TextEditingController(text: service.title);
+    final priceCtrl = TextEditingController(text: service.price.toString());
+    final descCtrl = TextEditingController(text: service.description);
+    String selectedUnit = service.unit;
+
+    showDialog(
+      context: context,
+      builder: (ctx) => StatefulBuilder(
+        builder: (ctx, setDialogState) => AlertDialog(
+          backgroundColor:
+              isDark ? AppColors.darkSurface : AppColors.surfaceContainerLowest,
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+          title: Text(
+            'Hizmet & Fiyat Düzenle',
+            style: AppTypography.titleCard.copyWith(
+              fontWeight: FontWeight.w700,
+              fontSize: 18,
+            ),
+          ),
+          content: SingleChildScrollView(
             child: Column(
+              mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                Text('Hizmet Adı', style: AppTypography.caption),
+                const SizedBox(height: 6),
+                TextField(
+                  controller: titleCtrl,
+                  style: AppTypography.bodyDefault,
+                  decoration: InputDecoration(
+                    filled: true,
+                    fillColor: isDark
+                        ? AppColors.darkSurfaceContainer
+                        : AppColors.surfaceContainerLow,
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(14),
+                      borderSide: BorderSide.none,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 14),
                 Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(weekday, style: AppTypography.titleCard),
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 8,
-                        vertical: 2,
+                    Expanded(
+                      flex: 2,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text('Fiyat (₺)', style: AppTypography.caption),
+                          const SizedBox(height: 6),
+                          TextField(
+                            controller: priceCtrl,
+                            keyboardType: TextInputType.number,
+                            style: AppTypography.bodyDefault,
+                            decoration: InputDecoration(
+                              filled: true,
+                              fillColor: isDark
+                                  ? AppColors.darkSurfaceContainer
+                                  : AppColors.surfaceContainerLow,
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(14),
+                                borderSide: BorderSide.none,
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
-                      decoration: BoxDecoration(
-                        color: badgeColor.withValues(alpha: 0.15),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: Text(
-                        status,
-                        style: TextStyle(
-                          color: badgeColor,
-                          fontSize: 11,
-                          fontWeight: FontWeight.w700,
-                        ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      flex: 2,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text('Birim', style: AppTypography.caption),
+                          const SizedBox(height: 6),
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 10),
+                            decoration: BoxDecoration(
+                              color: isDark
+                                  ? AppColors.darkSurfaceContainer
+                                  : AppColors.surfaceContainerLow,
+                              borderRadius: BorderRadius.circular(14),
+                            ),
+                            child: DropdownButtonHideUnderline(
+                              child: DropdownButton<String>(
+                                value: selectedUnit,
+                                isExpanded: true,
+                                dropdownColor: isDark
+                                    ? AppColors.darkSurfaceContainer
+                                    : AppColors.surfaceContainerLowest,
+                                items: const [
+                                  DropdownMenuItem(
+                                    value: '/ gece',
+                                    child: Text('/ gece'),
+                                  ),
+                                  DropdownMenuItem(
+                                    value: '/ gün',
+                                    child: Text('/ gün'),
+                                  ),
+                                  DropdownMenuItem(
+                                    value: '/ saat',
+                                    child: Text('/ saat'),
+                                  ),
+                                  DropdownMenuItem(
+                                    value: '/ seans',
+                                    child: Text('/ seans'),
+                                  ),
+                                ],
+                                onChanged: (val) {
+                                  if (val != null) {
+                                    setDialogState(() => selectedUnit = val);
+                                  }
+                                },
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   ],
                 ),
-                const SizedBox(height: 4),
-                Text(details, style: AppTypography.caption),
+                const SizedBox(height: 14),
+                Text('Açıklama', style: AppTypography.caption),
+                const SizedBox(height: 6),
+                TextField(
+                  controller: descCtrl,
+                  maxLines: 2,
+                  style: AppTypography.bodyDefault,
+                  decoration: InputDecoration(
+                    filled: true,
+                    fillColor: isDark
+                        ? AppColors.darkSurfaceContainer
+                        : AppColors.surfaceContainerLow,
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(14),
+                      borderSide: BorderSide.none,
+                    ),
+                  ),
+                ),
               ],
             ),
           ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(ctx).pop(),
+              child: Text(
+                'İptal',
+                style: TextStyle(
+                  color: isDark
+                    ? AppColors.darkOnSurfaceVariant
+                    : AppColors.onSurfaceVariant,
+                ),
+              ),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                final p = int.tryParse(priceCtrl.text) ?? service.price;
+                appState.updateSitterService(
+                  service.id,
+                  title: titleCtrl.text,
+                  price: p,
+                  unit: selectedUnit,
+                  description: descCtrl.text,
+                );
+                Navigator.of(ctx).pop();
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(
+                      '${titleCtrl.text} fiyatı ₺$p $selectedUnit olarak güncellendi!',
+                    ),
+                    backgroundColor:
+                        isDark ? AppColors.darkPrimary : AppColors.primary,
+                  ),
+                );
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor:
+                    isDark ? AppColors.darkPrimary : AppColors.primary,
+                foregroundColor:
+                    isDark ? AppColors.darkOnPrimary : AppColors.onPrimary,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
+              child: const Text('Kaydet'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _showAddServiceDialog(
+    BuildContext context,
+    AppState appState,
+    bool isDark,
+  ) {
+    final titleCtrl = TextEditingController();
+    final priceCtrl = TextEditingController(text: '200');
+    final descCtrl = TextEditingController();
+    String selectedUnit = '/ gün';
+
+    showDialog(
+      context: context,
+      builder: (ctx) => StatefulBuilder(
+        builder: (ctx, setDialogState) => AlertDialog(
+          backgroundColor:
+              isDark ? AppColors.darkSurface : AppColors.surfaceContainerLowest,
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+          title: Text(
+            'Yeni Hizmet Ekle',
+            style: AppTypography.titleCard.copyWith(
+              fontWeight: FontWeight.w700,
+              fontSize: 18,
+            ),
+          ),
+          content: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('Hizmet Adı', style: AppTypography.caption),
+                const SizedBox(height: 6),
+                TextField(
+                  controller: titleCtrl,
+                  style: AppTypography.bodyDefault,
+                  decoration: InputDecoration(
+                    hintText: 'Örn: Özel Köpek Eğitimi & İtaat',
+                    filled: true,
+                    fillColor: isDark
+                        ? AppColors.darkSurfaceContainer
+                        : AppColors.surfaceContainerLow,
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(14),
+                      borderSide: BorderSide.none,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 14),
+                Row(
+                  children: [
+                    Expanded(
+                      flex: 2,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text('Ücret (₺)', style: AppTypography.caption),
+                          const SizedBox(height: 6),
+                          TextField(
+                            controller: priceCtrl,
+                            keyboardType: TextInputType.number,
+                            style: AppTypography.bodyDefault,
+                            decoration: InputDecoration(
+                              filled: true,
+                              fillColor: isDark
+                                  ? AppColors.darkSurfaceContainer
+                                  : AppColors.surfaceContainerLow,
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(14),
+                                borderSide: BorderSide.none,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      flex: 2,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text('Birim', style: AppTypography.caption),
+                          const SizedBox(height: 6),
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 10),
+                            decoration: BoxDecoration(
+                              color: isDark
+                                  ? AppColors.darkSurfaceContainer
+                                  : AppColors.surfaceContainerLow,
+                              borderRadius: BorderRadius.circular(14),
+                            ),
+                            child: DropdownButtonHideUnderline(
+                              child: DropdownButton<String>(
+                                value: selectedUnit,
+                                isExpanded: true,
+                                dropdownColor: isDark
+                                    ? AppColors.darkSurfaceContainer
+                                    : AppColors.surfaceContainerLowest,
+                                items: const [
+                                  DropdownMenuItem(
+                                    value: '/ gece',
+                                    child: Text('/ gece'),
+                                  ),
+                                  DropdownMenuItem(
+                                    value: '/ gün',
+                                    child: Text('/ gün'),
+                                  ),
+                                  DropdownMenuItem(
+                                    value: '/ saat',
+                                    child: Text('/ saat'),
+                                  ),
+                                  DropdownMenuItem(
+                                    value: '/ seans',
+                                    child: Text('/ seans'),
+                                  ),
+                                ],
+                                onChanged: (val) {
+                                  if (val != null) {
+                                    setDialogState(() => selectedUnit = val);
+                                  }
+                                },
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 14),
+                Text('Hizmet Açıklaması', style: AppTypography.caption),
+                const SizedBox(height: 6),
+                TextField(
+                  controller: descCtrl,
+                  maxLines: 2,
+                  style: AppTypography.bodyDefault,
+                  decoration: InputDecoration(
+                    hintText: 'Örn: Temel itaat ve sosyalleşme seansı',
+                    filled: true,
+                    fillColor: isDark
+                        ? AppColors.darkSurfaceContainer
+                        : AppColors.surfaceContainerLow,
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(14),
+                      borderSide: BorderSide.none,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(ctx).pop(),
+              child: Text(
+                'İptal',
+                style: TextStyle(
+                  color: isDark
+                    ? AppColors.darkOnSurfaceVariant
+                    : AppColors.onSurfaceVariant,
+                ),
+              ),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                if (titleCtrl.text.trim().isEmpty) return;
+                final p = int.tryParse(priceCtrl.text) ?? 200;
+                appState.addSitterService(
+                  SitterServiceItem(
+                    id: 'srv_${DateTime.now().millisecondsSinceEpoch}',
+                    title: titleCtrl.text.trim(),
+                    price: p,
+                    unit: selectedUnit,
+                    description: descCtrl.text.trim().isEmpty
+                        ? 'Standart bakım ve ilgi servisi'
+                        : descCtrl.text.trim(),
+                    icon: Icons.pets_outlined,
+                  ),
+                );
+                Navigator.of(ctx).pop();
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text('${titleCtrl.text} hizmeti eklendi!'),
+                    backgroundColor:
+                        isDark ? AppColors.darkPrimary : AppColors.primary,
+                  ),
+                );
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor:
+                    isDark ? AppColors.darkPrimary : AppColors.primary,
+                foregroundColor:
+                    isDark ? AppColors.darkOnPrimary : AppColors.onPrimary,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
+              child: const Text('Ekle'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _showAddAmenityDialog(
+    BuildContext context,
+    AppState appState,
+    bool isDark,
+  ) {
+    final amenityCtrl = TextEditingController();
+
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor:
+            isDark ? AppColors.darkSurface : AppColors.surfaceContainerLowest,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+        title: Text(
+          'Yeni Tesis Olanağı Ekle',
+          style: AppTypography.titleCard.copyWith(
+            fontWeight: FontWeight.w700,
+            fontSize: 18,
+          ),
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('Olanak Adı', style: AppTypography.caption),
+            const SizedBox(height: 6),
+            TextField(
+              controller: amenityCtrl,
+              style: AppTypography.bodyDefault,
+              decoration: InputDecoration(
+                hintText: 'Örn: Yerden Isıtmalı Zemin, Geniş Havuz',
+                filled: true,
+                fillColor: isDark
+                    ? AppColors.darkSurfaceContainer
+                    : AppColors.surfaceContainerLow,
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(14),
+                  borderSide: BorderSide.none,
+                ),
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(),
+            child: Text(
+              'İptal',
+              style: TextStyle(
+                color: isDark
+                    ? AppColors.darkOnSurfaceVariant
+                    : AppColors.onSurfaceVariant,
+              ),
+            ),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              if (amenityCtrl.text.trim().isNotEmpty) {
+                appState.addSitterAmenity(amenityCtrl.text.trim());
+                Navigator.of(ctx).pop();
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content:
+                        Text('${amenityCtrl.text.trim()} olanağı eklendi!'),
+                    backgroundColor:
+                        isDark ? AppColors.darkPrimary : AppColors.primary,
+                  ),
+                );
+              }
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor:
+                  isDark ? AppColors.darkPrimary : AppColors.primary,
+              foregroundColor:
+                  isDark ? AppColors.darkOnPrimary : AppColors.onPrimary,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+            ),
+            child: const Text('Ekle'),
+          ),
         ],
+      ),
+    );
+  }
+
+  void _showEditDayDialog(
+    BuildContext context,
+    AppState appState,
+    SitterCalendarDay day,
+    bool isDark,
+  ) {
+    String selectedStatus = day.status;
+    CalendarDayStatusType selectedType = day.statusType;
+    final detailsCtrl = TextEditingController(text: day.details);
+
+    final options = [
+      ('Tamamen Müsait', CalendarDayStatusType.available),
+      ('1 Oda Müsait', CalendarDayStatusType.limited),
+      ('2 Oda Müsait', CalendarDayStatusType.limited),
+      ('3 Oda Müsait', CalendarDayStatusType.available),
+      ('Dolu (Tüm Odalar)', CalendarDayStatusType.full),
+    ];
+
+    showDialog(
+      context: context,
+      builder: (ctx) => StatefulBuilder(
+        builder: (ctx, setDialogState) => AlertDialog(
+          backgroundColor:
+              isDark ? AppColors.darkSurface : AppColors.surfaceContainerLowest,
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+          title: Text(
+            '${day.day} ${day.month} (${day.weekday}) Müsaitliği',
+            style: AppTypography.titleCard.copyWith(
+              fontWeight: FontWeight.w700,
+              fontSize: 18,
+            ),
+          ),
+          content: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('Durum Seçin', style: AppTypography.caption),
+                const SizedBox(height: 8),
+                Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
+                  children: options.map((opt) {
+                    final isSelected = selectedStatus == opt.$1;
+                    return ChoiceChip(
+                      label: Text(opt.$1),
+                      selected: isSelected,
+                      selectedColor: isDark
+                          ? AppColors.darkPrimaryContainer
+                          : AppColors.secondaryContainer,
+                      labelStyle: TextStyle(
+                        fontSize: 12,
+                        fontWeight:
+                            isSelected ? FontWeight.bold : FontWeight.normal,
+                        color: isSelected
+                            ? (isDark
+                                ? AppColors.darkPrimary
+                                : AppColors.primary)
+                            : (isDark
+                                ? AppColors.darkOnSurface
+                                : AppColors.onSurface),
+                      ),
+                      onSelected: (val) {
+                        if (val) {
+                          setDialogState(() {
+                            selectedStatus = opt.$1;
+                            selectedType = opt.$2;
+                          });
+                        }
+                      },
+                    );
+                  }).toList(),
+                ),
+                const SizedBox(height: 16),
+                Text('Rezervasyon / Not Detayı', style: AppTypography.caption),
+                const SizedBox(height: 6),
+                TextField(
+                  controller: detailsCtrl,
+                  maxLines: 2,
+                  style: AppTypography.bodyDefault,
+                  decoration: InputDecoration(
+                    hintText: 'Misafir veya oda notlarını yazın',
+                    filled: true,
+                    fillColor: isDark
+                        ? AppColors.darkSurfaceContainer
+                        : AppColors.surfaceContainerLow,
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(14),
+                      borderSide: BorderSide.none,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(ctx).pop(),
+              child: Text(
+                'İptal',
+                style: TextStyle(
+                  color: isDark
+                      ? AppColors.darkOnSurfaceVariant
+                      : AppColors.onSurfaceVariant,
+                ),
+              ),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                appState.updateCalendarDay(
+                  day.id,
+                  status: selectedStatus,
+                  statusType: selectedType,
+                  details: detailsCtrl.text.trim().isEmpty
+                      ? 'Rezervasyon durumu güncellendi'
+                      : detailsCtrl.text.trim(),
+                );
+                Navigator.of(ctx).pop();
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(
+                      '${day.day} ${day.month} müsaitlik durumu "$selectedStatus" olarak güncellendi!',
+                    ),
+                    backgroundColor:
+                        isDark ? AppColors.darkPrimary : AppColors.primary,
+                  ),
+                );
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor:
+                    isDark ? AppColors.darkPrimary : AppColors.primary,
+                foregroundColor:
+                    isDark ? AppColors.darkOnPrimary : AppColors.onPrimary,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
+              child: const Text('Güncelle'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _showAddCalendarDayDialog(
+    BuildContext context,
+    AppState appState,
+    bool isDark,
+  ) {
+    final dayCtrl = TextEditingController(text: '28');
+    final weekdayCtrl = TextEditingController(text: 'Çarşamba');
+    final detailsCtrl = TextEditingController(
+      text: 'Tüm odalar için rezervasyon kabul ediliyor',
+    );
+
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor:
+            isDark ? AppColors.darkSurface : AppColors.surfaceContainerLowest,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+        title: Text(
+          'Takvime Gün Ekle',
+          style: AppTypography.titleCard.copyWith(
+            fontWeight: FontWeight.w700,
+            fontSize: 18,
+          ),
+        ),
+        content: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text('Gün Numarası', style: AppTypography.caption),
+              const SizedBox(height: 6),
+              TextField(
+                controller: dayCtrl,
+                keyboardType: TextInputType.number,
+                style: AppTypography.bodyDefault,
+                decoration: InputDecoration(
+                  filled: true,
+                  fillColor: isDark
+                      ? AppColors.darkSurfaceContainer
+                      : AppColors.surfaceContainerLow,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(14),
+                    borderSide: BorderSide.none,
+                  ),
+                ),
+              ),
+              const SizedBox(height: 12),
+              Text('Gün Adı', style: AppTypography.caption),
+              const SizedBox(height: 6),
+              TextField(
+                controller: weekdayCtrl,
+                style: AppTypography.bodyDefault,
+                decoration: InputDecoration(
+                  filled: true,
+                  fillColor: isDark
+                      ? AppColors.darkSurfaceContainer
+                      : AppColors.surfaceContainerLow,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(14),
+                    borderSide: BorderSide.none,
+                  ),
+                ),
+              ),
+              const SizedBox(height: 12),
+              Text('Durum Notu', style: AppTypography.caption),
+              const SizedBox(height: 6),
+              TextField(
+                controller: detailsCtrl,
+                style: AppTypography.bodyDefault,
+                decoration: InputDecoration(
+                  filled: true,
+                  fillColor: isDark
+                      ? AppColors.darkSurfaceContainer
+                      : AppColors.surfaceContainerLow,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(14),
+                    borderSide: BorderSide.none,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(),
+            child: Text(
+              'İptal',
+              style: TextStyle(
+                color: isDark
+                    ? AppColors.darkOnSurfaceVariant
+                    : AppColors.onSurfaceVariant,
+              ),
+            ),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              if (dayCtrl.text.trim().isNotEmpty) {
+                appState.addCalendarDay(
+                  SitterCalendarDay(
+                    id: 'cal_${DateTime.now().millisecondsSinceEpoch}',
+                    day: dayCtrl.text.trim(),
+                    month: 'Eki',
+                    weekday: weekdayCtrl.text.trim(),
+                    status: 'Tamamen Müsait',
+                    statusType: CalendarDayStatusType.available,
+                    details: detailsCtrl.text.trim(),
+                  ),
+                );
+                Navigator.of(ctx).pop();
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(
+                      '${dayCtrl.text} Ekim (${weekdayCtrl.text}) takvime eklendi!',
+                    ),
+                    backgroundColor:
+                        isDark ? AppColors.darkPrimary : AppColors.primary,
+                  ),
+                );
+              }
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor:
+                  isDark ? AppColors.darkPrimary : AppColors.primary,
+              foregroundColor:
+                  isDark ? AppColors.darkOnPrimary : AppColors.onPrimary,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+            ),
+            child: const Text('Ekle'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showEditCapacityDialog(
+    BuildContext context,
+    AppState appState,
+    bool isDark,
+  ) {
+    int total = appState.totalSuites;
+    int occupied = appState.occupiedSuites;
+
+    showDialog(
+      context: context,
+      builder: (ctx) => StatefulBuilder(
+        builder: (ctx, setDialogState) {
+          final available = (total - occupied).clamp(0, total);
+          return AlertDialog(
+            backgroundColor: isDark
+                ? AppColors.darkSurface
+                : AppColors.surfaceContainerLowest,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(24),
+            ),
+            title: Text(
+              'Oda Kontenjanını Güncelle',
+              style: AppTypography.titleCard.copyWith(
+                fontWeight: FontWeight.w700,
+                fontSize: 18,
+              ),
+            ),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text('Toplam Süit Kapasitesi:',
+                        style: AppTypography.bodyMedium),
+                    Row(
+                      children: [
+                        IconButton(
+                          icon: const Icon(Icons.remove_circle_outline),
+                          onPressed: total > 1
+                              ? () => setDialogState(() {
+                                    total--;
+                                    if (occupied > total) occupied = total;
+                                  })
+                              : null,
+                        ),
+                        Text('$total',
+                            style: AppTypography.headlineSection
+                                .copyWith(fontWeight: FontWeight.bold)),
+                        IconButton(
+                          icon: const Icon(Icons.add_circle_outline),
+                          onPressed: () => setDialogState(() => total++),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 10),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text('Dolu Süit Sayısı:',
+                        style: AppTypography.bodyMedium),
+                    Row(
+                      children: [
+                        IconButton(
+                          icon: const Icon(Icons.remove_circle_outline),
+                          onPressed: occupied > 0
+                              ? () => setDialogState(() => occupied--)
+                              : null,
+                        ),
+                        Text('$occupied',
+                            style: AppTypography.headlineSection
+                                .copyWith(fontWeight: FontWeight.bold)),
+                        IconButton(
+                          icon: const Icon(Icons.add_circle_outline),
+                          onPressed: occupied < total
+                              ? () => setDialogState(() => occupied++)
+                              : null,
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+                const Divider(height: 24),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text('Kalan Müsait Oda:',
+                        style: AppTypography.bodyMedium
+                            .copyWith(fontWeight: FontWeight.bold)),
+                    Text(
+                      '$available Süit',
+                      style: AppTypography.headlineSection.copyWith(
+                        color: isDark
+                            ? AppColors.darkPrimary
+                            : AppColors.primary,
+                        fontWeight: FontWeight.w800,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(ctx).pop(),
+                child: Text(
+                  'İptal',
+                  style: TextStyle(
+                    color: isDark
+                        ? AppColors.darkOnSurfaceVariant
+                        : AppColors.onSurfaceVariant,
+                  ),
+                ),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  appState.updateSuitesCapacity(
+                    total: total,
+                    occupied: occupied,
+                    available: available,
+                  );
+                  Navigator.of(ctx).pop();
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: const Text('Oda kontenjanları güncellendi!'),
+                      backgroundColor:
+                          isDark ? AppColors.darkPrimary : AppColors.primary,
+                    ),
+                  );
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor:
+                      isDark ? AppColors.darkPrimary : AppColors.primary,
+                  foregroundColor:
+                      isDark ? AppColors.darkOnPrimary : AppColors.onPrimary,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+                child: const Text('Güncelle'),
+              ),
+            ],
+          );
+        },
       ),
     );
   }

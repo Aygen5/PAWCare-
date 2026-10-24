@@ -150,10 +150,12 @@ class _SitterDashboardView extends StatelessWidget {
                                     ),
                                   ),
                                   const SizedBox(width: 4),
-                                  const Icon(
+                                  Icon(
                                     Icons.verified,
                                     size: 16,
-                                    color: AppColors.primary,
+                                    color: isDark
+                                        ? AppColors.darkPrimary
+                                        : AppColors.primary,
                                   ),
                                 ],
                               ),
@@ -176,19 +178,28 @@ class _SitterDashboardView extends StatelessWidget {
                               context.go(RoutePaths.home);
                             } catch (_) {}
                           },
-                          icon: const Icon(
+                          icon: Icon(
                             Icons.swap_horiz,
                             size: 16,
-                            color: AppColors.primary,
+                            color: isDark
+                                ? AppColors.darkPrimary
+                                : AppColors.primary,
                           ),
                           label: Text(
                             'Sahip Modu',
                             style: AppTypography.labelTag.copyWith(
-                              color: AppColors.primary,
+                              color: isDark
+                                  ? AppColors.darkPrimary
+                                  : AppColors.primary,
+                              fontWeight: FontWeight.w700,
                             ),
                           ),
                           style: OutlinedButton.styleFrom(
-                            side: const BorderSide(color: AppColors.primary),
+                            side: BorderSide(
+                              color: isDark
+                                  ? AppColors.darkPrimary
+                                  : AppColors.primary,
+                            ),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(14),
                             ),
@@ -626,7 +637,11 @@ class _SitterDashboardView extends StatelessWidget {
                     : AppColors.surfaceContainerLow,
                 shape: BoxShape.circle,
               ),
-              child: Icon(icon, color: AppColors.primary, size: 20),
+              child: Icon(
+                icon,
+                color: isDark ? AppColors.darkPrimary : AppColors.primary,
+                size: 20,
+              ),
             ),
             const SizedBox(width: 14),
             Expanded(

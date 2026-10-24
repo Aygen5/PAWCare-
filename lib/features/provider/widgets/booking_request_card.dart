@@ -221,15 +221,15 @@ class BookingRequestCard extends StatelessWidget {
                 sitterName: 'Aygen (Köpek Sahibi)',
                 avatarPath: 'assets/images/barley.jpg',
               ),
-              icon: const Icon(
+              icon: Icon(
                 Icons.chat_bubble_outline,
                 size: 16,
-                color: AppColors.primary,
+                color: isDark ? AppColors.darkPrimary : AppColors.primary,
               ),
               label: Text(
                 'Sahibine Mesaj Gönder',
                 style: AppTypography.caption.copyWith(
-                  color: AppColors.primary,
+                  color: isDark ? AppColors.darkPrimary : AppColors.primary,
                   fontWeight: FontWeight.w600,
                 ),
               ),

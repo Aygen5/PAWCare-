@@ -37,6 +37,24 @@ class CallModal extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final cardBg =
+        isDark ? AppColors.darkSurface : AppColors.surfaceContainerLowest;
+    final outlineColor = isDark
+        ? AppColors.darkOutlineVariant
+        : AppColors.outlineVariant.withValues(alpha: 0.5);
+    final iconCircleBg = isDark
+        ? AppColors.darkSurfaceContainer
+        : AppColors.secondaryContainer;
+    final iconColor = isDark ? AppColors.darkPrimary : AppColors.primary;
+    final textColor = isDark ? AppColors.darkOnSurface : AppColors.onSurface;
+    final subtextColor =
+        isDark ? AppColors.darkOnSurfaceVariant : AppColors.onSurfaceVariant;
+    final phoneBoxBg = isDark
+        ? AppColors.darkSurfaceContainer
+        : AppColors.surfaceContainerLow;
+    final phoneTextColor = isDark ? AppColors.darkPrimary : AppColors.primary;
+
     return BackdropFilter(
       filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
       child: Dialog(
@@ -45,11 +63,11 @@ class CallModal extends StatelessWidget {
         child: Container(
           constraints: const BoxConstraints(maxWidth: 400),
           decoration: BoxDecoration(
-            color: AppColors.surfaceContainerLowest,
+            color: cardBg,
             borderRadius: BorderRadius.circular(24),
             boxShadow: AppColors.floatingShadow,
             border: Border.all(
-              color: AppColors.outlineVariant.withValues(alpha: 0.5),
+              color: outlineColor,
             ),
           ),
           padding: const EdgeInsets.all(24),
@@ -59,29 +77,38 @@ class CallModal extends StatelessWidget {
               Container(
                 width: 56,
                 height: 56,
-                decoration: const BoxDecoration(
-                  color: AppColors.secondaryContainer,
+                decoration: BoxDecoration(
+                  color: iconCircleBg,
                   shape: BoxShape.circle,
                 ),
-                child: const Icon(
+                child: Icon(
                   Icons.phone_in_talk,
-                  color: AppColors.primary,
+                  color: iconColor,
                   size: 28,
                 ),
               ),
               const SizedBox(height: 16),
-              Text('Telefon Araması', style: AppTypography.headlineSection),
+              Text(
+                'Telefon Araması',
+                style: AppTypography.headlineSection.copyWith(
+                  color: textColor,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
               const SizedBox(height: 6),
               Text(
                 contactName,
                 style: AppTypography.bodyMedium.copyWith(
                   fontWeight: FontWeight.w700,
+                  color: textColor,
                 ),
                 textAlign: TextAlign.center,
               ),
               Text(
                 roleSubtitle,
-                style: AppTypography.caption,
+                style: AppTypography.caption.copyWith(
+                  color: subtextColor,
+                ),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 12),
@@ -91,21 +118,27 @@ class CallModal extends StatelessWidget {
                   vertical: 8,
                 ),
                 decoration: BoxDecoration(
-                  color: AppColors.surfaceContainerLow,
+                  color: phoneBoxBg,
                   borderRadius: BorderRadius.circular(12),
+                  border: Border.all(
+                    color: outlineColor.withValues(alpha: 0.3),
+                  ),
                 ),
                 child: Text(
                   phoneNumber,
                   style: AppTypography.titleCard.copyWith(
-                    color: AppColors.primary,
+                    color: phoneTextColor,
                     letterSpacing: 1.0,
+                    fontWeight: FontWeight.w800,
                   ),
                 ),
               ),
               const SizedBox(height: 16),
               Text(
                 'Demo ortamında arama başlatılacaktır. Gerçek arama için mobil cihaz izinleri gereklidir.',
-                style: AppTypography.caption,
+                style: AppTypography.caption.copyWith(
+                  color: subtextColor,
+                ),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 24),
@@ -115,13 +148,23 @@ class CallModal extends StatelessWidget {
                     child: OutlinedButton(
                       onPressed: () => Navigator.of(context).pop(),
                       style: OutlinedButton.styleFrom(
-                        side: const BorderSide(color: AppColors.outlineVariant),
+                        side: BorderSide(
+                          color: isDark
+                              ? AppColors.darkOutline
+                              : AppColors.outlineVariant,
+                        ),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(14),
                         ),
                         padding: const EdgeInsets.symmetric(vertical: 14),
                       ),
-                      child: Text('Vazgeç', style: AppTypography.bodyMedium),
+                      child: Text(
+                        'Vazgeç',
+                        style: AppTypography.bodyMedium.copyWith(
+                          color: textColor,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
                     ),
                   ),
                   const SizedBox(width: 12),
@@ -134,16 +177,23 @@ class CallModal extends StatelessWidget {
                             content: Text(
                               '$contactName ($phoneNumber) aranıyor...',
                               style: AppTypography.bodyMedium.copyWith(
-                                color: Colors.white,
+                                color: isDark
+                                    ? AppColors.darkOnPrimary
+                                    : Colors.white,
                               ),
                             ),
-                            backgroundColor: AppColors.primary,
+                            backgroundColor: isDark
+                                ? AppColors.darkPrimary
+                                : AppColors.primary,
                           ),
                         );
                       },
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.primary,
-                        foregroundColor: AppColors.onPrimary,
+                        backgroundColor:
+                            isDark ? AppColors.darkPrimary : AppColors.primary,
+                        foregroundColor: isDark
+                            ? AppColors.darkOnPrimary
+                            : AppColors.onPrimary,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(14),
                         ),
@@ -152,7 +202,9 @@ class CallModal extends StatelessWidget {
                       child: Text(
                         'Ara',
                         style: AppTypography.bodyMedium.copyWith(
-                          color: AppColors.onPrimary,
+                          color: isDark
+                              ? AppColors.darkOnPrimary
+                              : AppColors.onPrimary,
                           fontWeight: FontWeight.w700,
                         ),
                       ),
