@@ -174,17 +174,22 @@ class ExploreScreen extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 18),
-              // Service Count Info
+              // Hizmet sayısı ve konum bilgisi satırı.
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(
-                    'Kadıköy & Çevresinde ${sitters.length} Hizmet Bulundu',
-                    style: AppTypography.titleCard.copyWith(
-                      color: AppColors.secondary,
+                  Expanded(
+                    child: Text(
+                      'Kadıköy & Çevresinde ${sitters.length} Hizmet Bulundu',
+                      style: AppTypography.titleCard.copyWith(
+                        color: AppColors.secondary,
+                      ),
+                      overflow: TextOverflow.ellipsis,
                     ),
                   ),
+                  const SizedBox(width: 8),
                   Row(
+                    mainAxisSize: MainAxisSize.min,
                     children: [
                       const Icon(
                         Icons.location_on_outlined,

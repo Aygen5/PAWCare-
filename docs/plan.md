@@ -106,7 +106,7 @@ Ekranları feature klasörlerine taşımadan önce:
 
 > **Amaç:** Navigasyonu GoRouter altyapısına geçirmek; üstteki geçici yeşil "Ekranlar" çubuğunu kaldırmak, alt navigasyon çubuğunu bağlamak ve standart üst başlık (profil/bildirim ikonları) şablonunu oluşturmak.
 
-#### Adım 3.1: GoRouter Rota Yapılandırması
+#### Adım 3.1: [TAMAMLANDI] GoRouter Rota Yapılandırması
 - **Yapılacak İş:**
   - `lib/app/router/route_names.dart`: Rota sabitlerini tanımlamak (`splash`, `welcome`, `home`, `explore`, `pets`, `bookings`, `profile`, `sitterDashboard`, `sitterDetail`).
   - `lib/app/router/app_router.dart`: `StatefulShellRoute` veya `ShellRoute` kullanarak alt navigasyonlu ana uygulama çatısını kurmak.

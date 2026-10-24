@@ -18,7 +18,8 @@ void main() {
       await tester.ensureVisible(ownerCardFinder);
       await tester.pump(const Duration(milliseconds: 100));
       await tester.tap(ownerCardFinder);
-      await tester.pump(const Duration(milliseconds: 300));
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 500));
 
       // Ana sayfaya (OwnerHomeScreen) geçildiğini doğrular
       expect(find.textContaining('Aygen'), findsWidgets);
