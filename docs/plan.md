@@ -183,7 +183,7 @@ Ekranları feature klasörlerine taşımadan önce:
 - **Etkilenecek Dosyalar:** `lib/features/pets/`
 - **Tamamlanma Kontrolü:** Fotoğraf seçimi sonrası resmin profil kartında ve yeniden başlatma sonrasında kaybolmadığı doğrulanmalı.
 
-#### Adım 4.5: Hizmet Veren Paneli ve Taleplerin Yönetimi (`Provider`)
+#### Adım 4.5: [TAMAMLANDI] Hizmet Veren Paneli ve Taleplerin Yönetimi (`Provider`)
 - **Yapılacak İş:**
   - `sitter_dashboard_screen.dart` → `lib/features/provider/view/sitter_dashboard_screen.dart`
   - `ProviderCubit`: Bekleyen ve onaylı rezervasyonları `BookingRepository` üzerinden yönetmeli.

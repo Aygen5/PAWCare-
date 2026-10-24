@@ -6,45 +6,124 @@ import '../../../app/router/route_names.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_typography.dart';
 import '../../../core/utils/app_state.dart';
+import '../../../core/widgets/paw_header_actions.dart';
 import '../../../data/models/models.dart';
+import '../../../data/repositories/booking_repository.dart';
+import '../../../domain/usecases/booking/get_bookings_use_case.dart';
+import '../../../domain/usecases/booking/manage_booking_status_use_case.dart';
 import '../../auth/cubit/role_cubit.dart';
 import '../../discovery/widgets/call_modal.dart';
 import '../../home/widgets/chat_modal.dart';
+import '../cubit/provider_cubit.dart';
+import '../cubit/provider_state.dart';
+import '../widgets/booking_request_card.dart';
 
+/// Hizmet veren (sitter) kontrol ve yönetim paneli ekranı.
 class SitterDashboardScreen extends StatelessWidget {
   const SitterDashboardScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final state = AppStateScope.of(context);
-    final bookings = state.bookings;
-    final pendingBookings = bookings
-        .where((b) => b.status == BookingStatus.pending)
-        .toList();
-    final confirmedBookings = bookings
-        .where((b) => b.status == BookingStatus.confirmed)
-        .toList();
+    // Mevcut bir ProviderCubit varsa onu kullanır (test ve üst sarmalayıcı desteği)
+    try {
+      final existingCubit = context.read<ProviderCubit?>();
+      if (existingCubit != null) {
+        return const _SitterDashboardView();
+      }
+    } catch (_) {}
+
+    return BlocProvider(
+      create: (context) {
+        final bookingRepo = BookingRepository();
+        final appState = AppStateScope.of(context, listen: false);
+        return ProviderCubit(
+          getBookingsUseCase: GetBookingsUseCase(bookingRepo),
+          manageBookingStatusUseCase: ManageBookingStatusUseCase(bookingRepo),
+          initialBookings: appState.bookings,
+        );
+      },
+      child: const _SitterDashboardView(),
+    );
+  }
+}
+
+class _SitterDashboardView extends StatelessWidget {
+  const _SitterDashboardView();
+
+  @override
+  Widget build(BuildContext context) {
+    final appState = AppStateScope.of(context);
 
     return Scaffold(
       backgroundColor: AppColors.background,
       body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Sitter Profile Header
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        child: BlocConsumer<ProviderCubit, ProviderState>(
+          listener: (context, state) {
+            if (state.errorMessage != null) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(state.errorMessage!),
+                  backgroundColor: AppColors.error,
+                ),
+              );
+            }
+          },
+          builder: (context, state) {
+            final cubit = context.read<ProviderCubit>();
+            final pendingBookings = state.pendingBookings;
+            final confirmedBookings = state.confirmedBookings;
+
+            return SingleChildScrollView(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Expanded(
+                  // 1. Üst Başlık ve Sağ İkonlar
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Hizmet Veren Paneli',
+                              style: AppTypography.headlineScreen,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            const SizedBox(height: 2),
+                            Text(
+                              'Bugünün Özeti & Talepler',
+                              style: AppTypography.caption,
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      // Bildirim ve Profil Açılır Menüsü
+                      const PawHeaderActions(),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+
+                  // 2. Bakıcı Profil Kartı & Rol Değiştirme Butonu
+                  Container(
+                    padding: const EdgeInsets.all(14),
+                    decoration: BoxDecoration(
+                      color: AppColors.surfaceContainerLowest,
+                      borderRadius: BorderRadius.circular(20),
+                      boxShadow: AppColors.cardShadow,
+                      border: Border.all(
+                        color: AppColors.outlineVariant.withValues(alpha: 0.3),
+                      ),
+                    ),
                     child: Row(
                       children: [
                         const CircleAvatar(
-                          radius: 26,
+                          radius: 24,
                           backgroundImage: AssetImage('assets/images/ayse.jpg'),
                         ),
-                        const SizedBox(width: 14),
+                        const SizedBox(width: 12),
                         Expanded(
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -74,461 +153,387 @@ class SitterDashboardScreen extends StatelessWidget {
                             ],
                           ),
                         ),
+                        const SizedBox(width: 8),
+                        // Rol Değiştir: Sahip Moduna Geç
+                        OutlinedButton.icon(
+                          onPressed: () {
+                            context.read<RoleCubit?>()?.switchToOwner();
+                            appState.setRole(UserRole.owner);
+                            appState.setOwnerNavIndex(0);
+                            try {
+                              context.go(RoutePaths.home);
+                            } catch (_) {}
+                          },
+                          icon: const Icon(
+                            Icons.swap_horiz,
+                            size: 16,
+                            color: AppColors.primary,
+                          ),
+                          label: Text(
+                            'Sahip Modu',
+                            style: AppTypography.labelTag.copyWith(
+                              color: AppColors.primary,
+                            ),
+                          ),
+                          style: OutlinedButton.styleFrom(
+                            side: const BorderSide(color: AppColors.primary),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(14),
+                            ),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 10,
+                              vertical: 8,
+                            ),
+                          ),
+                        ),
                       ],
                     ),
                   ),
-                  const SizedBox(width: 8),
-                  OutlinedButton.icon(
-                    onPressed: () {
-                      context.read<RoleCubit?>()?.switchToOwner();
-                      state.setRole(UserRole.owner);
-                      state.setOwnerNavIndex(0);
-                      context.go(RoutePaths.home);
-                    },
-                    icon: const Icon(
-                      Icons.swap_horiz,
-                      size: 16,
-                      color: AppColors.primary,
-                    ),
-                    label: Text(
-                      'Sahip Modu',
-                      style: AppTypography.labelTag.copyWith(
-                        color: AppColors.primary,
-                      ),
-                    ),
-                    style: OutlinedButton.styleFrom(
-                      side: const BorderSide(color: AppColors.primary),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 10,
-                        vertical: 8,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 20),
-              // KPI Metric Cards
-              Row(
-                children: [
-                  _buildMetricCard(
-                    'Bekleyen',
-                    '${pendingBookings.length}',
-                    'Talep',
-                    AppColors.secondaryContainer,
-                    AppColors.primary,
-                  ),
-                  const SizedBox(width: 10),
-                  _buildMetricCard(
-                    'Onaylı',
-                    '${confirmedBookings.length}',
-                    'Rezervasyon',
-                    AppColors.tertiaryFixed,
-                    AppColors.tertiary,
-                  ),
-                  const SizedBox(width: 10),
-                  _buildMetricCard(
-                    'Kazanç',
-                    '₺4.250',
-                    'Bu ay',
-                    AppColors.surfaceContainerLow,
-                    AppColors.onSurface,
-                  ),
-                ],
-              ),
-              const SizedBox(height: 24),
-              // Incoming Booking Requests Section
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    'Yeni Gelen Talepler',
-                    style: AppTypography.headlineSection,
-                  ),
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 8,
-                      vertical: 2,
-                    ),
-                    decoration: BoxDecoration(
-                      color: pendingBookings.isNotEmpty
-                          ? AppColors.primary
-                          : AppColors.surfaceContainerLow,
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: Text(
-                      '${pendingBookings.length}',
-                      style: AppTypography.labelTag.copyWith(
-                        color: pendingBookings.isNotEmpty
-                            ? Colors.white
-                            : AppColors.onSurfaceVariant,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 12),
-              if (pendingBookings.isEmpty)
-                Container(
-                  padding: const EdgeInsets.all(24),
-                  width: double.infinity,
-                  decoration: BoxDecoration(
-                    color: AppColors.surfaceContainerLowest,
-                    borderRadius: BorderRadius.circular(20),
-                    border: Border.all(
-                      color: AppColors.outlineVariant.withValues(alpha: 0.3),
-                    ),
-                  ),
-                  child: Column(
+                  const SizedBox(height: 18),
+
+                  // 3. KPI Metrik Kartları
+                  Row(
                     children: [
-                      const Icon(
-                        Icons.task_alt,
-                        color: AppColors.success,
-                        size: 36,
+                      _buildMetricCard(
+                        'Bekleyen',
+                        '${pendingBookings.length}',
+                        'Talep',
+                        AppColors.secondaryContainer,
+                        AppColors.primary,
                       ),
-                      const SizedBox(height: 10),
-                      Text(
-                        'Tüm talepler yanıtlandı!',
-                        style: AppTypography.titleCard,
+                      const SizedBox(width: 10),
+                      _buildMetricCard(
+                        'Onaylı',
+                        '${confirmedBookings.length}',
+                        'Rezervasyon',
+                        AppColors.tertiaryFixed,
+                        AppColors.tertiary,
                       ),
-                      const SizedBox(height: 4),
-                      Text(
-                        'Şu anda bekleyen yeni rezervasyon talebi bulunmuyor.',
-                        style: AppTypography.caption,
+                      const SizedBox(width: 10),
+                      _buildMetricCard(
+                        'Kazanç',
+                        '₺${state.totalEarnings.toInt()}',
+                        'Bu ay',
+                        AppColors.surfaceContainerLow,
+                        AppColors.onSurface,
                       ),
                     ],
                   ),
-                )
-              else
-                ListView.separated(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  itemCount: pendingBookings.length,
-                  separatorBuilder: (_, _) => const SizedBox(height: 14),
-                  itemBuilder: (context, index) {
-                    final booking = pendingBookings[index];
-                    return Container(
-                      padding: const EdgeInsets.all(18),
-                      decoration: BoxDecoration(
-                        color: AppColors.surfaceContainerLowest,
-                        borderRadius: BorderRadius.circular(22),
-                        boxShadow: AppColors.cardShadow,
-                        border: Border.all(
-                          color: AppColors.outlineVariant.withValues(
-                            alpha: 0.4,
+                  const SizedBox(height: 24),
+
+                  // 4. Yeni Gelen Rezervasyon Talepleri
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        'Yeni Gelen Talepler',
+                        style: AppTypography.headlineSection,
+                      ),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 8,
+                          vertical: 2,
+                        ),
+                        decoration: BoxDecoration(
+                          color: pendingBookings.isNotEmpty
+                              ? AppColors.primary
+                              : AppColors.surfaceContainerLow,
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: Text(
+                          '${pendingBookings.length}',
+                          style: AppTypography.labelTag.copyWith(
+                            color: pendingBookings.isNotEmpty
+                                ? Colors.white
+                                : AppColors.onSurfaceVariant,
                           ),
                         ),
                       ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            children: [
-                              const CircleAvatar(
-                                radius: 22,
-                                backgroundImage: AssetImage(
-                                  'assets/images/barley.jpg',
-                                ),
-                              ),
-                              const SizedBox(width: 12),
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      '${booking.petName} (${booking.petBreed})',
-                                      style: AppTypography.titleCard,
-                                    ),
-                                    Text(
-                                      'Sahibi: Aygen • Kadıköy',
-                                      style: AppTypography.caption,
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              Container(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 10,
-                                  vertical: 4,
-                                ),
-                                decoration: BoxDecoration(
-                                  color: AppColors.secondaryContainer,
-                                  borderRadius: BorderRadius.circular(10),
-                                ),
-                                child: Text(
-                                  '₺${booking.totalPrice.toInt()}',
-                                  style: AppTypography.bodyMedium.copyWith(
-                                    color: AppColors.primary,
-                                    fontWeight: FontWeight.w800,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 14),
-                          Container(
-                            padding: const EdgeInsets.all(12),
-                            decoration: BoxDecoration(
-                              color: AppColors.surfaceContainerLow,
-                              borderRadius: BorderRadius.circular(14),
-                            ),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Row(
-                                  children: [
-                                    const Icon(
-                                      Icons.calendar_month,
-                                      size: 16,
-                                      color: AppColors.primary,
-                                    ),
-                                    const SizedBox(width: 6),
-                                    Expanded(
-                                      child: Text(
-                                        booking.serviceTitle,
-                                        style: AppTypography.bodyMedium,
-                                        overflow: TextOverflow.ellipsis,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                const SizedBox(height: 6),
-                                Text(
-                                  'Not: ${booking.careNotes}',
-                                  style: AppTypography.caption.copyWith(
-                                    color: AppColors.onSurfaceVariant,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          const SizedBox(height: 16),
-                          Row(
-                            children: [
-                              Expanded(
-                                child: OutlinedButton(
-                                  onPressed: () {
-                                    state.updateBookingStatus(
-                                      booking.id,
-                                      BookingStatus.rejected,
-                                    );
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      const SnackBar(
-                                        content: Text('Talep reddedildi.'),
-                                      ),
-                                    );
-                                  },
-                                  style: OutlinedButton.styleFrom(
-                                    side: const BorderSide(
-                                      color: AppColors.error,
-                                    ),
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(14),
-                                    ),
-                                    padding: const EdgeInsets.symmetric(
-                                      vertical: 12,
-                                    ),
-                                  ),
-                                  child: Text(
-                                    'Reddet',
-                                    style: AppTypography.bodyMedium.copyWith(
-                                      color: AppColors.error,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              const SizedBox(width: 12),
-                              Expanded(
-                                child: ElevatedButton(
-                                  onPressed: () {
-                                    state.updateBookingStatus(
-                                      booking.id,
-                                      BookingStatus.confirmed,
-                                    );
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(
-                                        content: Text(
-                                          '${booking.petName} için rezervasyon başarıyla onaylandı!',
-                                          style: AppTypography.bodyMedium
-                                              .copyWith(color: Colors.white),
-                                        ),
-                                        backgroundColor: AppColors.primary,
-                                      ),
-                                    );
-                                  },
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: AppColors.primary,
-                                    foregroundColor: AppColors.onPrimary,
-                                    elevation: 0,
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(14),
-                                    ),
-                                    padding: const EdgeInsets.symmetric(
-                                      vertical: 12,
-                                    ),
-                                  ),
-                                  child: Text(
-                                    'Onayla',
-                                    style: AppTypography.bodyMedium.copyWith(
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.w700,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 8),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              TextButton.icon(
-                                onPressed: () => ChatModal.show(
-                                  context,
-                                  sitterName: 'Aygen (Köpek Sahibi)',
-                                  avatarPath: 'assets/images/barley.jpg',
-                                ),
-                                icon: const Icon(
-                                  Icons.chat_bubble_outline,
-                                  size: 16,
-                                  color: AppColors.primary,
-                                ),
-                                label: Text(
-                                  'Sahibine Mesaj Gönder',
-                                  style: AppTypography.caption.copyWith(
-                                    color: AppColors.primary,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    );
-                  },
-                ),
-              const SizedBox(height: 24),
-              // Active & Upcoming Guests Section
-              Text(
-                'Aktif & Yaklaşan Konuklar',
-                style: AppTypography.headlineSection,
-              ),
-              const SizedBox(height: 12),
-              Container(
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: AppColors.surfaceContainerLowest,
-                  borderRadius: BorderRadius.circular(22),
-                  boxShadow: AppColors.cardShadow,
-                  border: Border.all(
-                    color: AppColors.outlineVariant.withValues(alpha: 0.3),
+                    ],
                   ),
-                ),
-                child: Row(
-                  children: [
-                    const CircleAvatar(
-                      radius: 24,
-                      backgroundImage: AssetImage('assets/images/barley.jpg'),
-                    ),
-                    const SizedBox(width: 14),
-                    Expanded(
+                  const SizedBox(height: 12),
+
+                  if (pendingBookings.isEmpty)
+                    Container(
+                      padding: const EdgeInsets.all(24),
+                      width: double.infinity,
+                      decoration: BoxDecoration(
+                        color: AppColors.surfaceContainerLowest,
+                        borderRadius: BorderRadius.circular(20),
+                        border: Border.all(
+                          color: AppColors.outlineVariant.withValues(alpha: 0.3),
+                        ),
+                      ),
                       child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Wrap(
-                            crossAxisAlignment: WrapCrossAlignment.center,
-                            spacing: 6,
-                            children: [
-                              Text('Barley', style: AppTypography.titleCard),
-                              Container(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 6,
-                                  vertical: 2,
-                                ),
-                                decoration: BoxDecoration(
-                                  color: AppColors.successContainer,
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                                child: Text(
-                                  'Giriş Yapıldı',
-                                  style: AppTypography.labelTag.copyWith(
-                                    color: AppColors.success,
-                                    fontSize: 10,
-                                  ),
-                                ),
-                              ),
-                            ],
+                          const Icon(
+                            Icons.task_alt,
+                            color: AppColors.success,
+                            size: 36,
                           ),
-                          const SizedBox(height: 2),
+                          const SizedBox(height: 10),
                           Text(
-                            'Oda: Süit 3 • 2 Gece Konaklama',
+                            'Tüm talepler yanıtlandı!',
+                            style: AppTypography.titleCard,
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            'Şu anda bekleyen yeni rezervasyon talebi bulunmuyor.',
                             style: AppTypography.caption,
                           ),
                         ],
                       ),
+                    )
+                  else
+                    ListView.separated(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemCount: pendingBookings.length,
+                      separatorBuilder: (_, _) => const SizedBox(height: 14),
+                      itemBuilder: (context, index) {
+                        final booking = pendingBookings[index];
+                        final isUpdating =
+                            state.updatingBookingId == booking.id;
+
+                        return BookingRequestCard(
+                          booking: booking,
+                          isUpdating: isUpdating,
+                          onConfirm: () async {
+                            final success =
+                                await cubit.confirmBooking(booking.id);
+                            if (success) {
+                              appState.updateBookingStatus(
+                                booking.id,
+                                BookingStatus.confirmed,
+                              );
+                              if (context.mounted) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text(
+                                      '${booking.petName} için rezervasyon başarıyla onaylandı! 🐾',
+                                      style: AppTypography.bodyMedium.copyWith(
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                    backgroundColor: AppColors.primary,
+                                  ),
+                                );
+                              }
+                            }
+                          },
+                          onReject: () async {
+                            final success =
+                                await cubit.rejectBooking(booking.id);
+                            if (success) {
+                              appState.updateBookingStatus(
+                                booking.id,
+                                BookingStatus.rejected,
+                              );
+                              if (context.mounted) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text(
+                                      '${booking.petName} rezervasyon talebi reddedildi.',
+                                      style: AppTypography.bodyMedium.copyWith(
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                    backgroundColor: AppColors.error,
+                                  ),
+                                );
+                              }
+                            }
+                          },
+                        );
+                      },
                     ),
-                    IconButton(
-                      icon: const Icon(
-                        Icons.phone_outlined,
-                        color: AppColors.primary,
-                      ),
-                      onPressed: () => CallModal.show(
-                        context,
-                        contactName: 'Aygen (Barley\'nin Sahibi)',
-                        roleSubtitle: 'Kayıtlı İletişim Numarası',
-                        phoneNumber: '+90 532 890 12 34',
-                      ),
-                      style: IconButton.styleFrom(
-                        backgroundColor: AppColors.surfaceContainerLow,
-                        shape: const CircleBorder(),
-                      ),
+                  const SizedBox(height: 24),
+
+                  // 5. Aktif & Yaklaşan Konuklar
+                  Text(
+                    'Aktif & Yaklaşan Konuklar',
+                    style: AppTypography.headlineSection,
+                  ),
+                  const SizedBox(height: 12),
+
+                  if (confirmedBookings.isNotEmpty)
+                    ListView.separated(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemCount: confirmedBookings.length,
+                      separatorBuilder: (_, _) => const SizedBox(height: 10),
+                      itemBuilder: (context, index) {
+                        final confirmed = confirmedBookings[index];
+                        return _buildGuestCard(
+                          context,
+                          petName: confirmed.petName,
+                          breed: confirmed.petBreed,
+                          service: confirmed.serviceTitle,
+                          avatarPath: 'assets/images/barley.jpg',
+                          statusBadge: 'Onaylandı',
+                        );
+                      },
+                    )
+                  else
+                    _buildGuestCard(
+                      context,
+                      petName: 'Barley',
+                      breed: 'Golden Retriever',
+                      service: 'Oda: Süit 3 • 2 Gece Konaklama',
+                      avatarPath: 'assets/images/barley.jpg',
+                      statusBadge: 'Giriş Yapıldı',
                     ),
-                    const SizedBox(width: 6),
-                    IconButton(
-                      icon: const Icon(
-                        Icons.chat_bubble_outline,
-                        color: AppColors.primary,
+                  const SizedBox(height: 24),
+
+                  // 6. Hızlı Yönetim Seçenekleri
+                  Text('Hızlı Yönetim', style: AppTypography.headlineSection),
+                  const SizedBox(height: 12),
+                  _buildActionTile(
+                    icon: Icons.storefront_outlined,
+                    title: 'İlanımı ve Fiyatlarımı Düzenle',
+                    subtitle: 'Gecelik ücret, fotoğraflar ve olanaklar',
+                    onTap: () {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('İlan düzenleme modülü hazır.'),
+                          backgroundColor: AppColors.primary,
+                        ),
+                      );
+                    },
+                  ),
+                  const SizedBox(height: 10),
+                  _buildActionTile(
+                    icon: Icons.calendar_month_outlined,
+                    title: 'Müsaitlik Takvimini Güncelle',
+                    subtitle: 'Dolu günler ve oda kontenjanları',
+                    onTap: () {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Müsaitlik takvimi açılıyor...'),
+                          backgroundColor: AppColors.primary,
+                        ),
+                      );
+                    },
+                  ),
+                  const SizedBox(height: 10),
+                  _buildActionTile(
+                    icon: Icons.star_outline,
+                    title: 'Değerlendirmelerim & Puanlar',
+                    subtitle: '4.9 ortalama puan (128 yorum)',
+                    onTap: () {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('128 yorum inceleniyor.'),
+                          backgroundColor: AppColors.primary,
+                        ),
+                      );
+                    },
+                  ),
+                  const SizedBox(height: 24),
+                ],
+              ),
+            );
+          },
+        ),
+      ),
+    );
+  }
+
+  Widget _buildGuestCard(
+    BuildContext context, {
+    required String petName,
+    required String breed,
+    required String service,
+    required String avatarPath,
+    required String statusBadge,
+  }) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: AppColors.surfaceContainerLowest,
+        borderRadius: BorderRadius.circular(22),
+        boxShadow: AppColors.cardShadow,
+        border: Border.all(
+          color: AppColors.outlineVariant.withValues(alpha: 0.3),
+        ),
+      ),
+      child: Row(
+        children: [
+          CircleAvatar(
+            radius: 24,
+            backgroundImage: AssetImage(avatarPath),
+          ),
+          const SizedBox(width: 14),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Wrap(
+                  crossAxisAlignment: WrapCrossAlignment.center,
+                  spacing: 6,
+                  children: [
+                    Text(petName, style: AppTypography.titleCard),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 6,
+                        vertical: 2,
                       ),
-                      onPressed: () => ChatModal.show(
-                        context,
-                        sitterName: 'Aygen (Köpek Sahibi)',
-                        avatarPath: 'assets/images/barley.jpg',
+                      decoration: BoxDecoration(
+                        color: AppColors.successContainer,
+                        borderRadius: BorderRadius.circular(8),
                       ),
-                      style: IconButton.styleFrom(
-                        backgroundColor: AppColors.surfaceContainerLow,
-                        shape: const CircleBorder(),
+                      child: Text(
+                        statusBadge,
+                        style: AppTypography.labelTag.copyWith(
+                          color: AppColors.success,
+                          fontSize: 10,
+                        ),
                       ),
                     ),
                   ],
                 ),
-              ),
-              const SizedBox(height: 24),
-              // Sitter Tools & Management Links
-              Text('Hızlı Yönetim', style: AppTypography.headlineSection),
-              const SizedBox(height: 12),
-              _buildActionTile(
-                Icons.storefront_outlined,
-                'İlanımı ve Fiyatlarımı Düzenle',
-                'Gecelik ücret, fotoğraflar ve olanaklar',
-              ),
-              const SizedBox(height: 10),
-              _buildActionTile(
-                Icons.calendar_month_outlined,
-                'Müsaitlik Takvimini Güncelle',
-                'Dolu günler ve oda kontenjanları',
-              ),
-              const SizedBox(height: 10),
-              _buildActionTile(
-                Icons.star_outline,
-                'Değerlendirmelerim & Puanlar',
-                '4.9 ortalama puan (128 yorum)',
-              ),
-              const SizedBox(height: 24),
-            ],
+                const SizedBox(height: 2),
+                Text(
+                  service,
+                  style: AppTypography.caption,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ],
+            ),
           ),
-        ),
+          IconButton(
+            icon: const Icon(
+              Icons.phone_outlined,
+              color: AppColors.primary,
+            ),
+            onPressed: () => CallModal.show(
+              context,
+              contactName: 'Aygen ($petName Sahibi)',
+              roleSubtitle: 'Kayıtlı İletişim Numarası',
+              phoneNumber: '+90 532 890 12 34',
+            ),
+            style: IconButton.styleFrom(
+              backgroundColor: AppColors.surfaceContainerLow,
+              shape: const CircleBorder(),
+            ),
+          ),
+          const SizedBox(width: 6),
+          IconButton(
+            icon: const Icon(
+              Icons.chat_bubble_outline,
+              color: AppColors.primary,
+            ),
+            onPressed: () => ChatModal.show(
+              context,
+              sitterName: 'Aygen (Köpek Sahibi)',
+              avatarPath: avatarPath,
+            ),
+            style: IconButton.styleFrom(
+              backgroundColor: AppColors.surfaceContainerLow,
+              shape: const CircleBorder(),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -565,49 +570,61 @@ class SitterDashboardScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 2),
-            Text(subtitle, style: AppTypography.caption.copyWith(fontSize: 10)),
+            Text(
+              subtitle,
+              style: AppTypography.caption.copyWith(fontSize: 10),
+            ),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildActionTile(IconData icon, String title, String subtitle) {
-    return Container(
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: AppColors.surfaceContainerLowest,
-        borderRadius: BorderRadius.circular(18),
-        border: Border.all(
-          color: AppColors.outlineVariant.withValues(alpha: 0.3),
+  Widget _buildActionTile({
+    required IconData icon,
+    required String title,
+    required String subtitle,
+    required VoidCallback onTap,
+  }) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(18),
+      child: Container(
+        padding: const EdgeInsets.all(14),
+        decoration: BoxDecoration(
+          color: AppColors.surfaceContainerLowest,
+          borderRadius: BorderRadius.circular(18),
+          border: Border.all(
+            color: AppColors.outlineVariant.withValues(alpha: 0.3),
+          ),
         ),
-      ),
-      child: Row(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(10),
-            decoration: const BoxDecoration(
-              color: AppColors.surfaceContainerLow,
-              shape: BoxShape.circle,
+        child: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(10),
+              decoration: const BoxDecoration(
+                color: AppColors.surfaceContainerLow,
+                shape: BoxShape.circle,
+              ),
+              child: Icon(icon, color: AppColors.primary, size: 20),
             ),
-            child: Icon(icon, color: AppColors.primary, size: 20),
-          ),
-          const SizedBox(width: 14),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(title, style: AppTypography.titleCard),
-                Text(subtitle, style: AppTypography.caption),
-              ],
+            const SizedBox(width: 14),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(title, style: AppTypography.titleCard),
+                  Text(subtitle, style: AppTypography.caption),
+                ],
+              ),
             ),
-          ),
-          const Icon(
-            Icons.arrow_forward_ios,
-            size: 14,
-            color: AppColors.onSurfaceVariant,
-          ),
-        ],
+            const Icon(
+              Icons.arrow_forward_ios,
+              size: 14,
+              color: AppColors.onSurfaceVariant,
+            ),
+          ],
+        ),
       ),
     );
   }
