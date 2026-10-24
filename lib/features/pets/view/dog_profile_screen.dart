@@ -135,9 +135,11 @@ class _DogProfileView extends StatelessWidget {
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           IconButton(
-                            icon: const Icon(
+                            icon: Icon(
                               Icons.qr_code,
-                              color: AppColors.primary,
+                              color: isDark
+                                  ? AppColors.darkPrimary
+                                  : AppColors.primary,
                             ),
                             onPressed: () {
                               ScaffoldMessenger.of(context).showSnackBar(
@@ -153,13 +155,19 @@ class _DogProfileView extends StatelessWidget {
                               );
                             },
                             style: IconButton.styleFrom(
-                              backgroundColor: AppColors.surfaceContainerLowest,
+                              backgroundColor: isDark
+                                  ? AppColors.darkSurfaceContainer
+                                  : AppColors.surfaceContainerLowest,
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(14),
                                 side: BorderSide(
-                                  color: AppColors.outlineVariant.withValues(
-                                    alpha: 0.4,
-                                  ),
+                                  color: isDark
+                                      ? AppColors.darkOutlineVariant.withValues(
+                                          alpha: 0.4,
+                                        )
+                                      : AppColors.outlineVariant.withValues(
+                                          alpha: 0.4,
+                                        ),
                                 ),
                               ),
                             ),
@@ -312,17 +320,28 @@ class _DogProfileView extends StatelessWidget {
                           onPressed: () {
                             _showEditProfileDialog(context, dog);
                           },
-                          icon: const Icon(
+                          icon: Icon(
                             Icons.edit_outlined,
                             size: 18,
-                            color: AppColors.primary,
+                            color: isDark
+                                ? AppColors.darkPrimary
+                                : AppColors.primary,
                           ),
                           label: Text(
                             'Profili Düzenle',
-                            style: AppTypography.bodyMedium,
+                            style: AppTypography.bodyMedium.copyWith(
+                              color: isDark
+                                  ? AppColors.darkPrimary
+                                  : AppColors.primary,
+                              fontWeight: FontWeight.w600,
+                            ),
                           ),
                           style: OutlinedButton.styleFrom(
-                            side: const BorderSide(color: AppColors.primary),
+                            side: BorderSide(
+                              color: isDark
+                                  ? AppColors.darkPrimary
+                                  : AppColors.primary,
+                            ),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(14),
                             ),
@@ -355,10 +374,14 @@ class _DogProfileView extends StatelessWidget {
                   Container(
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
-                      color: const Color(0xFFFFF2F2),
+                      color: isDark
+                          ? const Color(0xFF2E1A1A)
+                          : const Color(0xFFFFF2F2),
                       borderRadius: BorderRadius.circular(18),
                       border: Border.all(
-                        color: AppColors.error.withValues(alpha: 0.3),
+                        color: isDark
+                            ? AppColors.darkError.withValues(alpha: 0.3)
+                            : AppColors.error.withValues(alpha: 0.3),
                       ),
                     ),
                     child: Row(
@@ -367,12 +390,14 @@ class _DogProfileView extends StatelessWidget {
                         Container(
                           padding: const EdgeInsets.all(8),
                           decoration: BoxDecoration(
-                            color: AppColors.error.withValues(alpha: 0.15),
+                            color: isDark
+                                ? AppColors.darkError.withValues(alpha: 0.2)
+                                : AppColors.error.withValues(alpha: 0.15),
                             shape: BoxShape.circle,
                           ),
-                          child: const Icon(
+                          child: Icon(
                             Icons.warning_amber_rounded,
-                            color: AppColors.error,
+                            color: isDark ? AppColors.darkError : AppColors.error,
                             size: 20,
                           ),
                         ),
@@ -384,7 +409,9 @@ class _DogProfileView extends StatelessWidget {
                               Text(
                                 'Kritik Sağlık & Alerji Uyarısı',
                                 style: AppTypography.titleCard.copyWith(
-                                  color: AppColors.error,
+                                  color: isDark
+                                      ? AppColors.darkError
+                                      : AppColors.error,
                                   fontWeight: FontWeight.w700,
                                 ),
                               ),
@@ -392,7 +419,9 @@ class _DogProfileView extends StatelessWidget {
                               Text(
                                 dog.allergyNote,
                                 style: AppTypography.bodyDefault.copyWith(
-                                  color: const Color(0xFF701A1A),
+                                  color: isDark
+                                      ? const Color(0xFFFFDAD6)
+                                      : const Color(0xFF701A1A),
                                 ),
                               ),
                             ],
@@ -416,15 +445,19 @@ class _DogProfileView extends StatelessWidget {
                       ),
                       TextButton.icon(
                         onPressed: () => HealthCardModal.show(context),
-                        icon: const Icon(
+                        icon: Icon(
                           Icons.medical_information_outlined,
                           size: 16,
-                          color: AppColors.primary,
+                          color: isDark
+                              ? AppColors.darkPrimary
+                              : AppColors.primary,
                         ),
                         label: Text(
                           'Özeti Gör',
                           style: AppTypography.labelTag.copyWith(
-                            color: AppColors.primary,
+                            color: isDark
+                                ? AppColors.darkPrimary
+                                : AppColors.primary,
                           ),
                         ),
                       ),
@@ -459,12 +492,18 @@ class _DogProfileView extends StatelessWidget {
                         child: Container(
                           padding: const EdgeInsets.all(14),
                           decoration: BoxDecoration(
-                            color: AppColors.surfaceContainerLowest,
+                            color: isDark
+                                ? AppColors.darkSurfaceContainer
+                                : AppColors.surfaceContainerLowest,
                             borderRadius: BorderRadius.circular(16),
                             border: Border.all(
-                              color: AppColors.outlineVariant.withValues(
-                                alpha: 0.3,
-                              ),
+                              color: isDark
+                                  ? AppColors.darkOutlineVariant.withValues(
+                                      alpha: 0.3,
+                                    )
+                                  : AppColors.outlineVariant.withValues(
+                                      alpha: 0.3,
+                                    ),
                             ),
                           ),
                           child: Row(
@@ -473,7 +512,9 @@ class _DogProfileView extends StatelessWidget {
                                 isDone ? Icons.check_circle : Icons.event,
                                 color: isDone
                                     ? AppColors.success
-                                    : AppColors.primary,
+                                    : (isDark
+                                          ? AppColors.darkPrimary
+                                          : AppColors.primary),
                                 size: 24,
                               ),
                               const SizedBox(width: 14),
@@ -483,12 +524,20 @@ class _DogProfileView extends StatelessWidget {
                                   children: [
                                     Text(
                                       v.title,
-                                      style: AppTypography.titleCard,
+                                      style: AppTypography.titleCard.copyWith(
+                                        color: isDark
+                                            ? AppColors.darkOnSurface
+                                            : const Color(0xFF1E3023),
+                                      ),
                                     ),
                                     const SizedBox(height: 2),
                                     Text(
                                       '${v.dueDate} • ${v.vetName}',
-                                      style: AppTypography.caption,
+                                      style: AppTypography.caption.copyWith(
+                                        color: isDark
+                                            ? AppColors.darkOnSurfaceVariant
+                                            : const Color(0xFF344638),
+                                      ),
                                     ),
                                   ],
                                 ),
@@ -500,16 +549,25 @@ class _DogProfileView extends StatelessWidget {
                                 ),
                                 decoration: BoxDecoration(
                                   color: isDone
-                                      ? AppColors.successContainer
-                                      : AppColors.secondaryContainer,
+                                      ? (isDark
+                                            ? const Color(0xFF1C3A20)
+                                            : AppColors.successContainer)
+                                      : (isDark
+                                            ? AppColors.darkSurfaceContainerHigh
+                                            : AppColors.secondaryContainer),
                                   borderRadius: BorderRadius.circular(12),
                                 ),
                                 child: Text(
                                   isDone ? 'Tamamlandı' : 'Yaklaşıyor',
                                   style: AppTypography.labelTag.copyWith(
                                     color: isDone
-                                        ? AppColors.success
-                                        : AppColors.primary,
+                                        ? (isDark
+                                              ? const Color(0xFF85E38C)
+                                              : AppColors.success)
+                                        : (isDark
+                                              ? AppColors.darkPrimary
+                                              : const Color(0xFF1E3023)),
+                                    fontWeight: FontWeight.w600,
                                   ),
                                 ),
                               ),
@@ -532,10 +590,12 @@ class _DogProfileView extends StatelessWidget {
                         ),
                       ),
                       IconButton(
-                        icon: const Icon(
+                        icon: Icon(
                           Icons.edit_outlined,
                           size: 20,
-                          color: AppColors.primary,
+                          color: isDark
+                              ? AppColors.darkPrimary
+                              : AppColors.primary,
                         ),
                         tooltip: 'Beslenme ve Davranışı Düzenle',
                         onPressed: () => _showEditBehaviorDialog(context, dog),
@@ -580,10 +640,12 @@ class _DogProfileView extends StatelessWidget {
                       children: [
                         Row(
                           children: [
-                            const Icon(
+                            Icon(
                               Icons.restaurant,
                               size: 18,
-                              color: AppColors.primary,
+                              color: isDark
+                                  ? AppColors.darkPrimary
+                                  : AppColors.primary,
                             ),
                             const SizedBox(width: 8),
                             Text(
@@ -603,10 +665,12 @@ class _DogProfileView extends StatelessWidget {
                         ),
                         Row(
                           children: [
-                            const Icon(
+                            Icon(
                               Icons.favorite_border,
                               size: 18,
-                              color: AppColors.primary,
+                              color: isDark
+                                  ? AppColors.darkPrimary
+                                  : AppColors.primary,
                             ),
                             const SizedBox(width: 8),
                             Text(
@@ -651,13 +715,17 @@ class _DogProfileView extends StatelessWidget {
                       children: [
                         Container(
                           padding: const EdgeInsets.all(12),
-                          decoration: const BoxDecoration(
-                            color: AppColors.secondaryContainer,
+                          decoration: BoxDecoration(
+                            color: isDark
+                                ? AppColors.darkPrimaryContainer
+                                : AppColors.secondaryContainer,
                             shape: BoxShape.circle,
                           ),
-                          child: const Icon(
+                          child: Icon(
                             Icons.local_hospital,
-                            color: AppColors.primary,
+                            color: isDark
+                                ? AppColors.darkPrimary
+                                : AppColors.primary,
                             size: 24,
                           ),
                         ),

@@ -517,7 +517,10 @@ class _SitterDashboardView extends StatelessWidget {
             ),
           ),
           IconButton(
-            icon: const Icon(Icons.phone_outlined, color: AppColors.primary),
+            icon: Icon(
+              Icons.phone_outlined,
+              color: isDark ? AppColors.darkPrimary : AppColors.primary,
+            ),
             onPressed: () => CallModal.show(
               context,
               contactName: 'Aygen ($petName Sahibi)',
@@ -525,15 +528,17 @@ class _SitterDashboardView extends StatelessWidget {
               phoneNumber: '+90 532 890 12 34',
             ),
             style: IconButton.styleFrom(
-              backgroundColor: AppColors.surfaceContainerLow,
+              backgroundColor: isDark
+                  ? AppColors.darkSurfaceContainerLow
+                  : AppColors.surfaceContainerLow,
               shape: const CircleBorder(),
             ),
           ),
           const SizedBox(width: 6),
           IconButton(
-            icon: const Icon(
+            icon: Icon(
               Icons.chat_bubble_outline,
-              color: AppColors.primary,
+              color: isDark ? AppColors.darkPrimary : AppColors.primary,
             ),
             onPressed: () => ChatModal.show(
               context,
@@ -541,7 +546,9 @@ class _SitterDashboardView extends StatelessWidget {
               avatarPath: avatarPath,
             ),
             style: IconButton.styleFrom(
-              backgroundColor: AppColors.surfaceContainerLow,
+              backgroundColor: isDark
+                  ? AppColors.darkSurfaceContainerLow
+                  : AppColors.surfaceContainerLow,
               shape: const CircleBorder(),
             ),
           ),

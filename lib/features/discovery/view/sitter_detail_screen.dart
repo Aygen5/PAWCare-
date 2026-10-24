@@ -373,10 +373,14 @@ class _SitterDetailScreenState extends State<SitterDetailScreen> {
                     Container(
                       padding: const EdgeInsets.all(14),
                       decoration: BoxDecoration(
-                        color: AppColors.surfaceContainerLowest,
+                        color: isDark
+                            ? AppColors.darkSurfaceContainer
+                            : AppColors.surfaceContainerLowest,
                         borderRadius: BorderRadius.circular(18),
                         border: Border.all(
-                          color: AppColors.primary,
+                          color: isDark
+                              ? AppColors.darkPrimary
+                              : AppColors.primary,
                           width: 1.5,
                         ),
                       ),
@@ -392,17 +396,30 @@ class _SitterDetailScreenState extends State<SitterDetailScreen> {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text(dog.name, style: AppTypography.titleCard),
+                                Text(
+                                  dog.name,
+                                  style: AppTypography.titleCard.copyWith(
+                                    color: isDark
+                                        ? AppColors.darkOnSurface
+                                        : const Color(0xFF1E3023),
+                                  ),
+                                ),
                                 Text(
                                   '${dog.breed} • ${dog.ageYears} Yaş • ${dog.weightKg} kg',
-                                  style: AppTypography.caption,
+                                  style: AppTypography.caption.copyWith(
+                                    color: isDark
+                                        ? AppColors.darkOnSurfaceVariant
+                                        : const Color(0xFF344638),
+                                  ),
                                 ),
                               ],
                             ),
                           ),
-                          const Icon(
+                          Icon(
                             Icons.check_circle,
-                            color: AppColors.primary,
+                            color: isDark
+                                ? AppColors.darkPrimary
+                                : AppColors.primary,
                           ),
                         ],
                       ),
@@ -418,13 +435,19 @@ class _SitterDetailScreenState extends State<SitterDetailScreen> {
                     Container(
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
-                        color: AppColors.surfaceContainerLowest,
+                        color: isDark
+                            ? AppColors.darkSurfaceContainer
+                            : AppColors.surfaceContainerLowest,
                         borderRadius: BorderRadius.circular(20),
                         boxShadow: AppColors.cardShadow,
                         border: Border.all(
-                          color: AppColors.outlineVariant.withValues(
-                            alpha: 0.3,
-                          ),
+                          color: isDark
+                              ? AppColors.darkOutlineVariant.withValues(
+                                  alpha: 0.3,
+                                )
+                              : AppColors.outlineVariant.withValues(
+                                  alpha: 0.3,
+                                ),
                         ),
                       ),
                       child: TableCalendar(
@@ -438,7 +461,11 @@ class _SitterDetailScreenState extends State<SitterDetailScreen> {
                         headerStyle: HeaderStyle(
                           formatButtonVisible: false,
                           titleCentered: true,
-                          titleTextStyle: AppTypography.titleCard,
+                          titleTextStyle: AppTypography.titleCard.copyWith(
+                            color: isDark
+                                ? AppColors.darkOnSurface
+                                : const Color(0xFF1E3023),
+                          ),
                         ),
                         calendarStyle: CalendarStyle(
                           rangeStartDecoration: const BoxDecoration(
@@ -449,10 +476,31 @@ class _SitterDetailScreenState extends State<SitterDetailScreen> {
                             color: AppColors.primary,
                             shape: BoxShape.circle,
                           ),
-                          rangeHighlightColor: AppColors.secondaryContainer,
+                          rangeHighlightColor: isDark
+                              ? AppColors.darkSecondaryContainer
+                              : AppColors.secondaryContainer,
                           todayDecoration: BoxDecoration(
-                            border: Border.all(color: AppColors.primary),
+                            border: Border.all(
+                              color: isDark
+                                  ? AppColors.darkPrimary
+                                  : AppColors.primary,
+                            ),
                             shape: BoxShape.circle,
+                          ),
+                          defaultTextStyle: TextStyle(
+                            color: isDark
+                                ? AppColors.darkOnSurface
+                                : const Color(0xFF1E3023),
+                          ),
+                          weekendTextStyle: TextStyle(
+                            color: isDark
+                                ? AppColors.darkOnSurfaceVariant
+                                : const Color(0xFF344638),
+                          ),
+                          outsideTextStyle: TextStyle(
+                            color: isDark
+                                ? AppColors.darkOutlineVariant
+                                : AppColors.outlineVariant,
                           ),
                         ),
                         onRangeSelected: (start, end, focusedDay) {
@@ -587,7 +635,9 @@ class _SitterDetailScreenState extends State<SitterDetailScreen> {
                               Text(
                                 '₺${_totalPrice.toInt()}',
                                 style: AppTypography.headlineHero.copyWith(
-                                  color: AppColors.primary,
+                                  color: isDark
+                                      ? AppColors.darkPrimary
+                                      : AppColors.primary,
                                   fontWeight: FontWeight.w800,
                                 ),
                               ),

@@ -606,14 +606,24 @@ class _ExploreViewState extends State<_ExploreView> {
                                                 style: AppTypography
                                                     .headlineSection
                                                     .copyWith(
-                                                      color: AppColors.primary,
+                                                      color: isDark
+                                                          ? AppColors.darkPrimary
+                                                          : AppColors.primary,
                                                       fontWeight:
                                                           FontWeight.w800,
                                                     ),
                                               ),
                                               Text(
                                                 '/${s.unitLabel}',
-                                                style: AppTypography.caption,
+                                                style: AppTypography.caption
+                                                    .copyWith(
+                                                      color: isDark
+                                                          ? AppColors
+                                                              .darkOnSurfaceVariant
+                                                          : const Color(
+                                                              0xFF344638,
+                                                            ),
+                                                    ),
                                               ),
                                             ],
                                           ),
@@ -640,15 +650,26 @@ class _ExploreViewState extends State<_ExploreView> {
                                               vertical: 4,
                                             ),
                                             decoration: BoxDecoration(
-                                              color:
-                                                  AppColors.surfaceContainerLow,
+                                              color: isDark
+                                                  ? AppColors
+                                                      .darkSurfaceContainerLow
+                                                  : AppColors
+                                                      .surfaceContainerLow,
                                               borderRadius:
                                                   BorderRadius.circular(8),
                                             ),
                                             child: Text(
                                               amenity,
                                               style: AppTypography.caption
-                                                  .copyWith(fontSize: 11),
+                                                  .copyWith(
+                                                    fontSize: 11,
+                                                    color: isDark
+                                                        ? AppColors.darkOnSurface
+                                                        : const Color(
+                                                            0xFF1E3023,
+                                                          ),
+                                                    fontWeight: FontWeight.w500,
+                                                  ),
                                             ),
                                           );
                                         }).toList(),

@@ -125,7 +125,9 @@ class BookingCard extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: AppColors.surfaceContainerLow,
+              color: isDark
+                  ? AppColors.darkSurfaceContainerLow
+                  : AppColors.surfaceContainerLow,
               borderRadius: BorderRadius.circular(14),
             ),
             child: Column(
@@ -137,16 +139,21 @@ class BookingCard extends StatelessWidget {
                     Expanded(
                       child: Row(
                         children: [
-                          const Icon(
+                          Icon(
                             Icons.calendar_month,
                             size: 16,
-                            color: AppColors.primary,
+                            color: isDark
+                                ? AppColors.darkPrimary
+                                : AppColors.primary,
                           ),
                           const SizedBox(width: 6),
                           Expanded(
                             child: Text(
                               dateStr,
                               style: AppTypography.caption.copyWith(
+                                color: isDark
+                                    ? AppColors.darkOnSurfaceVariant
+                                    : const Color(0xFF344638),
                                 fontWeight: FontWeight.w600,
                               ),
                               overflow: TextOverflow.ellipsis,
@@ -159,7 +166,9 @@ class BookingCard extends StatelessWidget {
                     Text(
                       '₺${booking.totalPrice.toInt()}',
                       style: AppTypography.bodyMedium.copyWith(
-                        color: AppColors.primary,
+                        color: isDark
+                            ? AppColors.darkPrimary
+                            : AppColors.primary,
                         fontWeight: FontWeight.w800,
                       ),
                     ),

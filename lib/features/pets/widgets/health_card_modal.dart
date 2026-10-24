@@ -159,6 +159,7 @@ class HealthCardModal extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     final state = AppStateScope.of(context);
     final dog = state.currentDog;
 
@@ -170,11 +171,15 @@ class HealthCardModal extends StatelessWidget {
         child: Container(
           constraints: const BoxConstraints(maxWidth: 480),
           decoration: BoxDecoration(
-            color: AppColors.surfaceContainerLowest,
+            color: isDark
+                ? AppColors.darkSurface
+                : AppColors.surfaceContainerLowest,
             borderRadius: BorderRadius.circular(28),
             boxShadow: AppColors.floatingShadow,
             border: Border.all(
-              color: AppColors.outlineVariant.withValues(alpha: 0.5),
+              color: isDark
+                  ? AppColors.darkOutlineVariant.withValues(alpha: 0.5)
+                  : AppColors.outlineVariant.withValues(alpha: 0.5),
             ),
           ),
           child: SingleChildScrollView(
@@ -220,13 +225,17 @@ class HealthCardModal extends StatelessWidget {
                     ),
                     const SizedBox(width: 8),
                     IconButton(
-                      icon: const Icon(
+                      icon: Icon(
                         Icons.close,
-                        color: AppColors.onSurfaceVariant,
+                        color: isDark
+                            ? AppColors.darkOnSurfaceVariant
+                            : AppColors.onSurfaceVariant,
                       ),
                       onPressed: () => Navigator.of(context).pop(),
                       style: IconButton.styleFrom(
-                        backgroundColor: AppColors.surfaceContainerLow,
+                        backgroundColor: isDark
+                            ? AppColors.darkSurfaceContainerLow
+                            : AppColors.surfaceContainerLow,
                         shape: const CircleBorder(),
                       ),
                     ),
@@ -298,12 +307,18 @@ class HealthCardModal extends StatelessWidget {
                     return Container(
                       padding: const EdgeInsets.all(14),
                       decoration: BoxDecoration(
-                        color: AppColors.surfaceContainerLow,
+                        color: isDark
+                            ? AppColors.darkSurfaceContainer
+                            : AppColors.surfaceContainerLow,
                         borderRadius: BorderRadius.circular(16),
                         border: Border.all(
-                          color: AppColors.outlineVariant.withValues(
-                            alpha: 0.3,
-                          ),
+                          color: isDark
+                              ? AppColors.darkOutlineVariant.withValues(
+                                  alpha: 0.3,
+                                )
+                              : AppColors.outlineVariant.withValues(
+                                  alpha: 0.3,
+                                ),
                         ),
                       ),
                       child: Row(
@@ -312,7 +327,9 @@ class HealthCardModal extends StatelessWidget {
                             isDone ? Icons.check_circle : Icons.schedule,
                             color: isDone
                                 ? AppColors.success
-                                : AppColors.primary,
+                                : (isDark
+                                      ? AppColors.darkPrimary
+                                      : AppColors.primary),
                             size: 22,
                           ),
                           const SizedBox(width: 12),
@@ -320,10 +337,22 @@ class HealthCardModal extends StatelessWidget {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text(v.title, style: AppTypography.bodyMedium),
+                                Text(
+                                  v.title,
+                                  style: AppTypography.bodyMedium.copyWith(
+                                    color: isDark
+                                        ? AppColors.darkOnSurface
+                                        : const Color(0xFF1E3023),
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
                                 Text(
                                   'Tarih: ${v.dueDate} • ${v.vetName}',
-                                  style: AppTypography.caption,
+                                  style: AppTypography.caption.copyWith(
+                                    color: isDark
+                                        ? AppColors.darkOnSurfaceVariant
+                                        : const Color(0xFF344638),
+                                  ),
                                 ),
                               ],
                             ),
@@ -335,16 +364,25 @@ class HealthCardModal extends StatelessWidget {
                             ),
                             decoration: BoxDecoration(
                               color: isDone
-                                  ? AppColors.successContainer
-                                  : AppColors.secondaryContainer,
+                                  ? (isDark
+                                        ? const Color(0xFF1C3A20)
+                                        : AppColors.successContainer)
+                                  : (isDark
+                                        ? AppColors.darkSurfaceContainerHigh
+                                        : AppColors.secondaryContainer),
                               borderRadius: BorderRadius.circular(10),
                             ),
                             child: Text(
                               isDone ? 'Tamamlandı' : 'Beklemede',
                               style: AppTypography.labelTag.copyWith(
                                 color: isDone
-                                    ? AppColors.success
-                                    : AppColors.primary,
+                                    ? (isDark
+                                          ? const Color(0xFF85E38C)
+                                          : AppColors.success)
+                                    : (isDark
+                                          ? AppColors.darkPrimary
+                                          : const Color(0xFF1E3023)),
+                                fontWeight: FontWeight.w600,
                               ),
                             ),
                           ),
@@ -359,14 +397,26 @@ class HealthCardModal extends StatelessWidget {
                   height: 48,
                   child: OutlinedButton.icon(
                     onPressed: () => _showAddVaccineDialog(context, dog),
-                    icon: const Icon(Icons.add, color: AppColors.primary),
+                    icon: Icon(
+                      Icons.add,
+                      color: isDark
+                          ? AppColors.darkPrimary
+                          : AppColors.primary,
+                    ),
                     label: Text(
                       'Yeni Aşı / Tedavi Ekle',
-                      style: AppTypography.bodyMedium,
+                      style: AppTypography.bodyMedium.copyWith(
+                        color: isDark
+                            ? AppColors.darkPrimary
+                            : AppColors.primary,
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
                     style: OutlinedButton.styleFrom(
-                      side: const BorderSide(
-                        color: AppColors.primary,
+                      side: BorderSide(
+                        color: isDark
+                            ? AppColors.darkPrimary
+                            : AppColors.primary,
                         width: 1.5,
                       ),
                       shape: RoundedRectangleBorder(

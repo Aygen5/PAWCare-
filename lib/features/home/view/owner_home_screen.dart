@@ -258,29 +258,38 @@ class _OwnerHomeViewState extends State<_OwnerHomeView>
                                           vertical: 4,
                                         ),
                                         decoration: BoxDecoration(
-                                          color: AppColors.surfaceContainerLow,
+                                          color: isDark
+                                              ? AppColors.darkSurfaceContainerLow
+                                              : AppColors.surfaceContainerLow,
                                           borderRadius: BorderRadius.circular(
                                             8,
                                           ),
                                           border: Border.all(
-                                            color: AppColors.outlineVariant
-                                                .withValues(alpha: 0.5),
+                                            color: isDark
+                                                ? AppColors.darkOutlineVariant
+                                                    .withValues(alpha: 0.5)
+                                                : AppColors.outlineVariant
+                                                    .withValues(alpha: 0.5),
                                           ),
                                         ),
                                         child: Row(
                                           mainAxisSize: MainAxisSize.min,
                                           children: [
-                                            const Icon(
+                                            Icon(
                                               Icons.medical_services_outlined,
                                               size: 14,
-                                              color: AppColors.primary,
+                                              color: isDark
+                                                  ? AppColors.darkPrimary
+                                                  : AppColors.primary,
                                             ),
                                             const SizedBox(width: 4),
                                             Text(
                                               'Sağlık Kartı',
                                               style: AppTypography.labelTag
                                                   .copyWith(
-                                                    color: AppColors.primary,
+                                                    color: isDark
+                                                        ? AppColors.darkPrimary
+                                                        : AppColors.primary,
                                                   ),
                                             ),
                                           ],
@@ -300,20 +309,27 @@ class _OwnerHomeViewState extends State<_OwnerHomeView>
                                           vertical: 4,
                                         ),
                                         decoration: BoxDecoration(
-                                          color: AppColors.surfaceContainerLow,
+                                          color: isDark
+                                              ? AppColors.darkSurfaceContainerLow
+                                              : AppColors.surfaceContainerLow,
                                           borderRadius: BorderRadius.circular(
                                             8,
                                           ),
                                           border: Border.all(
-                                            color: AppColors.outlineVariant
-                                                .withValues(alpha: 0.5),
+                                            color: isDark
+                                                ? AppColors.darkOutlineVariant
+                                                    .withValues(alpha: 0.5)
+                                                : AppColors.outlineVariant
+                                                    .withValues(alpha: 0.5),
                                           ),
                                         ),
                                         child: Text(
                                           'Profili Gör',
                                           style: AppTypography.labelTag
                                               .copyWith(
-                                                color: AppColors.primary,
+                                                color: isDark
+                                                    ? AppColors.darkPrimary
+                                                    : AppColors.primary,
                                               ),
                                         ),
                                       ),
@@ -346,7 +362,9 @@ class _OwnerHomeViewState extends State<_OwnerHomeView>
                           child: Text(
                             'Tümünü Gör',
                             style: AppTypography.bodyMedium.copyWith(
-                              color: AppColors.primary,
+                              color: isDark
+                                  ? AppColors.darkPrimary
+                                  : AppColors.primary,
                             ),
                           ),
                         ),
@@ -855,7 +873,9 @@ class _OwnerHomeViewState extends State<_OwnerHomeView>
                                             '₺${s.pricePerUnit.toInt()}/${s.unitLabel}',
                                             style: AppTypography.bodyMedium
                                                 .copyWith(
-                                                  color: AppColors.primary,
+                                                  color: isDark
+                                                      ? AppColors.darkPrimary
+                                                      : AppColors.primary,
                                                   fontWeight: FontWeight.w800,
                                                 ),
                                           ),
